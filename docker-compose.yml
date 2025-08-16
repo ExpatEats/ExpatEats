@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: expatdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: expatdb
+      POSTGRES_USER: expatuser
+      POSTGRES_PASSWORD: expatpass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - expat-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U expatuser -d expatdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ExpatEats Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: expat-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://expatuser:expatpass@postgres:5432/expatdb
+      - PORT=3000
+      - SESSION_SECRET=dev-secret-change-in-production
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    networks:
+      - expat-network
+    stdin_open: true
+    tty: true
+    command: ["npm", "run", "dev"]
+
+  # pgAdmin (Optional - Database Management UI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: expat-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@expatapp.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - expat-network
+    depends_on:
+      - postgres
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  expat-network:
+    driver: bridge

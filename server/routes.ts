@@ -1,0 +1,493 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { 
+  insertPlaceSchema, 
+  insertReviewSchema, 
+  insertUserSchema, 
+  insertNutritionSchema,
+  insertBusinessLocationSchema 
+} from "@shared/schema";
+import { z } from "zod";
+
+const submissionSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  title: z.string(),
+  description: z.string(),
+  location: z.string(),
+  website: z.string().optional(),
+  type: z.enum(['event', 'location']),
+  submittedAt: z.string(),
+});
+import { importLisbonFoodSources } from "./importLisbonFoodSources";
+import { importAdditionalFoodSources } from "./additionalImport";
+import { updateFoodSourcesImages } from "./updateFoodSourcesImages";
+import { importLocationGuides } from "./importLocationGuides";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Get all places with optional filters
+  app.get("/api/places", async (req, res) => {
+    try {
+      const { city, category, tags } = req.query;
+      console.log("API Query params:", { city, category, tags });
+      
+      const filters = {
+        city: city as string,
+        category: category as string,
+        tags: tags ? (tags as string).split(',').filter(t => t.trim()) : undefined
+      };
+      console.log("Processed filters:", filters);
+      
+      const places = await storage.getPlaces(filters);
+      console.log(`Found ${places.length} places`);
+      res.json(places);
+    } catch (error) {
+      console.error("Error fetching places:", error);
+      res.status(500).json({ message: "Failed to fetch places" });
+    }
+  });
+
+  // Get place by ID
+  app.get("/api/places/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const place = await storage.getPlace(id);
+      
+      if (!place) {
+        return res.status(404).json({ message: "Place not found" });
+      }
+      
+      res.json(place);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch place" });
+    }
+  });
+
+  // Create a new place
+  app.post("/api/places", async (req, res) => {
+    try {
+      console.log("Received place data:", JSON.stringify(req.body, null, 2));
+      const placeData = insertPlaceSchema.parse(req.body);
+      console.log("Validated place data:", JSON.stringify(placeData, null, 2));
+      const newPlace = await storage.createPlace(placeData);
+      res.status(201).json(newPlace);
+    } catch (error) {
+      console.error("Place creation error:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid place data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to create place" });
+      }
+    }
+  });
+
+  // Admin authentication
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { password } = req.body;
+      const adminPassword = process.env.ADMIN_PASSWORD || "admin123"; // Default for development
+      
+      if (password === adminPassword) {
+        res.json({ success: true });
+      } else {
+        res.status(401).json({ success: false, message: "Invalid password" });
+      }
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ message: "Authentication failed" });
+    }
+  });
+
+  // Admin endpoints for place review
+  app.get("/api/admin/pending-places", async (req, res) => {
+    try {
+      const pendingPlaces = await storage.getPendingPlaces();
+      res.json(pendingPlaces);
+    } catch (error) {
+      console.error("Error fetching pending places:", error);
+      res.status(500).json({ message: "Failed to fetch pending places" });
+    }
+  });
+
+  app.post("/api/admin/approve-place/:id", async (req, res) => {
+    try {
+      const placeId = parseInt(req.params.id);
+      const { adminNotes } = req.body;
+      await storage.approvePlace(placeId, adminNotes);
+      res.json({ success: true, message: "Place approved successfully" });
+    } catch (error) {
+      console.error("Error approving place:", error);
+      res.status(500).json({ message: "Failed to approve place" });
+    }
+  });
+
+  app.post("/api/admin/reject-place/:id", async (req, res) => {
+    try {
+      const placeId = parseInt(req.params.id);
+      const { adminNotes } = req.body;
+      if (!adminNotes) {
+        return res.status(400).json({ message: "Admin notes are required for rejection" });
+      }
+      await storage.rejectPlace(placeId, adminNotes);
+      res.json({ success: true, message: "Place rejected successfully" });
+    } catch (error) {
+      console.error("Error rejecting place:", error);
+      res.status(500).json({ message: "Failed to reject place" });
+    }
+  });
+
+  // Get all users (admin only)
+  app.get("/api/users", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      // Remove password field for security
+      const safeUsers = users.map(user => {
+        const { password, ...safeUser } = user;
+        return safeUser;
+      });
+      res.json(safeUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Get reviews for a place
+  app.get("/api/places/:id/reviews", async (req, res) => {
+    try {
+      const placeId = parseInt(req.params.id);
+      const reviews = await storage.getReviewsByPlace(placeId);
+      res.json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  // Create a new review
+  app.post("/api/reviews", async (req, res) => {
+    try {
+      const reviewData = insertReviewSchema.parse(req.body);
+      const newReview = await storage.createReview(reviewData);
+      
+      // Update place average rating
+      const placeId = reviewData.placeId;
+      const reviews = await storage.getReviewsByPlace(placeId);
+      
+      if (reviews.length > 0) {
+        const sum = reviews.reduce((total, review) => total + review.rating, 0);
+        const average = Math.round(sum / reviews.length);
+        await storage.updatePlaceRating(placeId, average);
+      }
+      
+      res.status(201).json(newReview);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid review data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to create review" });
+      }
+    }
+  });
+
+  // Submit nutrition consultation request
+  app.post("/api/nutrition", async (req, res) => {
+    try {
+      const nutritionData = insertNutritionSchema.parse(req.body);
+      const consultation = await storage.createNutritionConsultation(nutritionData);
+      res.status(201).json(consultation);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid consultation data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to submit consultation request" });
+      }
+    }
+  });
+  
+  // Register a new user
+  app.post("/api/users", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      
+      // Check if username already exists
+      const existingUser = await storage.getUserByUsername(userData.username);
+      if (existingUser) {
+        return res.status(409).json({ message: "Username already exists" });
+      }
+      
+      const newUser = await storage.createUser(userData);
+      const { password, ...userWithoutPassword } = newUser;
+      
+      res.status(201).json(userWithoutPassword);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid user data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to create user" });
+      }
+    }
+  });
+
+  // Get featured cities
+  app.get("/api/cities", async (req, res) => {
+    try {
+      const cities = await storage.getFeaturedCities();
+      res.json(cities);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch cities" });
+    }
+  });
+  
+  // Import Lisbon food sources
+  app.post("/api/import-food-sources", async (req, res) => {
+    try {
+      const result = await importLisbonFoodSources();
+      if (result.success) {
+        res.status(200).json({ message: `Successfully imported ${result.count} food sources` });
+      } else {
+        res.status(500).json({ message: "Failed to import food sources", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error importing food sources:", error);
+      res.status(500).json({ message: "Failed to import food sources" });
+    }
+  });
+  
+  // Import additional specialized food sources
+  app.post("/api/import-additional-sources", async (req, res) => {
+    try {
+      const result = await importAdditionalFoodSources();
+      if (result.success) {
+        res.status(200).json({ message: `Successfully imported ${result.count} additional food sources` });
+      } else {
+        res.status(500).json({ message: "Failed to import additional food sources", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error importing additional food sources:", error);
+      res.status(500).json({ message: "Failed to import additional food sources" });
+    }
+  });
+
+  // Import location guides (Sintra, Cascais, Oeiras)
+  app.post("/api/import-location-guides", async (req, res) => {
+    try {
+      const result = await importLocationGuides();
+      if (result.success) {
+        res.status(200).json({ 
+          message: `Successfully imported ${result.count} food sources across all locations`,
+          locations: result.locations
+        });
+      } else {
+        res.status(500).json({ message: "Failed to import location guides", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error importing location guides:", error);
+      res.status(500).json({ message: "Failed to import location guides" });
+    }
+  });
+
+  // Import supplements data
+  app.post("/api/import-supplements", async (req, res) => {
+    try {
+      const { importSupplementsData } = await import('./importSupplementsData');
+      const result = await importSupplementsData();
+      if (result.success) {
+        res.status(200).json({ message: `Successfully imported ${result.count} supplement stores` });
+      } else {
+        res.status(500).json({ message: "Failed to import supplements", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error importing supplements:", error);
+      res.status(500).json({ message: "Failed to import supplements" });
+    }
+  });
+
+  // Import enhanced store data with contact info and social media
+  app.post("/api/import-enhanced-stores", async (req, res) => {
+    try {
+      const { importEnhancedStores } = await import('./importEnhancedStores');
+      const result = await importEnhancedStores();
+      if (result.success) {
+        res.status(200).json({ message: `Successfully imported ${result.count} enhanced stores` });
+      } else {
+        res.status(500).json({ message: "Failed to import enhanced stores", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error importing enhanced stores:", error);
+      res.status(500).json({ message: "Failed to import enhanced stores" });
+    }
+  });
+  
+  // Submit event or location submissions via email
+  app.post("/api/submissions", async (req, res) => {
+    try {
+      const validatedData = submissionSchema.parse(req.body);
+      
+      // Log the submission for now - in production, this would send an email
+      console.log(`New ${validatedData.type} submission:`, {
+        from: `${validatedData.name} <${validatedData.email}>`,
+        title: validatedData.title,
+        description: validatedData.description,
+        location: validatedData.location,
+        website: validatedData.website,
+        submittedAt: validatedData.submittedAt,
+      });
+      
+      res.status(200).json({ 
+        message: `${validatedData.type} submission received successfully`,
+        success: true 
+      });
+    } catch (error) {
+      console.error("Error processing submission:", error);
+      res.status(400).json({ message: "Invalid submission data" });
+    }
+  });
+
+  // Submit feedback via email
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      const feedbackSchema = z.object({
+        name: z.string().min(2, 'Name is required'),
+        email: z.string().email('Please enter a valid email'),
+        feedback: z.string().min(10, 'Feedback must be at least 10 characters'),
+      });
+      
+      const { name, email, feedback } = feedbackSchema.parse(req.body);
+      
+      // Send email to Michaele using SendGrid
+      const sgMail = require('@sendgrid/mail');
+      
+      if (!process.env.SENDGRID_API_KEY) {
+        return res.status(500).json({ message: "Email service not configured" });
+      }
+      
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      
+      const msg = {
+        to: 'admin@expateatsguide.com',
+        from: 'noreply@expateatsguide.com', // This should be a verified sender domain
+        subject: `ExpatEats Feedback from ${name}`,
+        text: `
+New feedback received from ExpatEats:
+
+Name: ${name}
+Email: ${email}
+
+Feedback:
+${feedback}
+        `,
+        html: `
+<h2>New feedback received from ExpatEats</h2>
+<p><strong>Name:</strong> ${name}</p>
+<p><strong>Email:</strong> ${email}</p>
+<h3>Feedback:</h3>
+<p>${feedback.replace(/\n/g, '<br>')}</p>
+        `,
+      };
+      
+      await sgMail.send(msg);
+      
+      res.status(200).json({ message: "Feedback sent successfully" });
+    } catch (error) {
+      console.error("Error sending feedback:", error);
+      res.status(500).json({ message: "Failed to send feedback" });
+    }
+  });
+
+  // Get business locations with filters
+  app.get("/api/business-locations", async (req, res) => {
+    try {
+      const { locations, category, subcategory } = req.query;
+      const businessLocations = await storage.getBusinessLocations({
+        locations: locations ? (locations as string).split(',') : undefined,
+        category: category as string,
+        subcategory: subcategory as string
+      });
+      res.json(businessLocations);
+    } catch (error) {
+      console.error("Error fetching business locations:", error);
+      res.status(500).json({ message: "Failed to fetch business locations" });
+    }
+  });
+
+  // Import supplements data
+  app.post("/api/import-supplements", async (req, res) => {
+    try {
+      const result = await storage.importSupplementsData();
+      if (result.success) {
+        res.status(200).json({ message: `Successfully imported ${result.count} supplement locations` });
+      } else {
+        res.status(500).json({ message: "Failed to import supplements data", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error importing supplements data:", error);
+      res.status(500).json({ message: "Failed to import supplements data" });
+    }
+  });
+
+  // Update food source images with better URLs
+  app.post("/api/update-food-source-images", async (req, res) => {
+    try {
+      const result = await updateFoodSourcesImages();
+      if (result.success) {
+        res.status(200).json({ message: `Successfully updated images for ${result.count} food sources` });
+      } else {
+        res.status(500).json({ message: "Failed to update food source images", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error updating food source images:", error);
+      res.status(500).json({ message: "Failed to update food source images" });
+    }
+  });
+
+  // Get categories
+  app.get("/api/categories", async (req, res) => {
+    try {
+      const categories = [
+        { id: 1, name: "International Markets", icon: "ri-store-2-line", description: "Find specialty ingredients" },
+        { id: 2, name: "Restaurants", icon: "ri-restaurant-line", description: "Authentic dining experiences" },
+        { id: 3, name: "Grocery Stores", icon: "ri-shopping-basket-line", description: "Stock your pantry" },
+        { id: 4, name: "Expat Groups", icon: "ri-community-line", description: "Connect with fellow foodies" }
+      ];
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  // Get testimonials
+  app.get("/api/testimonials", async (req, res) => {
+    try {
+      const testimonials = [
+        {
+          id: 1,
+          text: "ExpatEats helped me find authentic ingredients for my home country's dishes. The visual search is amazing - I just took a photo of a spice mix and it found the exact product at a local international market!",
+          author: "Sarah L.",
+          location: "American in Lisbon",
+          rating: 5
+        },
+        {
+          id: 2,
+          text: "The meal planning feature is a game-changer. It suggests recipes based on what's available locally, but with flavors that remind me of home. The nutritionist helped me adapt my diet to local ingredients.",
+          author: "Miguel R.",
+          location: "Brazilian in Barcelona",
+          rating: 4
+        },
+        {
+          id: 3,
+          text: "I've met amazing friends through the ExpatEats community events. We share recipes, cooking tips, and explore new restaurants together. It's made my transition to a new country so much easier.",
+          author: "Akiko T.",
+          location: "Japanese in Berlin",
+          rating: 5
+        }
+      ];
+      res.json(testimonials);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch testimonials" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}

@@ -1,0 +1,207 @@
+import { useState } from 'react';
+import { useLocation } from 'wouter';
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
+
+const formSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions to continue",
+  }),
+  newsletter: z.boolean().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+const Register = () => {
+  const [, navigate] = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      name: "",
+      acceptTerms: false,
+      newsletter: true,
+    },
+  });
+
+  const onSubmit = async (data: FormValues) => {
+    setIsLoading(true);
+    
+    try {
+      // Store user data in localStorage for now
+      localStorage.setItem('userProfile', JSON.stringify({
+        email: data.email,
+        name: data.name,
+        newsletter: data.newsletter,
+      }));
+      
+      // In a future version, this would send the registration to a backend API
+      // await apiRequest('/api/register', {
+      //   method: 'POST',
+      //   body: JSON.stringify(data),
+      // });
+      
+      toast({
+        title: "Registration successful!",
+        description: "Welcome to ExpatEats.",
+      });
+      
+      // Redirect to the diet preferences page
+      navigate('/preferences');
+    } catch (error) {
+      toast({
+        title: "Registration failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center bg-[#6D9075] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>PORTUGAL</span>
+        </div>
+        <h1 className="font-montserrat text-3xl md:text-4xl font-light tracking-wide mb-3">Welcome to Expat Eats</h1>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">Your Guide to Sustainable Living Abroad</p>
+      </div>
+      
+      <Card className="border shadow-lg">
+        <CardHeader className="bg-primary/10 border-b">
+          <CardTitle className="text-2xl text-center">Join Our Community</CardTitle>
+        </CardHeader>
+        
+        <CardContent className="p-6">
+          <p className="mb-6 text-center text-gray-600">
+            Register to access our complete guides to food and shopping in your new home and join our community of expats.
+          </p>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="newsletter"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Newsletter</FormLabel>
+                      <p className="text-sm text-gray-500">
+                        Receive notifications about community events and food-related news in Lisbon.
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="acceptTerms"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        I accept the <a href="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</a>
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex flex-col items-center pt-4 space-y-4">
+                <Button
+                  type="submit"
+                  className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white text-lg px-8 py-6 rounded-full font-medium w-full max-w-xs"
+                  size="lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Processing..." : "Join & Continue"}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  onClick={() => {
+                    // Add a test user to localStorage
+                    localStorage.setItem('userProfile', JSON.stringify({
+                      email: 'test@example.com',
+                      name: 'Test User',
+                      newsletter: false,
+                    }));
+                    // Redirect to find my food page
+                    navigate('/find-my-food');
+                  }}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  I just want to test for now
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Register;

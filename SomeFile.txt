@@ -1,0 +1,278 @@
+time="2025-08-13T20:29:11-05:00" level=warning msg="/home/aaron/Documents/Work/ExpatEats/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 548B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 2.18kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 DONE 0.3s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 1.80kB done
+#4 DONE 0.0s
+
+#5 [base 1/4] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 7.32kB done
+#6 DONE 0.0s
+
+#7 [base 3/4] WORKDIR /app
+#7 CACHED
+
+#8 [base 4/4] COPY package*.json ./
+#8 CACHED
+
+#9 [base 2/4] RUN apk add --no-cache libc6-compat python3 make g++
+#9 CACHED
+
+#10 [development 1/5] RUN npm ci
+#10 CACHED
+
+#11 [development 2/5] COPY . .
+#11 DONE 0.0s
+
+#12 [development 3/5] RUN addgroup --system --gid 1001 nodejs
+#12 DONE 0.1s
+
+#13 [development 4/5] RUN adduser --system --uid 1001 nextjs
+#13 DONE 0.2s
+
+#14 [development 5/5] RUN chown -R nextjs:nodejs /app
+#14 DONE 13.3s
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 1.7s done
+#15 writing image sha256:0e0d343f35470e90d2c65749c3ac6b43ef1cc4a303296a5957a5e3d6b4d4f2d7 done
+#15 naming to docker.io/library/expateats-app done
+#15 DONE 1.7s
+
+#16 resolving provenance for metadata file
+#16 DONE 0.0s
+ expateats-app  Built
+ Container expatdb  Running
+ Container expat-app  Recreate
+ Container expat-app  Recreated
+Attaching to expat-app, expatdb
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+expat-app  | [1G[0K\[1G[0K[1mnpm[22m [96mnotice[39m
+expat-app  | [1mnpm[22m [96mnotice[39m New [31mmajor[39m version of npm available! [31m10.8.2[39m -> [34m11.5.2[39m
+expat-app  | [1mnpm[22m [96mnotice[39m Changelog: [34mhttps://github.com/npm/cli/releases/tag/v11.5.2[39m
+expat-app  | [1mnpm[22m [96mnotice[39m To update run: [4mnpm install -g npm@11.5.2[24m
+expat-app  | [1mnpm[22m [96mnotice[39m
+expat-app  | [1G[0K\[1G[0K[1mnpm[22m [96mnotice[39m
+expat-app  | [1mnpm[22m [96mnotice[39m New [31mmajor[39m version of npm available! [31m10.8.2[39m -> [34m11.5.2[39m
+expat-app  | [1mnpm[22m [96mnotice[39m Changelog: [34mhttps://github.com/npm/cli/releases/tag/v11.5.2[39m
+expat-app  | [1mnpm[22m [96mnotice[39m To update run: [4mnpm install -g npm@11.5.2[24m
+expat-app  | [1mnpm[22m [96mnotice[39m
+expat-app  | [1G[0K\[1G[0K
+[Kexpat-app exited with code 1
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+[Kexpat-app exited with code 1
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+[Kexpat-app exited with code 1
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+[Kexpat-app exited with code 1
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+[Kexpat-app exited with code 1
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+[Kexpat-app exited with code 1
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+[Kexpat-app exited with code 1
+expat-app  | 
+expat-app  | > rest-express@1.0.0 dev
+expat-app  | > NODE_ENV=development tsx server/index.ts
+expat-app  | 
+expat-app  | [1G[0Knode:internal/errors:496
+expat-app  |     ErrorCaptureStackTrace(err);
+expat-app  |     ^
+expat-app  | 
+expat-app  | TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined
+expat-app  | [90m    at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)[39m
+expat-app  | [90m    at new NodeError (node:internal/errors:405:5)[39m
+expat-app  | [90m    at validateString (node:internal/validators:162:11)[39m
+expat-app  | [90m    at Object.resolve (node:path:1115:7)[39m
+expat-app  |     at <anonymous> [90m(/app/[39mvite.config.ts:21:17[90m)[39m
+expat-app  | [90m    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)[39m
+expat-app  | [90m    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)[39m
+expat-app  | [90m    at async loadESM (node:internal/process/esm_loader:34:7)[39m
+expat-app  | [90m    at async handleMainPromise (node:internal/modules/run_main:106:12)[39m {
+expat-app  |   code: [32m'ERR_INVALID_ARG_TYPE'[39m
+expat-app  | }
+expat-app  | 
+expat-app  | Node.js v18.20.8
+[Kexpat-app exited with code 1

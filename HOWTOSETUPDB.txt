@@ -1,0 +1,217 @@
+# How to Setup Local Database for ExpatEats Application
+
+This guide will help you set up a local PostgreSQL database on Ubuntu Linux to work with the ExpatEats application.
+
+## Prerequisites
+
+- Ubuntu Linux system
+- Terminal access with sudo privileges
+- Node.js and npm already installed
+
+## Step 1: Install PostgreSQL
+
+1. Update your package list:
+   ```bash
+   sudo apt update
+   ```
+
+2. Install PostgreSQL and additional contributed packages:
+   ```bash
+   sudo apt install postgresql postgresql-contrib
+   ```
+
+3. Verify installation:
+   ```bash
+   sudo systemctl status postgresql
+   ```
+
+## Step 2: Configure PostgreSQL
+
+1. Start PostgreSQL service (if not already running):
+   ```bash
+   sudo systemctl start postgresql
+   sudo systemctl enable postgresql
+   ```
+
+2. Switch to the postgres user:
+   ```bash
+   sudo -i -u postgres
+   ```
+
+3. Access PostgreSQL prompt:
+   ```bash
+   psql
+   ```
+
+4. Create a new database for the application:
+   ```sql
+   CREATE DATABASE expatEats;
+   ```
+
+5. Create a new user with password:
+   ```sql
+   CREATE USER expatuser WITH PASSWORD 'yourpassword';
+   ```
+
+6. Grant privileges to the new user:
+   ```sql
+   GRANT ALL PRIVILEGES ON DATABASE expatEats TO expatuser;
+   ```
+
+7. Exit PostgreSQL prompt:
+   ```sql
+   \q
+   ```
+
+8. Exit postgres user session:
+   ```bash
+   exit
+   ```
+
+## Step 3: Configure Database Connection
+
+1. Create a `.env` file in the project root directory:
+   ```bash
+   touch .env
+   ```
+
+2. Add the database connection string to `.env`:
+   ```
+   DATABASE_URL=postgresql://expatuser:yourpassword@localhost:5432/expatEats
+   ```
+
+   Replace `yourpassword` with the password you set in Step 2.
+
+## Step 4: Install Project Dependencies
+
+1. Install all npm dependencies:
+   ```bash
+   npm install
+   ```
+
+## Step 5: Setup Database Schema
+
+1. Push the database schema using Drizzle:
+   ```bash
+   npm run db:push
+   ```
+
+   This command will create all the necessary tables based on the schema defined in `shared/schema.ts`.
+
+## Step 6: Verify Database Setup
+
+1. Connect to your database to verify tables were created:
+   ```bash
+   sudo -u postgres psql -d expatEats
+   ```
+
+2. List all tables:
+   ```sql
+   \dt
+   ```
+
+   You should see tables like: users, places, and others defined in the schema.
+
+3. Exit PostgreSQL:
+   ```sql
+   \q
+   ```
+
+## Step 7: Start the Application
+
+1. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+   The application should now connect to your local PostgreSQL database successfully.
+
+## Troubleshooting
+
+### Connection Issues
+
+1. If you get connection refused errors, ensure PostgreSQL is running:
+   ```bash
+   sudo systemctl status postgresql
+   ```
+
+2. Check if PostgreSQL is listening on the correct port:
+   ```bash
+   sudo netstat -plnt | grep 5432
+   ```
+
+### Authentication Issues
+
+1. If you get authentication errors, verify your username and password in the DATABASE_URL.
+
+2. You can reset the user password:
+   ```bash
+   sudo -u postgres psql
+   ALTER USER expatuser PASSWORD 'newpassword';
+   \q
+   ```
+
+### Permission Issues
+
+1. If you get permission errors, ensure the user has proper privileges:
+   ```bash
+   sudo -u postgres psql
+   GRANT ALL PRIVILEGES ON DATABASE expatEats TO expatuser;
+   GRANT ALL ON SCHEMA public TO expatuser;
+   \q
+   ```
+
+## Additional Configuration (Optional)
+
+### Enable Remote Connections (if needed)
+
+1. Edit PostgreSQL configuration:
+   ```bash
+   sudo nano /etc/postgresql/*/main/postgresql.conf
+   ```
+
+2. Find and uncomment the line:
+   ```
+   listen_addresses = 'localhost'
+   ```
+
+3. Edit client authentication:
+   ```bash
+   sudo nano /etc/postgresql/*/main/pg_hba.conf
+   ```
+
+4. Add a line for your application:
+   ```
+   host    expatEats    expatuser    127.0.0.1/32    md5
+   ```
+
+5. Restart PostgreSQL:
+   ```bash
+   sudo systemctl restart postgresql
+   ```
+
+## Database Management Commands
+
+- **Start PostgreSQL**: `sudo systemctl start postgresql`
+- **Stop PostgreSQL**: `sudo systemctl stop postgresql`
+- **Restart PostgreSQL**: `sudo systemctl restart postgresql`
+- **Check PostgreSQL status**: `sudo systemctl status postgresql`
+- **Connect to database**: `sudo -u postgres psql -d expatEats`
+- **Push schema changes**: `npm run db:push`
+
+## Security Notes
+
+- Never commit your `.env` file to version control
+- Use strong passwords for database users
+- Consider using connection pooling for production environments
+- Regularly backup your database data
+
+## Production Considerations
+
+For production deployments, consider using:
+- Neon Database (as configured in the current setup)
+- AWS RDS PostgreSQL
+- Google Cloud SQL
+- Azure Database for PostgreSQL
+
+The application is currently configured to work with Neon Database using the same DATABASE_URL environment variable pattern.

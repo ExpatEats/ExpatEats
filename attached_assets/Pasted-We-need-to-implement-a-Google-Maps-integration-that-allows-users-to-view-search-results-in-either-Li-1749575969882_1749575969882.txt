@@ -1,0 +1,68 @@
+We need to implement a Google Maps integration that allows users to view search results in either List View or Map View on the Expat Eats platform. This will be activated via a toggle button located at the top of the search results section.
+
+🔧 Functional Requirements
+1. Toggle Placement & Behavior
+
+The "Show Map" button should appear at the top of the search results.
+
+The button toggles between “List View” and “Map View.”
+
+The map should regenerate automatically after every new search or change in filters.
+
+2. Pins and Data
+
+Each result shown in the list must be mapped as a pin on the Google Map.
+
+Each pin should include the following in a clickable pop-up card:
+
+Business name
+
+Category tags
+
+Full address
+
+Link to the detail page
+
+Phone number or WhatsApp contact if available
+
+If the result does not include an address, use a placeholder location in the selected city (e.g., the city center), and show a different colored pin with a note:
+“This vendor has not provided a specific address.”
+
+3. Always Show a Map
+
+If there’s only one result, still show the map.
+
+If no results have valid geolocation, show placeholder pins using city-level location and display appropriate messaging.
+
+4. Geolocation Handling
+
+Convert all addresses to lat/lon on the fly using the Google Maps Geocoding API.
+
+If address is missing, assign the pin to a generic city coordinate.
+
+5. Map Display & User Experience
+
+Use Google Maps JavaScript API.
+
+Display the map as a toggle view in the results area (not a modal).
+
+On mobile, the map should become swipeable and full-screen.
+
+When a user taps a list result card, the map should pan and zoom to the corresponding pin.
+
+6. Pagination and Pin Limits
+
+Display a maximum of 10 pins at a time.
+
+Include a button to load the next 10 pins, and so on.
+
+Do not use clustering for now.
+
+7. Branding
+
+All pins should use a custom Expat Eats shopping basket icon (SVG or PNG).
+
+The default pins should use brand colors.
+
+The “no address” pins should be in a different color (e.g., muted gray or red) to distinguish them.
+
