@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { runSeedData } from "./seedData.js";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,12 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Run seed data import on startup
+  if (process.env.SEED_DATA === "true" || process.env.NODE_ENV === "development") {
+    log("🌱 Running seed data import...");
+    await runSeedData();
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

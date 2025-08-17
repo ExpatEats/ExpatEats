@@ -40,6 +40,7 @@ services:
       - DATABASE_URL=postgresql://expatuser:expatpass@postgres:5432/expatdb
       - PORT=3001
       - SESSION_SECRET=dev-secret-change-in-production
+      - SEED_DATA=true
     ports:
       - "3001:3001"
     volumes:

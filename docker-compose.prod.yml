@@ -54,6 +54,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
+      - SEED_DATA=${SEED_DATA:-false}
     ports:
       - "${PORT:-3001}:3001"
     networks:

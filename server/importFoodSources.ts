@@ -251,6 +251,9 @@ export async function importFoodSources() {
 
     // Add tags for all major dietary preferences to each place
     allFoodSources.forEach(place => {
+      // Set status to approved so places show up in search results
+      place.status = 'approved';
+      
       // Add tags for specific dietary preferences based on their descriptions
       // We're doing this because the documents you provided have overlapping information
       
