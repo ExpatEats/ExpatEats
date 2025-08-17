@@ -49,13 +49,13 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
-      - PORT=${PORT:-3000}
+      - PORT=${PORT:-3001}
       - SESSION_SECRET=${SESSION_SECRET}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-3001}:3001"
     networks:
       - expat-network
     deploy:
