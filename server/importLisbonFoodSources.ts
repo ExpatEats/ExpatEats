@@ -283,7 +283,13 @@ export async function importLisbonFoodSources() {
   ];
 
   try {
-    const insertedPlaces = await db.insert(places).values(lisbonFoodSources).returning();
+    // Add approved status to all places
+    const lisbonFoodSourcesWithStatus = lisbonFoodSources.map(place => ({
+      ...place,
+      status: 'approved' as const
+    }));
+    
+    const insertedPlaces = await db.insert(places).values(lisbonFoodSourcesWithStatus).returning();
     console.log(`Successfully imported ${insertedPlaces.length} Lisbon food sources`);
     return { success: true, count: insertedPlaces.length };
   } catch (error) {

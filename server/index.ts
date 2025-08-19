@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { runSeedData } from "./seedData.js";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,12 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Run seed data import on startup
+  if (process.env.SEED_DATA === "true" || process.env.NODE_ENV === "development") {
+    log("🌱 Running seed data import...");
+    await runSeedData();
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -56,10 +63,9 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
+  // Serve the app on the configured port (default 3001)
   // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
+  const port = parseInt(process.env.PORT || "3001", 10);
   server.listen({
     port,
     host: "0.0.0.0",

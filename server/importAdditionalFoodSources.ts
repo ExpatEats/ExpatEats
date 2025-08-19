@@ -183,7 +183,10 @@ export async function importAdditionalFoodSources() {
     // Insert all food sources into the database
     await db.transaction(async (tx) => {
       for (const source of additionalFoodSources) {
-        await tx.insert(places).values(source);
+        await tx.insert(places).values({
+          ...source,
+          status: 'approved' as const
+        });
       }
       
       // Now update existing records with new tags

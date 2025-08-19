@@ -122,7 +122,7 @@ export default function AddLocation() {
   }, [selectedTags, form]);
 
   return (
-    <div className="container py-8">
+    <div className="container mx-auto py-8">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#E07A5F]/10 mb-4">

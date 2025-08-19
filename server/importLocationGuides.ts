@@ -312,7 +312,13 @@ export async function importLocationGuides() {
     const allPlaces = [...sintraPlaces, ...cascaisPlaces, ...oeirasPlaces];
     
     // Insert places into database
-    const insertedPlaces = await db.insert(places).values(allPlaces).returning();
+    // Add approved status to all places
+    const allPlacesWithStatus = allPlaces.map(place => ({
+      ...place,
+      status: 'approved' as const
+    }));
+    
+    const insertedPlaces = await db.insert(places).values(allPlacesWithStatus).returning();
     
     console.log(`Successfully imported ${insertedPlaces.length} food sources across all locations`);
     

@@ -20,7 +20,7 @@ const Search = () => {
   const [savedPreferences, setSavedPreferences] = useState<string[]>([]);
   
   // Fetch all food sources from the database
-  const { data: foodSources, isLoading } = useQuery<Place[]>({
+  const { data: foodSources = [], isLoading, error } = useQuery<Place[]>({
     queryKey: ['/api/places'],
   });
   

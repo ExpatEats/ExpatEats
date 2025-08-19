@@ -248,8 +248,14 @@ export async function importSupplementsData() {
   ];
 
   try {
+    // Add approved status to all supplement data
+    const supplementsWithStatus = supplementsData.map(place => ({
+      ...place,
+      status: 'approved' as const
+    }));
+    
     // Insert all supplements data
-    const result = await db.insert(places).values(supplementsData).returning();
+    const result = await db.insert(places).values(supplementsWithStatus).returning();
     console.log(`Successfully imported ${result.length} supplement stores`);
     return { success: true, count: result.length };
   } catch (error) {
