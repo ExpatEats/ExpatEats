@@ -39,8 +39,9 @@ services:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://expatuser:expatpass@postgres:5432/expatdb
       - PORT=3001
-      - SESSION_SECRET=dev-secret-change-in-production
+      - SESSION_SECRET=dev-secret-change-in-production-256-bits-minimum
       - SEED_DATA=true
+      - BCRYPT_ROUNDS=12
     ports:
       - "3001:3001"
     volumes:
