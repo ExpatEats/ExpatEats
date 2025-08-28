@@ -8,7 +8,7 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string, rememberMe?: boolean) => Promise<void>;
   register: (userData: RegisterData, autoLogin?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   checkAuthStatus: () => Promise<void>;
@@ -94,7 +94,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string, rememberMe: boolean = false) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
 
@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, rememberMe }),
       });
 
       const data = await response.json();
@@ -120,7 +120,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Keep localStorage in sync
         localStorage.setItem('userProfile', JSON.stringify(data.user));
       } else {
-        const errorMessage = data.message || 'Login failed';
+        let errorMessage = data.message || 'Login failed';
+        
+        // Provide more user-friendly error messages based on error codes
+        switch (data.code) {
+          case 'INVALID_CREDENTIALS':
+            errorMessage = 'Invalid username or password. Please check your credentials and try again.';
+            break;
+          case 'ACCOUNT_LOCKED':
+            errorMessage = `Your account has been locked due to too many failed attempts. ${data.message}`;
+            break;
+          case 'MISSING_CREDENTIALS':
+            errorMessage = 'Please enter both username and password.';
+            break;
+          case 'LOGIN_RATE_LIMIT_EXCEEDED':
+            errorMessage = 'Too many login attempts. Please wait 15 minutes before trying again.';
+            break;
+          case 'CSRF_ERROR':
+            errorMessage = 'Security token expired. Please refresh the page and try again.';
+            break;
+          default:
+            errorMessage = data.message || 'Login failed. Please try again.';
+        }
+        
         setAuthState(prev => ({
           ...prev,
           user: null,
@@ -184,7 +206,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }));
         }
       } else {
-        const errorMessage = data.message || 'Registration failed';
+        let errorMessage = data.message || 'Registration failed';
+        
+        // Provide more user-friendly error messages based on error codes
+        switch (data.code) {
+          case 'USERNAME_EXISTS':
+            errorMessage = 'This username is already taken. Please choose a different username.';
+            break;
+          case 'EMAIL_EXISTS':
+            errorMessage = 'An account with this email already exists. Please use a different email or try logging in.';
+            break;
+          case 'CSRF_ERROR':
+            errorMessage = 'Security token expired. Please refresh the page and try again.';
+            break;
+          default:
+            errorMessage = data.message || 'Registration failed. Please try again.';
+        }
+        
         setAuthState(prev => ({
           ...prev,
           user: null,

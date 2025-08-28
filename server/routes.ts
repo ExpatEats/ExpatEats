@@ -11,6 +11,8 @@ import { z } from "zod";
 import { requireAuth, requireAdmin, optionalAuth } from "./middleware/auth";
 import { AuthService } from "./services/authService";
 import { AuthenticatedRequest } from "./types/session";
+import { CsrfService } from "./services/csrfService";
+import { RateLimitService } from "./services/rateLimitService";
 
 const submissionSchema = z.object({
     name: z.string(),
@@ -28,8 +30,22 @@ import { updateFoodSourcesImages } from "./updateFoodSourcesImages";
 import { importLocationGuides } from "./importLocationGuides";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+    // Apply general rate limiting to all API routes
+    app.use("/api", RateLimitService.generalLimiter);
+
+    // CSRF token endpoint
+    app.get("/api/csrf-token", (req, res) => {
+        try {
+            const token = CsrfService.generateToken(req);
+            res.json({ csrfToken: token });
+        } catch (error) {
+            console.error("CSRF token generation error:", error);
+            res.status(500).json({ message: "Failed to generate CSRF token" });
+        }
+    });
+
     // Authentication routes
-    app.post("/api/auth/register", async (req, res) => {
+    app.post("/api/auth/register", RateLimitService.authLimiter, CsrfService.middleware(), async (req, res) => {
         try {
             const userData = insertUserSchema.parse(req.body);
 
@@ -51,7 +67,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 });
             }
 
-            const newUser = await AuthService.createUser(userData);
+            const newUser = await AuthService.createUser({
+                ...userData,
+                name: userData.name ?? undefined,
+                city: userData.city ?? undefined,
+                country: userData.country ?? undefined,
+                bio: userData.bio ?? undefined,
+            });
 
             // Create session
             const session = req.session as AuthenticatedRequest["session"];
@@ -77,9 +99,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
-    app.post("/api/auth/login", async (req, res) => {
+    app.post("/api/auth/login", RateLimitService.loginLimiter, CsrfService.middleware(), async (req, res) => {
         try {
-            const { username, password } = req.body;
+            const { username, password, rememberMe } = req.body;
 
             if (!username || !password) {
                 return res.status(400).json({ 
@@ -93,21 +115,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (!authResult.success) {
                 return res.status(401).json({
                     message: authResult.message,
-                    code: authResult.locked ? "ACCOUNT_LOCKED" : "INVALID_CREDENTIALS",
-                    attemptsRemaining: authResult.attemptsRemaining
+                    code: "locked" in authResult ? "ACCOUNT_LOCKED" : "INVALID_CREDENTIALS",
+                    attemptsRemaining: "attemptsRemaining" in authResult ? authResult.attemptsRemaining : undefined
                 });
             }
 
             // Create session
             const session = req.session as AuthenticatedRequest["session"];
-            session.userId = authResult.user!.id;
-            session.username = authResult.user!.username;
-            session.isAdmin = authResult.user!.role === "admin";
+            const user = (authResult as any).user;
+            session.userId = user.id;
+            session.username = user.username;
+            session.isAdmin = user.role === "admin";
             session.lastActivity = new Date();
+
+            // Extend session duration if "remember me" is checked
+            if (rememberMe) {
+                session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+            }
 
             res.json({
                 message: "Login successful",
-                user: authResult.user
+                user: user
             });
         } catch (error) {
             console.error("Login error:", error);
@@ -115,7 +143,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
-    app.post("/api/auth/logout", (req, res) => {
+    app.post("/api/auth/logout", RateLimitService.authLimiter, CsrfService.middleware(), (req, res) => {
         req.session.destroy((err) => {
             if (err) {
                 console.error("Logout error:", err);
@@ -181,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // Create a new place
-    app.post("/api/places", async (req, res) => {
+    app.post("/api/places", CsrfService.middleware(), async (req, res) => {
         try {
             console.log(
                 "Received place data:",
@@ -208,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // Admin authentication (deprecated - use /api/auth/login instead)
-    app.post("/api/admin/login", async (req, res) => {
+    app.post("/api/admin/login", RateLimitService.loginLimiter, CsrfService.middleware(), async (req, res) => {
         try {
             const { username, password } = req.body;
             
@@ -243,7 +271,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     });
                 }
 
-                if (authResult.user?.role !== "admin") {
+                const user = (authResult as any).user;
+                if (user?.role !== "admin") {
                     return res.status(403).json({
                         success: false,
                         message: "Admin access required",
@@ -252,12 +281,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
                 // Create admin session
                 const session = req.session as AuthenticatedRequest["session"];
-                session.userId = authResult.user.id;
-                session.username = authResult.user.username;
+                session.userId = user.id;
+                session.username = user.username;
                 session.isAdmin = true;
                 session.lastActivity = new Date();
 
-                return res.json({ success: true, user: authResult.user });
+                return res.json({ success: true, user: user });
             }
 
             res.status(400).json({
@@ -281,7 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
-    app.post("/api/admin/approve-place/:id", requireAdmin, async (req: AuthenticatedRequest, res) => {
+    app.post("/api/admin/approve-place/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
         try {
             const placeId = parseInt(req.params.id);
             const { adminNotes } = req.body;
@@ -293,7 +322,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
-    app.post("/api/admin/reject-place/:id", requireAdmin, async (req: AuthenticatedRequest, res) => {
+    app.post("/api/admin/reject-place/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
         try {
             const placeId = parseInt(req.params.id);
             const { adminNotes } = req.body;
@@ -340,7 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // Create a new review
-    app.post("/api/reviews", async (req, res) => {
+    app.post("/api/reviews", CsrfService.middleware(), async (req, res) => {
         try {
             const reviewData = insertReviewSchema.parse(req.body);
             const newReview = await storage.createReview(reviewData);
@@ -372,7 +401,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // Submit nutrition consultation request
-    app.post("/api/nutrition", async (req, res) => {
+    app.post("/api/nutrition", CsrfService.middleware(), async (req, res) => {
         try {
             const nutritionData = insertNutritionSchema.parse(req.body);
             const consultation =
@@ -393,7 +422,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // Legacy user registration endpoint (deprecated - use /api/auth/register instead)
-    app.post("/api/users", async (req, res) => {
+    app.post("/api/users", CsrfService.middleware(), async (req, res) => {
         try {
             const userData = insertUserSchema.parse(req.body);
 
@@ -409,7 +438,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 return res.status(409).json({ message: "Email already exists" });
             }
 
-            const newUser = await AuthService.createUser(userData);
+            const newUser = await AuthService.createUser({
+                ...userData,
+                name: userData.name ?? undefined,
+                city: userData.city ?? undefined,
+                country: userData.country ?? undefined,
+                bio: userData.bio ?? undefined,
+            });
             res.status(201).json(newUser);
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -558,7 +593,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // Submit event or location submissions via email
-    app.post("/api/submissions", async (req, res) => {
+    app.post("/api/submissions", CsrfService.middleware(), async (req, res) => {
         try {
             const validatedData = submissionSchema.parse(req.body);
 
@@ -583,7 +618,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     // Submit feedback via email
-    app.post("/api/feedback", async (req, res) => {
+    app.post("/api/feedback", CsrfService.middleware(), async (req, res) => {
         try {
             const feedbackSchema = z.object({
                 name: z.string().min(2, "Name is required"),

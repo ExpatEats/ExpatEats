@@ -19,12 +19,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
     username: z.string().min(1, "Username is required"),
     password: z.string().min(1, "Password is required"),
+    rememberMe: z.boolean().optional(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -45,6 +47,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
         defaultValues: {
             username: "",
             password: "",
+            rememberMe: false,
         },
     });
 
@@ -52,7 +55,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
         setLocalError(null); // Clear local error
 
         try {
-            await login(data.username, data.password);
+            await login(data.username, data.password, data.rememberMe);
             
             toast({
                 title: "Login successful!",
@@ -145,6 +148,26 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                                             />
                                         </FormControl>
                                         <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="rememberMe"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                        <FormControl>
+                                            <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel className="text-sm">
+                                                Remember me for 30 days
+                                            </FormLabel>
+                                        </div>
                                     </FormItem>
                                 )}
                             />

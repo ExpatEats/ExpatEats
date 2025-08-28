@@ -6,14 +6,18 @@ declare module "express-session" {
         username?: string;
         isAdmin?: boolean;
         lastActivity?: Date;
+        csrfSecret?: string;
     }
 }
 
-export interface AuthenticatedRequest extends Express.Request {
+import { Request } from 'express';
+
+export interface AuthenticatedRequest extends Request {
     session: {
         userId?: number;
         username?: string;
         isAdmin?: boolean;
         lastActivity?: Date;
-    } & Express.Session;
+        csrfSecret?: string;
+    } & import('express-session').Session;
 }

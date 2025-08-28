@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -15,16 +15,29 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CheckCircle, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { RegistrationSuccessModal } from "@/components/RegistrationSuccessModal";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
+
+const passwordSchema = z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number");
 
 const formSchema = z.object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
+    username: z.string()
+        .min(3, "Username must be at least 3 characters")
+        .max(20, "Username must be no more than 20 characters")
+        .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
     email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Please confirm your password"),
-    name: z.string().min(2, "Name must be at least 2 characters"),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+    name: z.string()
+        .min(2, "Name must be at least 2 characters")
+        .max(50, "Name must be no more than 50 characters"),
     acceptTerms: z.boolean().refine((val) => val === true, {
         message: "You must accept the terms and conditions to continue",
     }),
@@ -41,6 +54,12 @@ const Register = () => {
     const [successModalOpen, setSuccessModalOpen] = useState(false);
     const [registeredUserName, setRegisteredUserName] = useState<string | null>(null);
     const [localError, setLocalError] = useState<string | null>(null);
+    const [validationState, setValidationState] = useState({
+        usernameChecking: false,
+        emailChecking: false,
+        usernameAvailable: null as boolean | null,
+        emailAvailable: null as boolean | null,
+    });
     const { register, isLoading, isAuthenticated } = useAuth();
     const { toast } = useToast();
 
@@ -177,12 +196,31 @@ const Register = () => {
                                     <FormItem>
                                         <FormLabel>Username</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                placeholder="johndoe"
-                                                {...field}
-                                            />
+                                            <div className="relative">
+                                                <Input
+                                                    placeholder="johndoe"
+                                                    {...field}
+                                                />
+                                                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                    {validationState.usernameChecking && (
+                                                        <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                                                    )}
+                                                    {!validationState.usernameChecking && validationState.usernameAvailable === true && (
+                                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                                    )}
+                                                    {!validationState.usernameChecking && validationState.usernameAvailable === false && (
+                                                        <X className="h-4 w-4 text-red-500" />
+                                                    )}
+                                                </div>
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
+                                        {validationState.usernameAvailable === false && (
+                                            <p className="text-sm text-red-600">Username is already taken</p>
+                                        )}
+                                        {validationState.usernameAvailable === true && (
+                                            <p className="text-sm text-green-600">Username is available</p>
+                                        )}
                                     </FormItem>
                                 )}
                             />
@@ -194,13 +232,32 @@ const Register = () => {
                                     <FormItem>
                                         <FormLabel>Email Address</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                type="email"
-                                                placeholder="you@example.com"
-                                                {...field}
-                                            />
+                                            <div className="relative">
+                                                <Input
+                                                    type="email"
+                                                    placeholder="you@example.com"
+                                                    {...field}
+                                                />
+                                                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                    {validationState.emailChecking && (
+                                                        <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                                                    )}
+                                                    {!validationState.emailChecking && validationState.emailAvailable === true && (
+                                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                                    )}
+                                                    {!validationState.emailChecking && validationState.emailAvailable === false && (
+                                                        <X className="h-4 w-4 text-red-500" />
+                                                    )}
+                                                </div>
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
+                                        {validationState.emailAvailable === false && (
+                                            <p className="text-sm text-red-600">Email is already registered</p>
+                                        )}
+                                        {validationState.emailAvailable === true && (
+                                            <p className="text-sm text-green-600">Email is available</p>
+                                        )}
                                     </FormItem>
                                 )}
                             />
@@ -218,6 +275,7 @@ const Register = () => {
                                                 {...field}
                                             />
                                         </FormControl>
+                                        <PasswordStrengthIndicator password={field.value || ""} />
                                         <FormMessage />
                                     </FormItem>
                                 )}
