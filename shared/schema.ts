@@ -100,21 +100,6 @@ export const nutrition = pgTable("nutrition", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const businessLocations = pgTable("business_locations", {
-    id: serial("id").primaryKey(),
-    name: text("name").notNull(),
-    description: text("description").notNull(),
-    address: text("address"),
-    website: text("website"),
-    phone: text("phone"),
-    category: text("category").notNull(), // 'food-nutrition', 'lifestyle'
-    subcategory: text("subcategory").notNull(), // 'supplements', 'grocery-market', 'beauty', etc.
-    location: text("location").notNull(), // 'lisbon', 'oeires', 'cascais', 'online'
-    tags: text("tags").array(),
-    isOnline: boolean("is_online").default(false),
-    shipsToPortugal: boolean("ships_to_portugal").default(false),
-    createdAt: timestamp("created_at").defaultNow(),
-});
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -145,12 +130,6 @@ export const insertNutritionSchema = createInsertSchema(nutrition).omit({
     createdAt: true,
 });
 
-export const insertBusinessLocationSchema = createInsertSchema(
-    businessLocations,
-).omit({
-    id: true,
-    createdAt: true,
-});
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -165,7 +144,3 @@ export type Review = typeof reviews.$inferSelect;
 export type InsertNutrition = z.infer<typeof insertNutritionSchema>;
 export type Nutrition = typeof nutrition.$inferSelect;
 
-export type InsertBusinessLocation = z.infer<
-    typeof insertBusinessLocationSchema
->;
-export type BusinessLocation = typeof businessLocations.$inferSelect;

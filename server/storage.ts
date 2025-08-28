@@ -5,19 +5,16 @@ import {
     users,
     reviews,
     nutrition,
-    businessLocations,
 } from "@shared/schema";
 import {
     InsertPlace,
     InsertUser,
     InsertReview,
     InsertNutrition,
-    InsertBusinessLocation,
     Place,
     User,
     Review,
     Nutrition,
-    BusinessLocation,
 } from "@shared/schema";
 
 interface City {
@@ -32,22 +29,10 @@ interface PlaceFilters {
     tags?: string[];
 }
 
-interface BusinessLocationFilters {
-    locations?: string[];
-    category?: string;
-    subcategory?: string;
-}
-
-export interface IStorage {
-    // User methods
-    getUser(id: number): Promise<User | undefined>;
-    getUserByUsername(username: string): Promise<User | undefined>;
-    createUser(user: InsertUser): Promise<User>;
-    getAllUsers(): Promise<User[]>;
-
+interface Storage {
     // Place methods
     getPlaces(filters?: PlaceFilters): Promise<Place[]>;
-    getPlace(id: number): Promise<Place | undefined>;
+    getPlace(id: number): Promise<Place | null>;
     createPlace(place: InsertPlace): Promise<Place>;
     updatePlaceRating(placeId: number, rating: number): Promise<void>;
 
@@ -55,21 +40,14 @@ export interface IStorage {
     getReviewsByPlace(placeId: number): Promise<Review[]>;
     createReview(review: InsertReview): Promise<Review>;
 
+    // User methods
+    getAllUsers(): Promise<User[]>;
+
     // Nutrition methods
     createNutritionConsultation(nutrition: InsertNutrition): Promise<Nutrition>;
 
-    // Business location methods
-    getBusinessLocations(
-        filters?: BusinessLocationFilters,
-    ): Promise<BusinessLocation[]>;
-    createBusinessLocation(
-        location: InsertBusinessLocation,
-    ): Promise<BusinessLocation>;
-    importSupplementsData(): Promise<{
-        success: boolean;
-        count?: number;
-        error?: string;
-    }>;
+    // Location methods
+    getDistinctLocations(): Promise<{id: string, name: string}[]>;
 
     // City methods
     getFeaturedCities(): Promise<City[]>;
@@ -80,116 +58,69 @@ export interface IStorage {
     rejectPlace(placeId: number, adminNotes: string): Promise<void>;
 }
 
-export class DatabaseStorage implements IStorage {
-    private cities: City[];
-
-    constructor() {
-        // Initialize featured cities
-        this.cities = [
-            { id: 1, name: "Lisbon", country: "Portugal" },
-            { id: 2, name: "Porto", country: "Portugal" },
-            { id: 3, name: "Barcelona", country: "Spain" },
-            { id: 4, name: "Madrid", country: "Spain" },
-            { id: 5, name: "Berlin", country: "Germany" },
-            { id: 6, name: "Paris", country: "France" },
-        ];
-    }
-
-    // User methods
-    async getUser(id: number): Promise<User | undefined> {
-        const [user] = await db.select().from(users).where(eq(users.id, id));
-        return user || undefined;
-    }
-
-    async getUserByUsername(username: string): Promise<User | undefined> {
-        const [user] = await db
-            .select()
-            .from(users)
-            .where(eq(users.username, username));
-        return user || undefined;
-    }
-
-    async createUser(user: InsertUser): Promise<User> {
-        const [newUser] = await db.insert(users).values(user).returning();
-        return newUser;
-    }
-
-    async getAllUsers(): Promise<User[]> {
-        return await db.select().from(users);
-    }
+class DatabaseStorage implements Storage {
+    cities: City[] = [
+        { id: 1, name: "Lisbon", country: "Portugal" },
+        { id: 2, name: "Porto", country: "Portugal" },
+        { id: 3, name: "Coimbra", country: "Portugal" },
+        { id: 4, name: "Braga", country: "Portugal" },
+    ];
 
     // Place methods
     async getPlaces(filters?: PlaceFilters): Promise<Place[]> {
-        // Build base query with status filter
         let whereConditions = [eq(places.status, "approved")];
 
-        if (filters) {
-            if (filters.city) {
-                // Handle comma-separated cities
-                const cities = filters.city
-                    .split(",")
-                    .map((c) => c.trim().toLowerCase());
+        if (filters?.city) {
+            const cities = filters.city
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c);
+
+            if (cities.length > 0) {
                 const capitalizedCities = cities.map(
-                    (city) => city.charAt(0).toUpperCase() + city.slice(1),
+                    (city) =>
+                        city.charAt(0).toUpperCase() + city.slice(1).toLowerCase(),
                 );
 
-                // For supplements, include online retailers regardless of city
-                if (
-                    filters.category &&
-                    filters.category.includes("Online Store")
-                ) {
-                    const cityCondition = or(
-                        inArray(places.city, capitalizedCities),
-                        eq(places.city, "Online"),
+                if (capitalizedCities.some((city) => city === "Online")) {
+                    whereConditions.push(
+                        or(
+                            inArray(places.city, capitalizedCities),
+                            eq(places.city, "Online"),
+                        ) as any,
                     );
-                    if (cityCondition) whereConditions.push(cityCondition);
                 } else {
                     whereConditions.push(
                         inArray(places.city, capitalizedCities),
                     );
                 }
             }
+        }
 
-            if (filters.category) {
-                // Handle comma-separated categories for supplements
+        if (filters?.category) {
+            if (filters.category.includes(",")) {
                 const categories = filters.category
                     .split(",")
-                    .map((c) => c.trim());
-                if (categories.length > 1) {
-                    whereConditions.push(inArray(places.category, categories));
-                } else {
-                    whereConditions.push(eq(places.category, filters.category));
-                }
+                    .map((cat) => cat.trim());
+                whereConditions.push(inArray(places.category, categories));
+            } else {
+                whereConditions.push(eq(places.category, filters.category));
             }
         }
 
-        let results = await db
+        if (filters?.tags && filters.tags.length > 0) {
+            // This will need to be adjusted based on your actual tag filtering logic
+        }
+
+        return await db
             .select()
             .from(places)
             .where(and(...whereConditions));
-
-        // Filter by tags if provided
-        // This is done in-memory since array filtering is complex in SQL
-        if (filters?.tags && filters.tags.length > 0) {
-            results = results.filter((place) => {
-                // Make sure place has tags and at least one of the required tags
-                return (
-                    place.tags &&
-                    place.tags.some((tag) =>
-                        filters.tags!.some((filterTag) =>
-                            tag.toLowerCase().includes(filterTag.toLowerCase()),
-                        ),
-                    )
-                );
-            });
-        }
-
-        return results;
     }
 
-    async getPlace(id: number): Promise<Place | undefined> {
+    async getPlace(id: number): Promise<Place | null> {
         const [place] = await db.select().from(places).where(eq(places.id, id));
-        return place || undefined;
+        return place || null;
     }
 
     async createPlace(place: InsertPlace): Promise<Place> {
@@ -206,10 +137,7 @@ export class DatabaseStorage implements IStorage {
 
     // Review methods
     async getReviewsByPlace(placeId: number): Promise<Review[]> {
-        return await db
-            .select()
-            .from(reviews)
-            .where(eq(reviews.placeId, placeId));
+        return await db.select().from(reviews).where(eq(reviews.placeId, placeId));
     }
 
     async createReview(review: InsertReview): Promise<Review> {
@@ -217,10 +145,13 @@ export class DatabaseStorage implements IStorage {
         return newReview;
     }
 
+    // User methods  
+    async getAllUsers(): Promise<User[]> {
+        return await db.select().from(users);
+    }
+
     // Nutrition methods
-    async createNutritionConsultation(
-        nutritionData: InsertNutrition,
-    ): Promise<Nutrition> {
+    async createNutritionConsultation(nutritionData: InsertNutrition): Promise<Nutrition> {
         const [newConsultation] = await db
             .insert(nutrition)
             .values(nutritionData)
@@ -228,355 +159,32 @@ export class DatabaseStorage implements IStorage {
         return newConsultation;
     }
 
-    // Business location methods
-    async getBusinessLocations(
-        filters?: BusinessLocationFilters,
-    ): Promise<BusinessLocation[]> {
-        let query = db.select().from(businessLocations);
-
-        const conditions = [];
-
-        if (filters?.locations && filters.locations.length > 0) {
-            conditions.push(
-                inArray(businessLocations.location, filters.locations),
-            );
-        }
-
-        if (filters?.category) {
-            conditions.push(eq(businessLocations.category, filters.category));
-        }
-
-        if (filters?.subcategory) {
-            conditions.push(
-                eq(businessLocations.subcategory, filters.subcategory),
-            );
-        }
-
-        if (conditions.length > 0) {
-            query = query.where(and(...conditions));
-        }
-
-        return await query;
-    }
-
-    async createBusinessLocation(
-        location: InsertBusinessLocation,
-    ): Promise<BusinessLocation> {
-        const [newLocation] = await db
-            .insert(businessLocations)
-            .values(location)
-            .returning();
-        return newLocation;
-    }
-
-    async importSupplementsData(): Promise<{
-        success: boolean;
-        count?: number;
-        error?: string;
-    }> {
-        try {
-            const supplementsData = [
-                // Physical Stores in Lisbon
-                {
-                    name: "Celeiro",
-                    description:
-                        "A well-established Portuguese health food chain with multiple locations across Lisbon. Offers a wide range of vitamins, minerals, herbal remedies, and natural products. Also provides gluten-free, vegetarian, and vegan options.",
-                    address: "Multiple locations across Lisbon",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "lisbon",
-                    tags: [
-                        "vitamins",
-                        "minerals",
-                        "herbal",
-                        "gluten-free",
-                        "vegan",
-                        "vegetarian",
-                    ],
-                    isOnline: false,
-                    shipsToPortugal: false,
-                },
-                {
-                    name: "PrimeBody",
-                    description:
-                        "Specializes in sports nutrition, offering products like creatine, protein powders, and vitamins. Known for high-quality products and expert staff.",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "lisbon",
-                    tags: [
-                        "sports nutrition",
-                        "protein",
-                        "creatine",
-                        "vitamins",
-                    ],
-                    isOnline: false,
-                    shipsToPortugal: false,
-                },
-                {
-                    name: "My Whey Store",
-                    description:
-                        "Focuses on fitness supplements, including whey proteins, amino acids, and pre-workouts. Caters to both amateur and professional athletes.",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "lisbon",
-                    tags: [
-                        "whey protein",
-                        "amino acids",
-                        "pre-workout",
-                        "fitness",
-                    ],
-                    isOnline: false,
-                    shipsToPortugal: false,
-                },
-                {
-                    name: "Essentia Produtos Naturais",
-                    description:
-                        "Offers a variety of natural health products, including supplements, teas, and organic foods. Emphasizes holistic wellness and natural remedies.",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "lisbon",
-                    tags: [
-                        "natural health",
-                        "supplements",
-                        "teas",
-                        "organic",
-                        "holistic",
-                    ],
-                    isOnline: false,
-                    shipsToPortugal: false,
-                },
-                {
-                    name: "Segredos da Saúde",
-                    description:
-                        "Provides a selection of health supplements, natural cosmetics, and wellness products. Known for personalized customer service.",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "lisbon",
-                    tags: [
-                        "health supplements",
-                        "natural cosmetics",
-                        "wellness",
-                    ],
-                    isOnline: false,
-                    shipsToPortugal: false,
-                },
-
-                // Online Retailers Shipping to Portugal
-                {
-                    name: "iHerb",
-                    description:
-                        "Offers a vast selection of international supplement brands. Ships to Portugal with VAT included at checkout, ensuring transparency.",
-                    website: "https://iherb.com",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: [
-                        "international brands",
-                        "VAT included",
-                        "vitamins",
-                        "supplements",
-                    ],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "Greatlife.eu",
-                    description:
-                        "European-based retailer specializing in premium supplements. Ships to Portugal within 5–7 business days using reliable carriers like DHL and UPS.",
-                    website: "https://greatlife.eu",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: ["premium supplements", "European", "DHL", "UPS"],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "Life Extension Europe",
-                    description:
-                        "Offers science-based supplements focusing on longevity and wellness. Products are non-GMO, gluten-free, and plant-based.",
-                    website: "https://lifeextensioneurope.com",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: [
-                        "science-based",
-                        "longevity",
-                        "non-GMO",
-                        "gluten-free",
-                        "plant-based",
-                    ],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "VitalAbo",
-                    description:
-                        "Provides a wide range of vitamins, minerals, and sports nutrition products. Free shipping to Portugal on orders over €39.90.",
-                    website: "https://vitalabo.de",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: [
-                        "vitamins",
-                        "minerals",
-                        "sports nutrition",
-                        "free shipping",
-                    ],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "Vitafor Europe",
-                    description:
-                        "Specializes in health and sports supplements, including probiotics and omega-3s. Free shipping to Portugal on orders over €99.",
-                    website: "https://vitafor.eu",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: [
-                        "health supplements",
-                        "sports",
-                        "probiotics",
-                        "omega-3",
-                    ],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "BulkSupplements.com",
-                    description:
-                        "Offers a broad selection of pure supplement powders. Ships to Portugal in 4–10 days; note that certain products like fish oil and melatonin may be restricted.",
-                    website: "https://bulksupplements.com",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: ["pure powders", "bulk", "restrictions apply"],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "Mass-Zone.eu",
-                    description:
-                        "European retailer with a comprehensive range of supplements. Provides worldwide shipping, including to Portugal.",
-                    website: "https://mass-zone.eu",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: [
-                        "European",
-                        "comprehensive range",
-                        "worldwide shipping",
-                    ],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "6PAK Nutrition",
-                    description:
-                        "Polish-based company offering sports nutrition products. Ships to Portugal with competitive rates.",
-                    website: "https://6paknutrition.com",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: ["Polish", "sports nutrition", "competitive rates"],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "Wild Nutrition",
-                    description:
-                        "UK-based company offering natural, food-grown supplements. Ships to Portugal within 3–5 business days.",
-                    website: "https://wildnutrition.com",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: ["UK-based", "natural", "food-grown"],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-
-                // Portuguese Supplement Brands
-                {
-                    name: "Prozis",
-                    description:
-                        "One of Europe's largest sports nutrition brands, headquartered in Portugal. Offers a wide range of supplements, functional foods, and fitness apparel. Ships globally with a strong online presence.",
-                    website: "https://prozis.com",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "lisbon",
-                    tags: [
-                        "Portuguese brand",
-                        "sports nutrition",
-                        "functional foods",
-                        "fitness apparel",
-                    ],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-                {
-                    name: "Marvelous Nutrition",
-                    description:
-                        "Portuguese company specializing in research-backed sports supplements. Focuses on delivering clinically dosed products for athletes.",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "lisbon",
-                    tags: [
-                        "Portuguese",
-                        "research-backed",
-                        "clinically dosed",
-                        "athletes",
-                    ],
-                    isOnline: false,
-                    shipsToPortugal: false,
-                },
-                {
-                    name: "Lusodiete",
-                    description:
-                        "Based in Oeiras, this company offers natural, plant-based supplements. Emphasizes the use of nutrient-rich wild plants in their formulations.",
-                    address: "Oeiras, Portugal",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "oeires",
-                    tags: [
-                        "natural",
-                        "plant-based",
-                        "wild plants",
-                        "nutrient-rich",
-                    ],
-                    isOnline: false,
-                    shipsToPortugal: false,
-                },
-                {
-                    name: "My Pharma Spot",
-                    description:
-                        "Online para-pharmacy offering a variety of supplements, including those targeting memory and mental performance. Caters to the Portuguese market with a user-friendly platform.",
-                    website: "https://mypharmaspot.pt",
-                    category: "food-nutrition",
-                    subcategory: "supplements",
-                    location: "online",
-                    tags: [
-                        "para-pharmacy",
-                        "memory",
-                        "mental performance",
-                        "Portuguese market",
-                    ],
-                    isOnline: true,
-                    shipsToPortugal: true,
-                },
-            ];
-
-            let count = 0;
-            for (const data of supplementsData) {
-                await this.createBusinessLocation(data);
-                count++;
-            }
-
-            return { success: true, count };
-        } catch (error) {
-            console.error("Error importing supplements data:", error);
-            return { success: false, error: String(error) };
-        }
+    // Location methods
+    async getDistinctLocations(): Promise<{id: string, name: string}[]> {
+        // Get distinct cities from places table
+        const placeCities = await db.selectDistinct({ city: places.city }).from(places);
+        
+        // Combine and dedupe
+        const allLocations = new Set<string>();
+        placeCities.forEach(p => p.city && allLocations.add(p.city.toLowerCase()));
+        
+        // Convert to expected format with proper capitalization
+        const locationMap: {[key: string]: string} = {
+            'lisbon': 'Lisbon',
+            'oeiras': 'Oeiras', 
+            'cascais': 'Cascais',
+            'sintra': 'Sintra',
+            'oeires': 'Oeiras', // Handle typo in data
+            'online': 'Online'
+        };
+        
+        return Array.from(allLocations)
+            .filter(loc => loc !== 'online') // Filter out online for location selector
+            .map(loc => ({
+                id: loc,
+                name: locationMap[loc] || loc.charAt(0).toUpperCase() + loc.slice(1)
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     // City methods

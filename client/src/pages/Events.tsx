@@ -514,7 +514,7 @@ const Events = () => {
                         <Button
                             onClick={() => setShowAddEventForm(true)}
                             size="lg"
-                            className="bg-[#F5A623] hover:bg-[#F5A623]/90 text-white font-medium"
+                            className="bg-[#E07A5F] hover:bg-[#E07A5E]/90 text-white font-medium"
                         >
                             Add Event
                         </Button>

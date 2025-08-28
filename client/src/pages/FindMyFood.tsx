@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -28,12 +29,17 @@ export default function FindMyFood() {
         [],
     );
 
-    const locations = [
-        { id: "lisbon", name: "Lisbon" },
-        { id: "oeiras", name: "Oeiras" },
-        { id: "cascais", name: "Cascais" },
-        { id: "sintra", name: "Sintra" },
-    ];
+    // Fetch locations from API
+    const { data: locations = [], isLoading: locationsLoading } = useQuery<{id: string, name: string}[]>({
+        queryKey: ["locations"],
+        queryFn: async () => {
+            const response = await fetch("/api/locations");
+            if (!response.ok) {
+                throw new Error("Failed to fetch locations");
+            }
+            return response.json();
+        },
+    });
 
     const guideTypes = [
         {
@@ -259,8 +265,11 @@ export default function FindMyFood() {
                             </p>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {locations.map((location) => (
+                            {locationsLoading ? (
+                                <div className="text-center py-4">Loading locations...</div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    {locations.map((location) => (
                                     <div
                                         key={location.id}
                                         className="border border-gray-200 rounded-lg p-4 hover:border-[#E07A5F]/50 transition-colors"
@@ -284,8 +293,9 @@ export default function FindMyFood() {
                                             </Label>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 

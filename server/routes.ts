@@ -6,7 +6,6 @@ import {
     insertReviewSchema,
     insertUserSchema,
     insertNutritionSchema,
-    insertBusinessLocationSchema,
 } from "@shared/schema";
 import { z } from "zod";
 import { requireAuth, requireAdmin, optionalAuth } from "./middleware/auth";
@@ -424,6 +423,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
+    // Get all locations from existing data
+    app.get("/api/locations", async (req, res) => {
+        try {
+            const locations = await storage.getDistinctLocations();
+            res.json(locations);
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+            res.status(500).json({ message: "Failed to fetch locations" });
+        }
+    });
+
     // Get featured cities
     app.get("/api/cities", async (req, res) => {
         try {
@@ -627,47 +637,7 @@ ${feedback}
         }
     });
 
-    // Get business locations with filters
-    app.get("/api/business-locations", async (req, res) => {
-        try {
-            const { locations, category, subcategory } = req.query;
-            const businessLocations = await storage.getBusinessLocations({
-                locations: locations
-                    ? (locations as string).split(",")
-                    : undefined,
-                category: category as string,
-                subcategory: subcategory as string,
-            });
-            res.json(businessLocations);
-        } catch (error) {
-            console.error("Error fetching business locations:", error);
-            res.status(500).json({
-                message: "Failed to fetch business locations",
-            });
-        }
-    });
 
-    // Import supplements data
-    app.post("/api/import-supplements", async (req, res) => {
-        try {
-            const result = await storage.importSupplementsData();
-            if (result.success) {
-                res.status(200).json({
-                    message: `Successfully imported ${result.count} supplement locations`,
-                });
-            } else {
-                res.status(500).json({
-                    message: "Failed to import supplements data",
-                    error: result.error,
-                });
-            }
-        } catch (error) {
-            console.error("Error importing supplements data:", error);
-            res.status(500).json({
-                message: "Failed to import supplements data",
-            });
-        }
-    });
 
     // Update food source images with better URLs
     app.post("/api/update-food-source-images", async (req, res) => {
