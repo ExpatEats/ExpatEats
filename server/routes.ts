@@ -44,6 +44,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
+    // Check username availability
+    app.get("/api/auth/check-username/:username", RateLimitService.generalLimiter, async (req, res) => {
+        try {
+            const { username } = req.params;
+            const existingUser = await AuthService.getUserByUsername(username);
+            res.json({ available: !existingUser });
+        } catch (error) {
+            console.error("Username check error:", error);
+            res.status(500).json({ message: "Failed to check username availability" });
+        }
+    });
+
+    // Check email availability
+    app.get("/api/auth/check-email/:email", RateLimitService.generalLimiter, async (req, res) => {
+        try {
+            const { email } = req.params;
+            const existingUser = await AuthService.getUserByEmail(email);
+            res.json({ available: !existingUser });
+        } catch (error) {
+            console.error("Email check error:", error);
+            res.status(500).json({ message: "Failed to check email availability" });
+        }
+    });
+
     // Authentication routes
     app.post("/api/auth/register", RateLimitService.authLimiter, CsrfService.middleware(), async (req, res) => {
         try {
@@ -235,69 +259,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
-    // Admin authentication (deprecated - use /api/auth/login instead)
-    app.post("/api/admin/login", RateLimitService.loginLimiter, CsrfService.middleware(), async (req, res) => {
-        try {
-            const { username, password } = req.body;
-            
-            // If only password provided, try legacy admin login
-            if (!username && password) {
-                const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-                if (password === adminPassword) {
-                    // Create temporary admin session
-                    const session = req.session as AuthenticatedRequest["session"];
-                    session.userId = -1; // Special admin ID
-                    session.username = "admin";
-                    session.isAdmin = true;
-                    session.lastActivity = new Date();
-                    
-                    return res.json({ success: true });
-                } else {
-                    return res.status(401).json({
-                        success: false,
-                        message: "Invalid password",
-                    });
-                }
-            }
-
-            // For new admin users, use regular authentication
-            if (username && password) {
-                const authResult = await AuthService.authenticateUser(username, password);
-                
-                if (!authResult.success) {
-                    return res.status(401).json({
-                        success: false,
-                        message: authResult.message,
-                    });
-                }
-
-                const user = (authResult as any).user;
-                if (user?.role !== "admin") {
-                    return res.status(403).json({
-                        success: false,
-                        message: "Admin access required",
-                    });
-                }
-
-                // Create admin session
-                const session = req.session as AuthenticatedRequest["session"];
-                session.userId = user.id;
-                session.username = user.username;
-                session.isAdmin = true;
-                session.lastActivity = new Date();
-
-                return res.json({ success: true, user: user });
-            }
-
-            res.status(400).json({
-                success: false,
-                message: "Username or password required",
-            });
-        } catch (error) {
-            console.error("Admin login error:", error);
-            res.status(500).json({ message: "Authentication failed" });
-        }
-    });
 
     // Admin endpoints for place review
     app.get("/api/admin/pending-places", requireAdmin, async (req: AuthenticatedRequest, res) => {

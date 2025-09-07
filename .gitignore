@@ -7,3 +7,5 @@ ADMININFO.txt
 cookies.txt
 *.log
 .DS_Store
+user_cookies.txt
+admin_cookies.txt

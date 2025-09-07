@@ -98,10 +98,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
 
+      // Get CSRF token
+      const csrfResponse = await fetch('/api/csrf-token', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (!csrfResponse.ok) {
+        throw new Error('Failed to get security token');
+      }
+      
+      const { csrfToken } = await csrfResponse.json();
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
         },
         credentials: 'include',
         body: JSON.stringify({ username, password, rememberMe }),
@@ -175,10 +188,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
 
+      // Get CSRF token
+      const csrfResponse = await fetch('/api/csrf-token', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (!csrfResponse.ok) {
+        throw new Error('Failed to get security token');
+      }
+      
+      const { csrfToken } = await csrfResponse.json();
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
         },
         credentials: 'include',
         body: JSON.stringify(userData),
@@ -255,12 +281,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
 
+      // Get CSRF token
+      const csrfResponse = await fetch('/api/csrf-token', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      let headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (csrfResponse.ok) {
+        const { csrfToken } = await csrfResponse.json();
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       });
 
       // Clear state regardless of response status

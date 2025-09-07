@@ -63,6 +63,62 @@ const Register = () => {
     const { register, isLoading, isAuthenticated } = useAuth();
     const { toast } = useToast();
 
+    const checkUsernameAvailability = useCallback(async (username: string) => {
+        if (username.length < 3) {
+            setValidationState(prev => ({ ...prev, usernameAvailable: null }));
+            return;
+        }
+
+        setValidationState(prev => ({ ...prev, usernameChecking: true }));
+
+        try {
+            const response = await fetch(`/api/auth/check-username/${encodeURIComponent(username)}`);
+            const data = await response.json();
+            
+            setValidationState(prev => ({ 
+                ...prev, 
+                usernameChecking: false,
+                usernameAvailable: data.available 
+            }));
+        } catch (error) {
+            console.error('Username check error:', error);
+            setValidationState(prev => ({ 
+                ...prev, 
+                usernameChecking: false,
+                usernameAvailable: null 
+            }));
+        }
+    }, []);
+
+    const checkEmailAvailability = useCallback(async (email: string) => {
+        // Basic email format validation using a simple regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setValidationState(prev => ({ ...prev, emailAvailable: null }));
+            return;
+        }
+
+        setValidationState(prev => ({ ...prev, emailChecking: true }));
+
+        try {
+            const response = await fetch(`/api/auth/check-email/${encodeURIComponent(email)}`);
+            const data = await response.json();
+            
+            setValidationState(prev => ({ 
+                ...prev, 
+                emailChecking: false,
+                emailAvailable: data.available 
+            }));
+        } catch (error) {
+            console.error('Email check error:', error);
+            setValidationState(prev => ({ 
+                ...prev, 
+                emailChecking: false,
+                emailAvailable: null 
+            }));
+        }
+    }, []);
+
     // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated) {
@@ -200,6 +256,10 @@ const Register = () => {
                                                 <Input
                                                     placeholder="johndoe"
                                                     {...field}
+                                                    onChange={(e) => {
+                                                        field.onChange(e);
+                                                        checkUsernameAvailability(e.target.value);
+                                                    }}
                                                 />
                                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                                     {validationState.usernameChecking && (
@@ -237,6 +297,10 @@ const Register = () => {
                                                     type="email"
                                                     placeholder="you@example.com"
                                                     {...field}
+                                                    onChange={(e) => {
+                                                        field.onChange(e);
+                                                        checkEmailAvailability(e.target.value);
+                                                    }}
                                                 />
                                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                                     {validationState.emailChecking && (

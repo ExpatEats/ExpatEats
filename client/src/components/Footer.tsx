@@ -145,17 +145,11 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-[#F7F4EF] border-opacity-20 mt-8 pt-6">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-center items-center">
                         <p className="text-xs text-[#F7F4EF] opacity-70">
                             Copyright Cerejaperaltada Unipessoal 2025 all rights
                             reserved
                         </p>
-                        <Link
-                            href="/admin/login"
-                            className="text-xs text-[#F7F4EF] opacity-80 hover:opacity-100 transition underline"
-                        >
-                            Admin
-                        </Link>
                     </div>
                 </div>
             </div>

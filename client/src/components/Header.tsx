@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, UserCircle, LogOut } from "lucide-react";
+import { Menu, UserCircle, LogOut, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
     DropdownMenu,
@@ -122,6 +122,14 @@ const Header = () => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                    {user?.role === "admin" && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/admin">
+                                                <Settings className="h-4 w-4 mr-2" />
+                                                Admin Panel
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onClick={handleLogout} disabled={isLoading}>
                                         <LogOut className="h-4 w-4 mr-2" />
                                         Logout
@@ -214,6 +222,21 @@ const Header = () => {
                                                 <UserCircle className="h-5 w-5" />
                                                 {user?.name?.split(" ")[0] || user?.username || "My Profile"}
                                             </Button>
+                                            {user?.role === "admin" && (
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full rounded-full"
+                                                    onClick={() => {
+                                                        setIsSheetOpen(false);
+                                                    }}
+                                                    asChild
+                                                >
+                                                    <Link href="/admin">
+                                                        <Settings className="h-4 w-4 mr-2" />
+                                                        Admin Panel
+                                                    </Link>
+                                                </Button>
+                                            )}
                                             <Button
                                                 variant="outline"
                                                 className="w-full rounded-full"

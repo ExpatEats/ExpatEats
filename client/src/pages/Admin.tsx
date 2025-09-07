@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/AuthContext";
 import {
     Form,
     FormControl,
@@ -86,8 +87,7 @@ export default function Admin() {
     const [, setLocation] = useLocation();
     const { toast } = useToast();
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
-    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-    const [isLoading, setIsLoading] = React.useState(true);
+    const { user, isAuthenticated, logout, isLoading } = useAuth();
 
     const form = useForm<FoodSourceFormValues>({
         resolver: zodResolver(foodSourceSchema),
@@ -105,12 +105,12 @@ export default function Admin() {
 
     const { data: users = [], isLoading: usersLoading } = useQuery<User[]>({
         queryKey: ["/api/users"],
-        enabled: isAuthenticated,
+        enabled: isAuthenticated && user?.role === "admin",
     });
 
     const { data: pendingPlaces = [], refetch: refetchPending } = useQuery({
         queryKey: ["/api/admin/pending-places"],
-        enabled: isAuthenticated,
+        enabled: isAuthenticated && user?.role === "admin",
     });
 
     const addFoodSourceMutation = useMutation({
@@ -221,18 +221,30 @@ export default function Admin() {
 
     // Effects and handlers
     useEffect(() => {
-        const adminAuth = sessionStorage.getItem("adminAuth");
-        if (adminAuth !== "true") {
-            setLocation("/admin/login");
-            return;
+        if (!isLoading) {
+            if (!isAuthenticated) {
+                setLocation("/register");
+                return;
+            }
+            if (user?.role !== "admin") {
+                setLocation("/find-my-food");
+                toast({
+                    title: "Access Denied",
+                    description: "Admin privileges required to access this page.",
+                    variant: "destructive",
+                });
+                return;
+            }
         }
-        setIsAuthenticated(true);
-        setIsLoading(false);
-    }, [setLocation]);
+    }, [isAuthenticated, user, isLoading, setLocation, toast]);
 
-    const handleLogout = () => {
-        sessionStorage.removeItem("adminAuth");
-        setLocation("/admin/login");
+    const handleLogout = async () => {
+        try {
+            await logout();
+            setLocation("/");
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
     const onSubmit = (values: FoodSourceFormValues) => {
@@ -246,7 +258,7 @@ export default function Admin() {
         );
     };
 
-    if (isLoading || !isAuthenticated) {
+    if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
@@ -257,29 +269,33 @@ export default function Admin() {
         );
     }
 
+    if (!isAuthenticated || user?.role !== "admin") {
+        return null; // useEffect will handle redirect
+    }
+
     return (
-        <div className="container py-8">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                        Admin Panel
-                    </h1>
-                    <p className="text-gray-600">
-                        Manage food sources and view registered users.
-                    </p>
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+            <div className="text-center mb-8">
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                    Admin Panel
+                </h1>
+                <p className="text-gray-600 mb-4">
+                    Manage food sources and view registered users.
+                </p>
+                <div className="flex justify-center">
+                    <Button
+                        onClick={handleLogout}
+                        variant="outline"
+                        className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                    >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                    </Button>
                 </div>
-                <Button
-                    onClick={handleLogout}
-                    variant="outline"
-                    className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
-                >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                </Button>
             </div>
 
             {/* Pending Location Reviews */}
-            <Card className="w-full max-w-6xl mx-auto mb-8">
+            <Card className="w-full mb-8">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Clock className="h-5 w-5 text-[#E07A5F]" />
@@ -430,7 +446,7 @@ export default function Admin() {
             </Card>
 
             {/* User Management Section */}
-            <Card className="w-full max-w-6xl mx-auto mb-8">
+            <Card className="w-full mb-8">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Users className="h-5 w-5 text-[#E07A5F]" />

@@ -16,7 +16,6 @@ import Resources from "./pages/Resources";
 import NewServices from "./pages/NewServices";
 import Events from "./pages/Events";
 import Admin from "./pages/Admin";
-import AdminLogin from "./pages/AdminLogin";
 import AddLocation from "./pages/AddLocation";
 import Terms from "./pages/Terms";
 import FindMyFood from "./pages/FindMyFood";
@@ -95,8 +94,7 @@ function Router() {
                 <Route path="/store/:id">
                     <RequireAuth component={Store} redirectTo="/" />
                 </Route>
-                {/* Admin routes - separate authentication */}
-                <Route path="/admin/login" component={AdminLogin} />
+                {/* Admin routes */}
                 <Route path="/admin" component={Admin} />
                 {/* Fallback route */}
                 <Route component={NotFound} />
