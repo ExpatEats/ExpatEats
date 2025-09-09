@@ -20,6 +20,7 @@ import AddLocation from "./pages/AddLocation";
 import Terms from "./pages/Terms";
 import FindMyFood from "./pages/FindMyFood";
 import Store from "./pages/Store";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/not-found";
 import { useEffect } from "react";
 
@@ -93,6 +94,9 @@ function Router() {
                 </Route>
                 <Route path="/store/:id">
                     <RequireAuth component={Store} redirectTo="/" />
+                </Route>
+                <Route path="/favorites">
+                    <RequireAuth component={Favorites} redirectTo="/" />
                 </Route>
                 {/* Admin routes */}
                 <Route path="/admin" component={Admin} />

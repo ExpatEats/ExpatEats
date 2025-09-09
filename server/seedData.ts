@@ -5,6 +5,8 @@ import { importLisbonFoodSources } from "./importLisbonFoodSources.js";
 import { importLocationGuides } from "./importLocationGuides.js";
 import { importAdditionalFoodSources } from "./importAdditionalFoodSources.js";
 import { AuthService } from "./services/authService.js";
+import { db } from "./db.js";
+import { sql } from "drizzle-orm";
 
 async function createAdminUser() {
     try {
@@ -33,10 +35,35 @@ async function createAdminUser() {
     }
 }
 
+async function verifyDatabaseTables() {
+    try {
+        // Verify savedStores table exists
+        const result = await db.execute(sql`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = 'saved_stores'
+            )
+        `);
+        
+        const tableExists = result.rows[0]?.exists;
+        if (tableExists) {
+            console.log("✅ savedStores table verified");
+        } else {
+            console.log("⚠️  savedStores table not found - running db:push may be needed");
+        }
+    } catch (error) {
+        console.error("❌ Database table verification failed:", error);
+    }
+}
+
 export async function runSeedData() {
     console.log("🌱 Starting seed data import...");
 
     try {
+        // Verify database tables exist
+        console.log("🔍 Verifying database tables...");
+        await verifyDatabaseTables();
         // Import food sources
         console.log("📦 Importing food sources...");
         const foodSourcesResult = await importFoodSources();

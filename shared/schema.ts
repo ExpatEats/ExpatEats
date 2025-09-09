@@ -6,6 +6,7 @@ import {
     boolean,
     jsonb,
     timestamp,
+    unique,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -100,6 +101,20 @@ export const nutrition = pgTable("nutrition", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const savedStores = pgTable("saved_stores", {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+        .references(() => users.id)
+        .notNull(),
+    placeId: integer("place_id")
+        .references(() => places.id)
+        .notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+    // Unique constraint to prevent duplicate favorites
+    uniqueUserPlace: unique().on(table.userId, table.placeId),
+}));
+
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -130,6 +145,11 @@ export const insertNutritionSchema = createInsertSchema(nutrition).omit({
     createdAt: true,
 });
 
+export const insertSavedStoreSchema = createInsertSchema(savedStores).omit({
+    id: true,
+    createdAt: true,
+});
+
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -143,4 +163,7 @@ export type Review = typeof reviews.$inferSelect;
 
 export type InsertNutrition = z.infer<typeof insertNutritionSchema>;
 export type Nutrition = typeof nutrition.$inferSelect;
+
+export type InsertSavedStore = z.infer<typeof insertSavedStoreSchema>;
+export type SavedStore = typeof savedStores.$inferSelect;
 

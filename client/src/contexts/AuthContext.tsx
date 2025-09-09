@@ -58,7 +58,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (response.ok) {
-        const user = await response.json();
+        const data = await response.json();
+        const user = data.user; // Extract user from the response object
         setAuthState(prev => ({
           ...prev,
           user,

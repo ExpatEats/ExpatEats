@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, UserCircle, LogOut, Settings } from "lucide-react";
+import { Menu, UserCircle, LogOut, Settings, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
     DropdownMenu,
@@ -122,6 +122,12 @@ const Header = () => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/favorites">
+                                            <Heart className="h-4 w-4 mr-2" />
+                                            Favorites
+                                        </Link>
+                                    </DropdownMenuItem>
                                     {user?.role === "admin" && (
                                         <DropdownMenuItem asChild>
                                             <Link href="/admin">
@@ -221,6 +227,19 @@ const Header = () => {
                                             <Button className="w-full bg-[#6D9075] hover:bg-opacity-90 text-white rounded-full font-medium flex items-center justify-center gap-2">
                                                 <UserCircle className="h-5 w-5" />
                                                 {user?.name?.split(" ")[0] || user?.username || "My Profile"}
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full rounded-full"
+                                                onClick={() => {
+                                                    setIsSheetOpen(false);
+                                                }}
+                                                asChild
+                                            >
+                                                <Link href="/favorites">
+                                                    <Heart className="h-4 w-4 mr-2" />
+                                                    Favorites
+                                                </Link>
                                             </Button>
                                             {user?.role === "admin" && (
                                                 <Button

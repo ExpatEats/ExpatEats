@@ -205,8 +205,15 @@ export default function FindMyFood() {
 
         const params = new URLSearchParams();
 
-        // Set the primary city for filtering
-        params.set("city", selectedLocations[0].toLowerCase());
+        // Set all selected cities for filtering
+        let citiesToSearch = selectedLocations.map(loc => loc.toLowerCase());
+        
+        // For supplements, always include Online stores
+        if (selectedGuideType === "supplements" && !citiesToSearch.includes("online")) {
+            citiesToSearch.push("online");
+        }
+        
+        params.set("city", citiesToSearch.join(","));
 
         // For supplements, add category filter
         if (selectedGuideType === "supplements") {
@@ -361,9 +368,9 @@ export default function FindMyFood() {
                                 {getDietaryPreferences().map((preference) => (
                                     <div
                                         key={preference.id}
-                                        className="border border-gray-200 rounded-lg p-3 hover:border-[#E07A5F]/50 transition-colors"
+                                        className="border border-gray-200 rounded-lg p-3 hover:border-[#E07A5F]/50 transition-colors overflow-hidden min-w-0"
                                     >
-                                        <div className="flex items-center space-x-3">
+                                        <div className="flex items-start space-x-3">
                                             <Checkbox
                                                 id={`pref-${preference.id}`}
                                                 checked={selectedPreferences.includes(
@@ -374,14 +381,16 @@ export default function FindMyFood() {
                                                         preference.id,
                                                     )
                                                 }
-                                                className="h-4 w-4"
+                                                className="h-4 w-4 mt-0.5 flex-shrink-0"
                                             />
                                             <Label
                                                 htmlFor={`pref-${preference.id}`}
-                                                className="text-sm font-medium cursor-pointer flex items-center gap-2 flex-1"
+                                                className="text-sm font-medium cursor-pointer flex items-start gap-2 flex-1 min-w-0 overflow-hidden"
                                             >
-                                                {preference.icon}
-                                                <span className="leading-tight">
+                                                <span className="flex-shrink-0 mt-0.5">
+                                                    {preference.icon}
+                                                </span>
+                                                <span className="leading-tight break-words text-wrap min-w-0 flex-1">
                                                     {preference.name}
                                                 </span>
                                             </Label>

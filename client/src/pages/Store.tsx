@@ -3,7 +3,25 @@ import { useRoute, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ArrowLeft, Heart, Share2, Clock } from "lucide-react";
+import { 
+    MapPin, 
+    ArrowLeft, 
+    Heart, 
+    Share2, 
+    Clock,
+    Apple,
+    Leaf,
+    Wheat,
+    Cherry,
+    Carrot,
+    Egg,
+    Baby,
+    Package2,
+    Truck,
+    ShoppingBag,
+    Search,
+    ExternalLink
+} from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { MapView } from "@/components/MapView";
@@ -36,6 +54,44 @@ interface Place {
     createdAt?: string;
 }
 
+// Function to get icon for a tag
+const getTagIcon = (tagId: string) => {
+    const iconMap: Record<string, JSX.Element> = {
+        // Grocery tags
+        "gluten-free": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
+        "dairy-free": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
+        "nut-free": <Apple className="h-4 w-4 text-[#E07A5F]" />,
+        "vegan": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
+        "organic": <Apple className="h-4 w-4 text-[#94AF9F]" />,
+        "local-farms": <Truck className="h-4 w-4 text-[#94AF9F]" />,
+        "fresh-vegetables": <Carrot className="h-4 w-4 text-[#E07A5F]" />,
+        "farm-raised-meat": <Egg className="h-4 w-4 text-[#E07A5F]" />,
+        "no-processed": <Package2 className="h-4 w-4 text-[#94AF9F]" />,
+        "kid-friendly": <Baby className="h-4 w-4 text-[#E07A5F]" />,
+        "bulk-buying": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+        "zero-waste": <Leaf className="h-4 w-4 text-[#E07A5F]" />,
+        
+        // Supplement tags
+        "supplements": <Package2 className="h-4 w-4 text-[#E07A5F]" />,
+        "vitamins": <Apple className="h-4 w-4 text-[#E07A5F]" />,
+        "sports-nutrition": <Truck className="h-4 w-4 text-[#94AF9F]" />,
+        "omega-3": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
+        "herbal-remedies": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
+        "practitioner-grade": <Search className="h-4 w-4 text-[#E07A5F]" />,
+        "hypoallergenic": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
+        "online": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+    };
+    
+    return iconMap[tagId] || null;
+};
+
+// Function to generate Google Maps URL
+const generateGoogleMapsUrl = (address: string, city: string, country: string) => {
+    const fullAddress = `${address}, ${city}, ${country}`;
+    const encodedAddress = encodeURIComponent(fullAddress);
+    return `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+};
+
 export default function Store() {
     const [, params] = useRoute("/store/:id");
     const [, setLocation] = useLocation();
@@ -65,14 +121,29 @@ export default function Store() {
     // Check if store is saved (for logged-in users)
     const { data: savedStores } = useQuery({
         queryKey: ["/api/user/saved-stores"],
-        enabled: false, // We'll enable this when we implement auth
+        queryFn: async () => {
+            const response = await fetch("/api/user/saved-stores");
+            if (!response.ok) {
+                throw new Error("Failed to fetch saved stores");
+            }
+            return response.json();
+        },
+        enabled: !!storeId, // Enable when we have a storeId
     });
+
+    // Check if current store is in saved stores
+    useEffect(() => {
+        if (savedStores && storeId) {
+            const isCurrentStoreSaved = savedStores.some((savedStore: any) => savedStore.id === storeId);
+            setIsSaved(isCurrentStoreSaved);
+        }
+    }, [savedStores, storeId]);
 
     // Save/unsave store mutation
     const saveMutation = useMutation({
         mutationFn: async (action: "save" | "unsave") => {
             return await apiRequest("POST", `/api/user/saved-stores`, {
-                storeId,
+                storeId: storeId,
                 action,
             });
         },
@@ -192,7 +263,7 @@ export default function Store() {
                             <Heart
                                 className={`h-4 w-4 mr-1 ${isSaved ? "fill-current" : ""}`}
                             />
-                            {isSaved ? "Saved" : "Save"}
+                            {isSaved ? "Favorited" : "Add to Favorites"}
                         </Button>
 
                         <Button
@@ -220,15 +291,23 @@ export default function Store() {
 
                             {/* Tags */}
                             <div className="flex flex-wrap gap-2 mb-4">
-                                {store.tags.map((tag, index) => (
-                                    <Badge
-                                        key={index}
-                                        variant="secondary"
-                                        className="bg-[#E8F4F0] text-[#94AF9F] border-[#94AF9F]/20"
-                                    >
-                                        {tag}
-                                    </Badge>
-                                ))}
+                                {store.tags.map((tag, index) => {
+                                    const tagIcon = getTagIcon(tag);
+                                    return (
+                                        <Badge
+                                            key={index}
+                                            variant="secondary"
+                                            className="bg-[#E8F4F0] text-[#94AF9F] border-[#94AF9F]/20 flex items-center gap-1.5 px-3 py-1.5"
+                                        >
+                                            {tagIcon}
+                                            {tag
+                                                .replace(/-/g, " ")
+                                                .replace(/\b\w/g, (l) =>
+                                                    l.toUpperCase(),
+                                                )}
+                                        </Badge>
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -267,8 +346,19 @@ export default function Store() {
                             <div className="space-y-3">
                                 <div className="flex items-start gap-3">
                                     <MapPin className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-medium">Address</p>
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between">
+                                            <p className="font-medium">Address</p>
+                                            <a
+                                                href={generateGoogleMapsUrl(store.address, store.city, store.country)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[#E07A5F] hover:text-[#d06851] transition-colors"
+                                                title="Open in Google Maps"
+                                            >
+                                                <ExternalLink className="h-4 w-4" />
+                                            </a>
+                                        </div>
                                         <p className="text-gray-600">
                                             {store.address}
                                         </p>

@@ -6,6 +6,8 @@ import {
     insertReviewSchema,
     insertUserSchema,
     insertNutritionSchema,
+    insertSavedStoreSchema,
+    savedStores,
 } from "@shared/schema";
 import { z } from "zod";
 import { requireAuth, requireAdmin, optionalAuth } from "./middleware/auth";
@@ -689,6 +691,63 @@ ${feedback}
             res.json(categories);
         } catch (error) {
             res.status(500).json({ message: "Failed to fetch categories" });
+        }
+    });
+
+    // Saved stores endpoints
+    app.get("/api/user/saved-stores", requireAuth, async (req: AuthenticatedRequest, res) => {
+        try {
+            const userId = req.session.userId!;
+            const savedPlaces = await storage.getSavedStoresByUserId(userId);
+            res.json(savedPlaces);
+        } catch (error) {
+            console.error("Get saved stores error:", error);
+            res.status(500).json({ message: "Failed to fetch saved stores" });
+        }
+    });
+
+    app.post("/api/user/saved-stores", requireAuth, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
+        try {
+            const userId = req.session.userId!;
+            const { storeId, action } = req.body;
+            
+            if (!storeId || !action) {
+                return res.status(400).json({ message: "storeId and action are required" });
+            }
+
+            if (action === "save") {
+                await storage.saveStore(userId, storeId);
+                res.json({ message: "Store saved successfully" });
+            } else if (action === "unsave") {
+                await storage.unsaveStore(userId, storeId);
+                res.json({ message: "Store removed successfully" });
+            } else {
+                res.status(400).json({ message: "Invalid action. Use 'save' or 'unsave'" });
+            }
+        } catch (error) {
+            console.error("Save/unsave store error:", error);
+            if (error instanceof Error && error.message.includes("already saved")) {
+                res.status(409).json({ message: "Store is already in favorites" });
+            } else {
+                res.status(500).json({ message: "Failed to save/unsave store" });
+            }
+        }
+    });
+
+    app.delete("/api/user/saved-stores/:placeId", requireAuth, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
+        try {
+            const userId = req.session.userId!;
+            const placeId = parseInt(req.params.placeId);
+            
+            if (!placeId) {
+                return res.status(400).json({ message: "Invalid place ID" });
+            }
+
+            await storage.unsaveStore(userId, placeId);
+            res.json({ message: "Store removed from favorites" });
+        } catch (error) {
+            console.error("Remove saved store error:", error);
+            res.status(500).json({ message: "Failed to remove store from favorites" });
         }
     });
 

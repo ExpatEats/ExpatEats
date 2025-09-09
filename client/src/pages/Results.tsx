@@ -3,7 +3,23 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ArrowLeft, Map, List, Heart } from "lucide-react";
+import { 
+    MapPin, 
+    ArrowLeft, 
+    Map, 
+    List,
+    Apple,
+    Leaf,
+    Wheat,
+    Cherry,
+    Carrot,
+    Egg,
+    Baby,
+    Package2,
+    Truck,
+    ShoppingBag,
+    Search
+} from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { MapView } from "@/components/MapView";
@@ -59,6 +75,37 @@ const Results = () => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
+    // Function to get icon for a tag
+    const getTagIcon = (tagId: string) => {
+        const iconMap: Record<string, JSX.Element> = {
+            // Grocery tags
+            "gluten-free": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
+            "dairy-free": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
+            "nut-free": <Apple className="h-4 w-4 text-[#E07A5F]" />,
+            "vegan": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
+            "organic": <Apple className="h-4 w-4 text-[#94AF9F]" />,
+            "local-farms": <Truck className="h-4 w-4 text-[#94AF9F]" />,
+            "fresh-vegetables": <Carrot className="h-4 w-4 text-[#E07A5F]" />,
+            "farm-raised-meat": <Egg className="h-4 w-4 text-[#E07A5F]" />,
+            "no-processed": <Package2 className="h-4 w-4 text-[#94AF9F]" />,
+            "kid-friendly": <Baby className="h-4 w-4 text-[#E07A5F]" />,
+            "bulk-buying": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+            "zero-waste": <Leaf className="h-4 w-4 text-[#E07A5F]" />,
+            
+            // Supplement tags
+            "supplements": <Package2 className="h-4 w-4 text-[#E07A5F]" />,
+            "vitamins": <Apple className="h-4 w-4 text-[#E07A5F]" />,
+            "sports-nutrition": <Truck className="h-4 w-4 text-[#94AF9F]" />,
+            "omega-3": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
+            "herbal-remedies": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
+            "practitioner-grade": <Search className="h-4 w-4 text-[#E07A5F]" />,
+            "hypoallergenic": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
+            "online": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+        };
+        
+        return iconMap[tagId] || null;
+    };
+
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         setSearchParams(params);
@@ -87,47 +134,6 @@ const Results = () => {
         enabled: !!searchParams && !!city,
     });
 
-    // Save/unsave store mutation
-    const saveMutation = useMutation({
-        mutationFn: async ({
-            storeId,
-            action,
-        }: {
-            storeId: number;
-            action: "save" | "unsave";
-        }) => {
-            return await apiRequest("POST", `/api/user/saved-stores`, {
-                storeId,
-                action,
-            });
-        },
-        onSuccess: (data, variables) => {
-            toast({
-                title:
-                    variables.action === "save"
-                        ? "Store Saved"
-                        : "Store Removed",
-                description:
-                    variables.action === "save"
-                        ? "Added to your favorites"
-                        : "Removed from your favorites",
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["/api/user/saved-stores"],
-            });
-        },
-        onError: () => {
-            toast({
-                title: "Error",
-                description: "Please log in to save stores",
-                variant: "destructive",
-            });
-        },
-    });
-
-    const handleSave = (storeId: number) => {
-        saveMutation.mutate({ storeId, action: "save" });
-    };
 
     const handlePlaceClick = (place: Place) => {
         setLocation(`/store/${place.id}`);
@@ -315,21 +321,6 @@ const Results = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Save Button - Only visible for logged-in users */}
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSave(place.id);
-                                                }}
-                                                className="p-1 hover:bg-gray-100 text-gray-400 hover:text-[#E07A5F]"
-                                                disabled={
-                                                    saveMutation.isPending
-                                                }
-                                            >
-                                                <Heart className="h-4 w-4" />
-                                            </Button>
                                         </div>
                                     </CardHeader>
                                     <CardContent>
@@ -406,35 +397,39 @@ const Results = () => {
                                                         <p className="text-sm font-medium text-gray-700 mb-2">
                                                             Features
                                                         </p>
-                                                        <div className="flex flex-wrap gap-1">
+                                                        <div className="flex flex-wrap gap-1.5">
                                                             {place.tags
                                                                 .slice(0, 4)
                                                                 .map(
                                                                     (
                                                                         tag: string,
                                                                         index: number,
-                                                                    ) => (
-                                                                        <Badge
-                                                                            key={
-                                                                                index
-                                                                            }
-                                                                            variant="secondary"
-                                                                            className="text-xs bg-[#94AF9F]/10 text-[#94AF9F] hover:bg-[#94AF9F]/20"
-                                                                        >
-                                                                            {tag
-                                                                                .replace(
-                                                                                    /-/g,
-                                                                                    " ",
-                                                                                )
-                                                                                .replace(
-                                                                                    /\b\w/g,
-                                                                                    (
-                                                                                        l,
-                                                                                    ) =>
-                                                                                        l.toUpperCase(),
-                                                                                )}
-                                                                        </Badge>
-                                                                    ),
+                                                                    ) => {
+                                                                        const tagIcon = getTagIcon(tag);
+                                                                        return (
+                                                                            <Badge
+                                                                                key={
+                                                                                    index
+                                                                                }
+                                                                                variant="secondary"
+                                                                                className="text-xs bg-[#94AF9F]/10 text-[#94AF9F] hover:bg-[#94AF9F]/20 flex items-center gap-1"
+                                                                            >
+                                                                                {tagIcon}
+                                                                                {tag
+                                                                                    .replace(
+                                                                                        /-/g,
+                                                                                        " ",
+                                                                                    )
+                                                                                    .replace(
+                                                                                        /\b\w/g,
+                                                                                        (
+                                                                                            l,
+                                                                                        ) =>
+                                                                                            l.toUpperCase(),
+                                                                                    )}
+                                                                            </Badge>
+                                                                        );
+                                                                    },
                                                                 )}
                                                             {place.tags.length >
                                                                 4 && (

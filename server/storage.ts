@@ -1,20 +1,23 @@
-import { eq, and, inArray, or } from "drizzle-orm";
+import { eq, and, inArray, or, sql } from "drizzle-orm";
 import { db } from "./db";
 import {
     places,
     users,
     reviews,
     nutrition,
+    savedStores,
 } from "@shared/schema";
 import {
     InsertPlace,
     InsertUser,
     InsertReview,
     InsertNutrition,
+    InsertSavedStore,
     Place,
     User,
     Review,
     Nutrition,
+    SavedStore,
 } from "@shared/schema";
 
 interface City {
@@ -56,6 +59,12 @@ interface Storage {
     getPendingPlaces(): Promise<Place[]>;
     approvePlace(placeId: number, adminNotes?: string): Promise<void>;
     rejectPlace(placeId: number, adminNotes: string): Promise<void>;
+
+    // Saved stores methods
+    saveStore(userId: number, placeId: number): Promise<SavedStore>;
+    unsaveStore(userId: number, placeId: number): Promise<void>;
+    getSavedStoresByUserId(userId: number): Promise<Place[]>;
+    isStoreSaved(userId: number, placeId: number): Promise<boolean>;
 }
 
 class DatabaseStorage implements Storage {
@@ -109,7 +118,13 @@ class DatabaseStorage implements Storage {
         }
 
         if (filters?.tags && filters.tags.length > 0) {
-            // This will need to be adjusted based on your actual tag filtering logic
+            // Use PostgreSQL array overlap operator to check if any of the requested tags match
+            const tagConditions = filters.tags.map(tag => 
+                sql`${places.tags} && ARRAY[${tag}]`
+            );
+            
+            // Use OR condition to find places that have ANY of the requested tags
+            whereConditions.push(or(...tagConditions) as any);
         }
 
         return await db
@@ -221,6 +236,89 @@ class DatabaseStorage implements Storage {
                 reviewedAt: new Date(),
             })
             .where(eq(places.id, placeId));
+    }
+
+    // Saved stores methods
+    async saveStore(userId: number, placeId: number): Promise<SavedStore> {
+        // Check if already saved
+        const existing = await db
+            .select()
+            .from(savedStores)
+            .where(and(eq(savedStores.userId, userId), eq(savedStores.placeId, placeId)));
+
+        if (existing.length > 0) {
+            throw new Error("Store is already saved");
+        }
+
+        const [savedStore] = await db
+            .insert(savedStores)
+            .values({ userId, placeId })
+            .returning();
+        
+        return savedStore;
+    }
+
+    async unsaveStore(userId: number, placeId: number): Promise<void> {
+        await db
+            .delete(savedStores)
+            .where(and(eq(savedStores.userId, userId), eq(savedStores.placeId, placeId)));
+    }
+
+    async getSavedStoresByUserId(userId: number): Promise<Place[]> {
+        const result = await db
+            .select({
+                id: places.id,
+                uniqueId: places.uniqueId,
+                name: places.name,
+                description: places.description,
+                address: places.address,
+                city: places.city,
+                region: places.region,
+                country: places.country,
+                category: places.category,
+                tags: places.tags,
+                latitude: places.latitude,
+                longitude: places.longitude,
+                phone: places.phone,
+                email: places.email,
+                instagram: places.instagram,
+                website: places.website,
+                glutenFree: places.glutenFree,
+                dairyFree: places.dairyFree,
+                nutFree: places.nutFree,
+                vegan: places.vegan,
+                organic: places.organic,
+                localFarms: places.localFarms,
+                freshVegetables: places.freshVegetables,
+                farmRaisedMeat: places.farmRaisedMeat,
+                noProcessed: places.noProcessed,
+                kidFriendly: places.kidFriendly,
+                bulkBuying: places.bulkBuying,
+                zeroWaste: places.zeroWaste,
+                userId: places.userId,
+                imageUrl: places.imageUrl,
+                averageRating: places.averageRating,
+                status: places.status,
+                submittedBy: places.submittedBy,
+                adminNotes: places.adminNotes,
+                reviewedAt: places.reviewedAt,
+                createdAt: places.createdAt,
+            })
+            .from(savedStores)
+            .innerJoin(places, eq(savedStores.placeId, places.id))
+            .where(eq(savedStores.userId, userId))
+            .orderBy(sql`${savedStores.createdAt} DESC`);
+
+        return result;
+    }
+
+    async isStoreSaved(userId: number, placeId: number): Promise<boolean> {
+        const result = await db
+            .select()
+            .from(savedStores)
+            .where(and(eq(savedStores.userId, userId), eq(savedStores.placeId, placeId)));
+        
+        return result.length > 0;
     }
 }
 
