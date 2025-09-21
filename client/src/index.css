@@ -102,7 +102,7 @@ body {
     }
 
     body {
-        @apply bg-[#F7F4EF] text-[#3B3229] font-montserrat antialiased;
+        @apply bg-background text-foreground font-montserrat antialiased;
     }
 
     h1,

@@ -193,117 +193,120 @@ const Results = () => {
     if (!searchParams) return null;
 
     return (
-        <div className="w-full max-w-full px-4 py-8 overflow-x-hidden">
-            {/* Header */}
-            <div className="mb-8">
-                <Button
-                    variant="ghost"
-                    onClick={() => window.history.back()}
-                    className="mb-4 text-[#E07A5F] hover:text-[#E07A5F]/80"
-                >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Modify Search
-                </Button>
-
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="bg-[#94AF9F] text-white px-3 py-1 rounded-full text-sm font-medium">
-                        {getLocationName()}
-                    </div>
-                </div>
-
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                    Results
-                </h1>
-                <p className="text-gray-600">
-                    {isLoading ? "Searching..." : getResultsDescription()}
-                </p>
-
-                {/* View Toggle */}
-                {results.length > 0 && (
-                    <div className="flex justify-end mt-4">
-                        <div className="bg-gray-100 rounded-lg p-1 inline-flex">
-                            <Button
-                                variant={
-                                    viewMode === "list" ? "default" : "ghost"
-                                }
-                                size="sm"
-                                onClick={() => setViewMode("list")}
-                                className={`${
-                                    viewMode === "list"
-                                        ? "bg-[#E07A5F] text-white hover:bg-[#d06851]"
-                                        : "text-gray-600 hover:text-gray-900"
-                                }`}
-                            >
-                                <List className="h-4 w-4 mr-1" />
-                                List View
-                            </Button>
-                            <Button
-                                variant={
-                                    viewMode === "map" ? "default" : "ghost"
-                                }
-                                size="sm"
-                                onClick={() => setViewMode("map")}
-                                className={`${
-                                    viewMode === "map"
-                                        ? "bg-[#E07A5F] text-white hover:bg-[#d06851]"
-                                        : "text-gray-600 hover:text-gray-900"
-                                }`}
-                            >
-                                <Map className="h-4 w-4 mr-1" />
-                                Map View
-                            </Button>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Results */}
-            {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[...Array(6)].map((_, i) => (
-                        <Card key={i} className="animate-pulse">
-                            <CardHeader>
-                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    <div className="h-3 bg-gray-200 rounded"></div>
-                                    <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            ) : results.length === 0 ? (
-                <div className="text-center py-12">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                        No results found
-                    </h2>
-                    <p className="text-gray-600 mb-6">
-                        We couldn't find any businesses matching your criteria.
-                        <br />
-                        Try adjusting your search parameters.
-                    </p>
+        <div className="container mx-auto px-4 py-8">
+            <div className="max-w-6xl mx-auto">
+                {/* Header */}
+                <div className="mb-8">
                     <Button
+                        variant="ghost"
                         onClick={() => window.history.back()}
-                        className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                        className="mb-4 text-[#E07A5F] hover:text-[#E07A5F]/80"
                     >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
                         Modify Search
                     </Button>
-                </div>
-            ) : (
-                <>
-                    {viewMode === "map" ? (
-                        <div className="w-full">
-                            <MapView
-                                places={results}
-                                onPlaceClick={handlePlaceClick}
-                            />
+
+                    <div className="text-center">
+                        <div className="flex justify-center items-center gap-2 mb-4">
+                            <div className="bg-[#94AF9F] text-white px-3 py-1 rounded-full text-sm font-medium">
+                                {getLocationName()}
+                            </div>
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {results.map((place) => (
+
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                            Results
+                        </h1>
+                        <p className="text-gray-600">
+                            {isLoading ? "Searching..." : getResultsDescription()}
+                        </p>
+                    </div>
+
+                    {/* View Toggle */}
+                    {results.length > 0 && (
+                        <div className="flex justify-center mt-4">
+                            <div className="bg-gray-100 rounded-lg p-1 inline-flex">
+                                <Button
+                                    variant={
+                                        viewMode === "list" ? "default" : "ghost"
+                                    }
+                                    size="sm"
+                                    onClick={() => setViewMode("list")}
+                                    className={`${
+                                        viewMode === "list"
+                                            ? "bg-[#E07A5F] text-white hover:bg-[#d06851]"
+                                            : "text-gray-600 hover:text-gray-900"
+                                    }`}
+                                >
+                                    <List className="h-4 w-4 mr-1" />
+                                    List View
+                                </Button>
+                                <Button
+                                    variant={
+                                        viewMode === "map" ? "default" : "ghost"
+                                    }
+                                    size="sm"
+                                    onClick={() => setViewMode("map")}
+                                    className={`${
+                                        viewMode === "map"
+                                            ? "bg-[#E07A5F] text-white hover:bg-[#d06851]"
+                                            : "text-gray-600 hover:text-gray-900"
+                                    }`}
+                                    >
+                                        <Map className="h-4 w-4 mr-1" />
+                                        Map View
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                </div>
+
+                {/* Results */}
+                {isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[...Array(6)].map((_, i) => (
+                            <Card key={i} className="animate-pulse">
+                                <CardHeader>
+                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-2">
+                                        <div className="h-3 bg-gray-200 rounded"></div>
+                                        <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                ) : results.length === 0 ? (
+                    <div className="text-center py-12">
+                        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                            No results found
+                        </h2>
+                        <p className="text-gray-600 mb-6">
+                            We couldn't find any businesses matching your criteria.
+                            <br />
+                            Try adjusting your search parameters.
+                        </p>
+                        <Button
+                            onClick={() => window.history.back()}
+                            className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                        >
+                            Modify Search
+                        </Button>
+                    </div>
+                ) : (
+                    <>
+                        {viewMode === "map" ? (
+                            <div className="w-full">
+                                <MapView
+                                    places={results}
+                                    onPlaceClick={handlePlaceClick}
+                                />
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {results.map((place) => (
                                 <Card
                                     key={place.id}
                                     className="hover:shadow-lg transition-shadow cursor-pointer relative"
@@ -457,10 +460,11 @@ const Results = () => {
                                     </CardContent>
                                 </Card>
                             ))}
-                        </div>
-                    )}
-                </>
-            )}
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 };

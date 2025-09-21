@@ -243,9 +243,9 @@ export default function FindMyFood() {
     };
 
     return (
-        <div className="min-h-screen mx-auto bg-white">
+        <div className="min-h-screen mx-auto">
             <div className="container mx-auto px-4 py-8">
-                <div className="max-w-3xl mx-auto">
+                <div className="max-w-6xl mx-auto">
                     {/* Header */}
                     <div className="text-center mb-12">
                         <div className="inline-flex items-center bg-[#94AF9F] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">

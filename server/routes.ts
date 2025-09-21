@@ -15,6 +15,7 @@ import { AuthService } from "./services/authService";
 import { AuthenticatedRequest } from "./types/session";
 import { CsrfService } from "./services/csrfService";
 import { RateLimitService } from "./services/rateLimitService";
+import { registerCommunityRoutes } from "./routes/community";
 
 const submissionSchema = z.object({
     name: z.string(),
@@ -782,6 +783,9 @@ ${feedback}
             res.status(500).json({ message: "Failed to fetch testimonials" });
         }
     });
+
+    // Register community routes
+    registerCommunityRoutes(app);
 
     const httpServer = createServer(app);
     return httpServer;

@@ -15,6 +15,9 @@ import Contact from "./pages/Contact";
 import Resources from "./pages/Resources";
 import NewServices from "./pages/NewServices";
 import Events from "./pages/Events";
+import Community from "./pages/Community";
+import CreatePost from "./pages/CreatePost";
+import PostDetail from "./pages/PostDetail";
 import Admin from "./pages/Admin";
 import AddLocation from "./pages/AddLocation";
 import Terms from "./pages/Terms";
@@ -97,6 +100,15 @@ function Router() {
                 </Route>
                 <Route path="/favorites">
                     <RequireAuth component={Favorites} redirectTo="/" />
+                </Route>
+                <Route path="/community">
+                    <RequireAuth component={Community} redirectTo="/" />
+                </Route>
+                <Route path="/community/create/:section?">
+                    <RequireAuth component={CreatePost} redirectTo="/" />
+                </Route>
+                <Route path="/community/post/:id">
+                    <RequireAuth component={PostDetail} redirectTo="/" />
                 </Route>
                 {/* Admin routes */}
                 <Route path="/admin" component={Admin} />

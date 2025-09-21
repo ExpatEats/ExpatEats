@@ -125,10 +125,10 @@ export default function Favorites() {
 
     if (isLoading) {
         return (
-            <div className="container py-8">
-                <div className="max-w-4xl mx-auto">
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-6xl mx-auto">
                     <div className="animate-pulse">
-                        <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+                        <div className="h-8 bg-gray-200 rounded w-1/4 mb-4 mx-auto"></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[...Array(6)].map((_, i) => (
                                 <div key={i} className="h-64 bg-gray-200 rounded"></div>
@@ -142,8 +142,8 @@ export default function Favorites() {
 
     if (error) {
         return (
-            <div className="container py-8">
-                <div className="max-w-4xl mx-auto text-center">
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-6xl mx-auto text-center">
                     <h1 className="text-2xl font-bold mb-4">Unable to Load Favorites</h1>
                     <p className="text-gray-600 mb-4">
                         Please log in to view your favorite stores.
@@ -160,23 +160,12 @@ export default function Favorites() {
     }
 
     return (
-        <div className="container py-8">
-            <div className="max-w-4xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <Button
-                        onClick={() => window.history.back()}
-                        variant="outline"
-                        className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
-                    >
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
-                    </Button>
-                </div>
+        <div className="container mx-auto px-4 py-8">
+            <div className="max-w-6xl mx-auto">
 
                 {/* Page Title */}
-                <div className="mb-8">
-                    <div className="flex items-center gap-3 mb-4">
+                <div className="mb-8 text-center">
+                    <div className="flex items-center justify-center gap-3 mb-4">
                         <Heart className="h-8 w-8 text-[#E07A5F] fill-current" />
                         <h1 className="text-3xl font-bold text-gray-900">My Favorites</h1>
                     </div>

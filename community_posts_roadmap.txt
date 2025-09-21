@@ -1,0 +1,367 @@
+COMMUNITY POSTS FEATURE ROADMAP
+====================================
+
+OVERVIEW:
+This roadmap outlines the implementation of a Twitter-style community posts feature where authenticated users can create posts, comment on posts, and like posts. The feature will have three main sections: General, Where to find..., and Product Swaps.
+
+CURRENT SYSTEM ANALYSIS:
+- Using PostgreSQL with Drizzle ORM
+- Authentication system already implemented with sessions and CSRF protection
+- User authentication required for protected routes
+- Frontend uses React with Wouter for routing
+- Backend uses Express.js with proper middleware setup
+- Existing database has users, places, reviews, nutrition tables
+- Already has saved_stores functionality for user favorites
+
+IMPLEMENTATION STEPS:
+
+✅ 1. DATABASE SCHEMA DESIGN AND MIGRATION [COMPLETED]
+   =====================================================
+
+   ✅ A. Create new migration file: migrations/0000_complete_schema.sql
+        NOTE: Created consolidated migration file instead of incremental one
+
+   ✅ B. Design three new tables:
+
+      ✅ posts table:
+      - id (serial PRIMARY KEY)
+      - title (text NOT NULL)
+      - body (text NOT NULL)
+      - user_id (integer NOT NULL, FK to users.id)
+      - section (text NOT NULL) - values: 'general', 'where-to-find', 'product-swaps'
+      - created_at (timestamp DEFAULT now())
+      - updated_at (timestamp DEFAULT now())
+      - status (text DEFAULT 'active') - for moderation: 'active', 'hidden', 'deleted'
+
+      ✅ comments table:
+      - id (serial PRIMARY KEY)
+      - post_id (integer NOT NULL, FK to posts.id)
+      - user_id (integer NOT NULL, FK to users.id)
+      - body (text NOT NULL)
+      - created_at (timestamp DEFAULT now())
+      - updated_at (timestamp DEFAULT now())
+      - status (text DEFAULT 'active')
+
+      ✅ post_likes table:
+      - id (serial PRIMARY KEY)
+      - post_id (integer NOT NULL, FK to posts.id)
+      - user_id (integer NOT NULL, FK to users.id)
+      - created_at (timestamp DEFAULT now())
+      - UNIQUE constraint on (post_id, user_id)
+
+   ✅ C. Add foreign key constraints with CASCADE DELETE
+   ✅ D. Add indexes for performance on frequently queried columns
+   ✅ E. Add check constraints for valid section/status values
+   ✅ F. Updated shared/schema.ts with new table definitions and TypeScript types
+
+   IMPLEMENTATION NOTES:
+   - Used Drizzle Kit's db:push to apply schema changes to running database
+   - Created consolidated migration file (0000_complete_schema.sql) containing all tables
+   - Removed fragmented migration files to avoid confusion during container initialization
+   - Tested fresh container initialization - all tables created successfully
+   - Added performance indexes: posts(user_id, section, created_at, status),
+     comments(post_id, user_id, created_at), post_likes(post_id, user_id)
+   - Check constraints ensure section IN ('general', 'where-to-find', 'product-swaps')
+   - Check constraints ensure status IN ('active', 'hidden', 'deleted')
+   - All foreign keys use CASCADE DELETE for data integrity
+
+✅ 2. BACKEND API IMPLEMENTATION [COMPLETED]
+   ==========================================
+
+   IMPLEMENTATION OVERVIEW:
+   - Create dedicated community routes with pagination support
+   - Include user information (username) in all post/comment responses
+   - Implement proper ordering (newest first for feeds)
+   - Add like status checking for current user
+   - Support both feed view (limited posts) and individual post view (all comments)
+   - Follow existing authentication and CSRF patterns
+
+   ✅ A. Update shared/schema.ts to include new table schemas [COMPLETED]
+
+   ✅ B. Create new route file: server/routes/community.ts [COMPLETED]
+
+      ✅ Posts endpoints:
+      - GET /api/community/posts?section=general&limit=20&offset=0 - Get posts with pagination
+      - POST /api/community/posts - Create new post (auth required)
+      - GET /api/community/posts/:id - Get single post with comments
+      - PUT /api/community/posts/:id - Update post (auth required, owner only)
+      - DELETE /api/community/posts/:id - Delete post (auth required, owner only)
+
+      ✅ Comments endpoints:
+      - POST /api/community/posts/:postId/comments - Add comment (auth required)
+      - PUT /api/community/comments/:id - Update comment (auth required, owner only)
+      - DELETE /api/community/comments/:id - Delete comment (auth required, owner only)
+
+      ✅ Likes endpoints:
+      - POST /api/community/posts/:postId/like - Toggle like (auth required)
+      - GET /api/community/posts/:postId/likes - Get like count and user's like status
+
+   ✅ C. Add middleware for:
+      - Authentication verification
+      - Input validation using Zod schemas
+      - Rate limiting for post creation
+      - Owner authorization for edit/delete operations
+
+   ✅ D. Update server/routes.ts to include community routes
+
+   IMPLEMENTATION NOTES:
+   - Created comprehensive API with full CRUD operations for posts and comments
+   - Implemented pagination with limit/offset and total count tracking
+   - Added proper user information (username) in all responses via database joins
+   - Like functionality includes toggle behavior (like/unlike) and count tracking
+   - Authentication required for all write operations (create, update, delete, like)
+   - Authorization enforced - users can only edit/delete their own posts/comments
+   - Input validation using Zod schemas with appropriate error messages
+   - Rate limiting applied to prevent spam
+   - Soft deletes implemented by updating status to 'deleted'
+   - Proper ordering: posts newest first, comments oldest first within post
+   - CSRF protection integrated following existing patterns
+   - **Cascading delete behavior**: When a post is deleted, ALL associated comments and likes are also removed/soft-deleted atomically using database transactions
+   - API tested successfully with all endpoints functional including cascading deletes
+
+✅ 3. FRONTEND COMPONENTS DEVELOPMENT [COMPLETED]
+   ================================================
+
+   ✅ A. Replace existing client/src/pages/Community.tsx with new post-based community
+
+   ✅ B. Implemented integrated design:
+      - Single-page application with sidebar navigation
+      - Twitter-style post cards with user avatars and timestamps
+      - Integrated like and comment functionality within post cards
+      - Section-based filtering with highlighted active section
+      - Responsive design for mobile and desktop
+
+   ✅ C. Updated routing and navigation:
+      - /community - Main community page with General section default
+      - Added COMMUNITY link to main navigation (both desktop and mobile)
+      - Section switching within single page (no separate routes needed)
+      - Authentication protection integrated
+
+   ✅ D. Implemented state management:
+      - Posts data fetching with React Query
+      - Section-based filtering and switching
+      - Like functionality with CSRF protection
+      - Real-time UI updates and loading states
+      - Error handling and empty states
+
+   IMPLEMENTATION NOTES:
+   - Created fully integrated Twitter-style community feed
+   - Sidebar navigation with highlighted active section (background color indication)
+   - Post cards show title, username, timestamp, truncated content
+   - Like buttons with heart icon (filled when liked, count displayed)
+   - Comment counts displayed, posts clickable for full view
+   - Text truncation implemented for space management (title: 100 chars, body: 300 chars)
+   - Responsive grid layout (4-column on desktop, single column on mobile)
+   - Loading skeletons and empty state messages
+   - Authentication redirect for non-logged-in users
+   - CSRF protection integrated for all write operations
+
+4. AUTHENTICATION INTEGRATION
+   ============================
+
+   A. Add route protection middleware to community routes
+
+   B. Redirect unauthenticated users to /register when accessing community features
+
+   C. Use existing AuthContext to:
+      - Check authentication status
+      - Get current user info for post ownership
+      - Handle session expiration gracefully
+
+   D. Show appropriate UI states:
+      - Loading states during auth checks
+      - Login prompts for unauthenticated users
+      - Disabled state for post creation when not logged in
+
+5. UI/UX IMPLEMENTATION
+   ====================
+
+   A. Design sidebar navigation with three sections:
+      - General (default active)
+      - Where to find....
+      - Product Swaps
+
+   B. Create Twitter-style feed layout:
+      - Post cards with user info, timestamp, content
+      - Like and comment buttons
+      - Comment count display
+      - Responsive design for mobile/desktop
+
+   C. Implement post creation interface:
+      - Modal or dedicated form area
+      - Section selection dropdown
+      - Character limit indicator
+      - Rich text support (basic formatting)
+
+   D. Style using existing design system:
+      - Reuse existing color scheme and typography
+      - Match existing component patterns
+      - Use existing UI components (buttons, cards, etc.)
+
+6. DATA FETCHING AND CACHING
+   ===========================
+
+   A. Implement React Query for:
+      - Posts fetching with pagination
+      - Comments loading
+      - Like status tracking
+      - Cache invalidation on new posts/comments
+
+   B. Add optimistic updates for:
+      - Like/unlike actions
+      - Comment posting
+      - Post creation
+
+   C. Implement infinite scroll for post feed
+
+   D. Add error handling and retry logic
+
+7. TESTING AND VALIDATION
+   =======================
+
+   A. Test database operations:
+      - Verify foreign key constraints
+      - Test cascade deletes
+      - Check data integrity
+
+   B. Test API endpoints:
+      - Authentication requirements
+      - Input validation
+      - Error responses
+      - Rate limiting
+
+   C. Test frontend functionality:
+      - Post creation and display
+      - Comment system
+      - Like functionality
+      - Navigation between sections
+      - Authentication redirects
+
+   D. Test responsive design on different screen sizes
+
+8. SECURITY CONSIDERATIONS
+   ========================
+
+   A. Input sanitization for post and comment content
+   B. XSS prevention in user-generated content display
+   C. Rate limiting on post/comment creation
+   D. Proper authorization checks for edit/delete operations
+   E. CSRF protection (already implemented in auth system)
+
+9. PERFORMANCE OPTIMIZATION
+   =========================
+
+   A. Database indexes on frequently queried columns
+   B. Pagination for large datasets
+   C. Efficient SQL queries with proper joins
+   D. Frontend lazy loading and code splitting
+   E. Image optimization if user avatars are added later
+
+10. FUTURE ENHANCEMENTS (OUT OF SCOPE)
+    ==================================
+
+    A. Image attachments to posts
+    B. User mentions and notifications
+    C. Post search functionality
+    D. User profiles and post history
+    E. Post categories/tags within sections
+    F. Moderation tools for admins
+    G. Real-time updates with WebSocket
+
+TECHNICAL DECISIONS:
+===================
+
+1. Database: Continue using PostgreSQL with Drizzle ORM for consistency
+2. Authentication: Leverage existing session-based auth system
+3. Frontend State: Use React Query for server state management
+4. Styling: Follow existing design patterns and component library
+5. Routing: Use existing Wouter router setup
+6. API Design: RESTful endpoints following existing patterns
+
+ESTIMATED TIMELINE:
+==================
+
+✅ Database design and migration: 2-3 hours [COMPLETED - 3 hours]
+✅ Backend API implementation: 4-6 hours [COMPLETED - 4 hours]
+✅ Frontend components development: 6-8 hours [COMPLETED - 6 hours]
+- Authentication integration: 2-3 hours
+- UI/UX polish and responsive design: 3-4 hours
+- Testing and bug fixes: 2-3 hours
+
+Total estimated time: 19-27 hours
+Completed: 13 hours | Remaining: 6-14 hours
+
+==============================================
+PROGRESS TRACKING - COMPLETED TASKS
+==============================================
+
+✅ PHASE 1: DATABASE SETUP [COMPLETED 2025-09-21]
+   - Schema design for posts, comments, post_likes tables
+   - Updated shared/schema.ts with TypeScript types
+   - Created consolidated migration: migrations/0000_complete_schema.sql
+   - Applied schema using Drizzle Kit db:push
+   - Added performance indexes and constraints
+   - Tested fresh container initialization
+   - Cleaned up legacy migration files
+
+✅ PHASE 2: BACKEND API IMPLEMENTATION [COMPLETED 2025-09-21]
+   - Created server/routes/community.ts with full CRUD operations
+   - Implemented pagination with limit/offset and total count
+   - Added user information (username) to all responses
+   - Built like/unlike functionality with toggle behavior
+   - Enforced authentication and authorization
+   - Added input validation using Zod schemas
+   - Integrated rate limiting and CSRF protection
+   - Tested all endpoints successfully
+
+✅ PHASE 3: FRONTEND IMPLEMENTATION [COMPLETED 2025-09-21]
+   - Completely rewrote client/src/pages/Community.tsx
+   - Added Community navigation to Header.tsx (desktop + mobile)
+   - Added Community route to App.tsx with authentication protection
+   - Implemented Twitter-style feed with sidebar navigation
+   - Created section switching with highlighted active state
+   - Built integrated post cards with like/comment functionality
+   - Added text truncation for space management
+   - Implemented loading states, error handling, and empty states
+   - Created test data across all three sections
+   - Tested UI functionality and responsiveness
+
+QUICK REFERENCE FOR DEVELOPERS:
+==============================
+
+Database Tables:
+- posts: id, title, body, user_id, section, status, created_at, updated_at
+- comments: id, post_id, user_id, body, status, created_at, updated_at
+- post_likes: id, post_id, user_id, created_at (unique constraint on user_id + post_id)
+
+Valid Section Values: 'general', 'where-to-find', 'product-swaps'
+Valid Status Values: 'active', 'hidden', 'deleted'
+
+Key Files Modified:
+- shared/schema.ts: Added posts, comments, postLikes table definitions
+- migrations/0000_complete_schema.sql: Complete database schema
+- server/routes/community.ts: Complete community API implementation
+- server/routes.ts: Registered community routes
+
+Docker Setup:
+- Container restart will automatically initialize all tables
+- Migration files in ./migrations/ are auto-executed on first container start
+
+API Endpoints:
+- GET /api/community/posts?section=general&limit=20&offset=0 - Get posts with pagination
+- GET /api/community/posts/:id - Get single post with all comments
+- POST /api/community/posts - Create new post (auth required)
+- PUT /api/community/posts/:id - Update post (auth required, owner only)
+- DELETE /api/community/posts/:id - Delete post (auth required, owner only)
+- POST /api/community/posts/:postId/comments - Add comment (auth required)
+- PUT /api/community/comments/:id - Update comment (auth required, owner only)
+- DELETE /api/community/comments/:id - Delete comment (auth required, owner only)
+- POST /api/community/posts/:postId/like - Toggle like (auth required)
+- GET /api/community/posts/:postId/likes - Get like status and count
+
+Next Steps:
+- Create frontend components for post feed and interactions
+- Implement Twitter-style UI with sidebar navigation
+- Add infinite scroll or pagination UI
+
+This roadmap provides a comprehensive plan for implementing the community posts feature while maintaining consistency with the existing codebase architecture and design patterns.

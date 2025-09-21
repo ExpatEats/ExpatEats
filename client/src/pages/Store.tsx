@@ -200,7 +200,7 @@ export default function Store() {
 
     if (isLoading) {
         return (
-            <div className="container py-8">
+            <div className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="animate-pulse">
                         <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -215,7 +215,7 @@ export default function Store() {
 
     if (error || !store) {
         return (
-            <div className="container py-8">
+            <div className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-2xl font-bold mb-4">Store Not Found</h1>
                     <p className="text-gray-600 mb-4">
@@ -235,7 +235,7 @@ export default function Store() {
     }
 
     return (
-        <div className="container py-8">
+        <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
                 {/* Header with Back Button */}
                 <div className="flex items-center justify-between mb-6">

@@ -115,6 +115,47 @@ export const savedStores = pgTable("saved_stores", {
     uniqueUserPlace: unique().on(table.userId, table.placeId),
 }));
 
+export const posts = pgTable("posts", {
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    userId: integer("user_id")
+        .references(() => users.id)
+        .notNull(),
+    section: text("section").notNull(), // 'general', 'where-to-find', 'product-swaps'
+    status: text("status").default("active"), // 'active', 'hidden', 'deleted'
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const comments = pgTable("comments", {
+    id: serial("id").primaryKey(),
+    postId: integer("post_id")
+        .references(() => posts.id)
+        .notNull(),
+    userId: integer("user_id")
+        .references(() => users.id)
+        .notNull(),
+    body: text("body").notNull(),
+    status: text("status").default("active"), // 'active', 'hidden', 'deleted'
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const postLikes = pgTable("post_likes", {
+    id: serial("id").primaryKey(),
+    postId: integer("post_id")
+        .references(() => posts.id)
+        .notNull(),
+    userId: integer("user_id")
+        .references(() => users.id)
+        .notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+    // Unique constraint to prevent duplicate likes
+    uniqueUserPost: unique().on(table.userId, table.postId),
+}));
+
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -150,6 +191,23 @@ export const insertSavedStoreSchema = createInsertSchema(savedStores).omit({
     createdAt: true,
 });
 
+export const insertPostSchema = createInsertSchema(posts).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export const insertCommentSchema = createInsertSchema(comments).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export const insertPostLikeSchema = createInsertSchema(postLikes).omit({
+    id: true,
+    createdAt: true,
+});
+
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -166,4 +224,13 @@ export type Nutrition = typeof nutrition.$inferSelect;
 
 export type InsertSavedStore = z.infer<typeof insertSavedStoreSchema>;
 export type SavedStore = typeof savedStores.$inferSelect;
+
+export type InsertPost = z.infer<typeof insertPostSchema>;
+export type Post = typeof posts.$inferSelect;
+
+export type InsertComment = z.infer<typeof insertCommentSchema>;
+export type Comment = typeof comments.$inferSelect;
+
+export type InsertPostLike = z.infer<typeof insertPostLikeSchema>;
+export type PostLike = typeof postLikes.$inferSelect;
 

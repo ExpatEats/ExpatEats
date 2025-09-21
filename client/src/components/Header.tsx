@@ -87,6 +87,11 @@ const Header = () => {
                         <Link href="/resources">RESOURCES</Link>
                     </div>
                     <div
+                        className={`py-2 transition ${isActive("/community") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                    >
+                        <Link href="/community">COMMUNITY</Link>
+                    </div>
+                    <div
                         className={`py-2 transition ${isActive("/add-location") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
                     >
                         <Link href="/add-location">ADD LOCATION</Link>
@@ -201,6 +206,12 @@ const Header = () => {
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/resources">RESOURCES</Link>
+                                </div>
+                                <div
+                                    className={`py-2 px-4 rounded-md transition ${isActive("/community") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    onClick={handleNavClick}
+                                >
+                                    <Link href="/community">COMMUNITY</Link>
                                 </div>
                                 <div
                                     className={`py-2 px-4 rounded-md transition ${isActive("/add-location") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
