@@ -3,7 +3,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { serveStatic, log } from "./vite";
 import { runSeedData } from "./seedData.js";
 
 const app = express();
@@ -84,6 +84,7 @@ app.use((req, res, next) => {
     // setting up all the other routes so the catch-all route
     // doesn't interfere with the other routes
     if (process.env.NODE_ENV === "development") {
+        const { setupVite } = await import("./vite");
         await setupVite(app, server);
     } else {
         serveStatic(app);
