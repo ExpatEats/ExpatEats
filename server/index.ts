@@ -65,7 +65,10 @@ app.use((req, res, next) => {
     if (process.env.SEED_DATA === "true") {
         log("🌱 Running seed data import...");
         try {
-            await runSeedData();
+            const result = await runSeedData();
+            if (result?.success) {
+                log("✅ Seed data import completed successfully");
+            }
         } catch (error) {
             log("💥 Seed data import failed:", error.message);
         }

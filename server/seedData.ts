@@ -8,6 +8,8 @@ import { AuthService } from "./services/authService.js";
 import { db } from "./db.js";
 import { sql } from "drizzle-orm";
 
+export { runSeedData };
+
 async function createAdminUser() {
     try {
         // Check if admin user already exists
@@ -160,8 +162,10 @@ export async function runSeedData() {
     }
 }
 
-// Allow running this script directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Allow running this script directly (but only exit if run as standalone script)
+const isStandaloneScript = import.meta.url === `file://${process.argv[1]}`;
+
+if (isStandaloneScript) {
     runSeedData()
         .then(() => {
             console.log("Seed data script completed");
