@@ -61,11 +61,8 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-    // Run seed data import on startup
-    if (
-        process.env.SEED_DATA === "true" ||
-        process.env.NODE_ENV === "development"
-    ) {
+    // Run seed data import on startup - only when explicitly requested
+    if (process.env.SEED_DATA === "true") {
         log("🌱 Running seed data import...");
         await runSeedData();
     }
