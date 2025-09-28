@@ -7,9 +7,9 @@ if (!process.env.DATABASE_URL) {
 // Add SSL parameter to DATABASE_URL for production if not already present
 const getDatabaseUrl = () => {
   const url = process.env.DATABASE_URL;
-  if (process.env.NODE_ENV === "production" && url && !url.includes("sslmode=")) {
+  if (process.env.NODE_ENV === "production" && url && !url.includes("ssl=")) {
     const separator = url.includes("?") ? "&" : "?";
-    return `${url}${separator}sslmode=require`;
+    return `${url}${separator}ssl=true`;
   }
   return url;
 };
