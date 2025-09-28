@@ -160,10 +160,10 @@ export async function runSeedData() {
     }
 }
 
-// Allow running this script directly (but only exit if run as standalone script)
+// Allow running this script directly (but only in development)
 const isStandaloneScript = import.meta.url === `file://${process.argv[1]}`;
 
-if (isStandaloneScript) {
+if (isStandaloneScript && process.env.NODE_ENV === "development") {
     runSeedData()
         .then(() => {
             console.log("Seed data script completed");
@@ -173,4 +173,7 @@ if (isStandaloneScript) {
             console.error("Seed data script failed:", error);
             process.exit(1);
         });
+} else if (isStandaloneScript) {
+    console.log("⚠️ Seed data script disabled in production mode");
+    process.exit(0);
 }
