@@ -443,8 +443,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
-    // Import Lisbon food sources
-    app.post("/api/import-food-sources", async (req, res) => {
+    // Import Lisbon food sources (development only)
+    if (process.env.NODE_ENV === "development") {
+        app.post("/api/import-food-sources", async (req, res) => {
         try {
             const result = await importLisbonFoodSources();
             if (result.success) {
@@ -461,10 +462,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error("Error importing food sources:", error);
             res.status(500).json({ message: "Failed to import food sources" });
         }
-    });
+        });
+    }
 
-    // Import additional specialized food sources
-    app.post("/api/import-additional-sources", async (req, res) => {
+    // Import additional specialized food sources (development only)
+    if (process.env.NODE_ENV === "development") {
+        app.post("/api/import-additional-sources", async (req, res) => {
         try {
             const result = await importAdditionalFoodSources();
             if (result.success) {
@@ -483,10 +486,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 message: "Failed to import additional food sources",
             });
         }
-    });
+        });
+    }
 
-    // Import location guides (Sintra, Cascais, Oeiras)
-    app.post("/api/import-location-guides", async (req, res) => {
+    // Import location guides (Sintra, Cascais, Oeiras) (development only)
+    if (process.env.NODE_ENV === "development") {
+        app.post("/api/import-location-guides", async (req, res) => {
         try {
             const result = await importLocationGuides();
             if (result.success) {
@@ -506,10 +511,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 message: "Failed to import location guides",
             });
         }
-    });
+        });
+    }
 
-    // Import supplements data
-    app.post("/api/import-supplements", async (req, res) => {
+    // Import supplements data (development only)
+    if (process.env.NODE_ENV === "development") {
+        app.post("/api/import-supplements", async (req, res) => {
         try {
             const { importSupplementsData } = await import(
                 "./importSupplementsData"
@@ -529,10 +536,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error("Error importing supplements:", error);
             res.status(500).json({ message: "Failed to import supplements" });
         }
-    });
+        });
+    }
 
-    // Import enhanced store data with contact info and social media
-    app.post("/api/import-enhanced-stores", async (req, res) => {
+    // Import enhanced store data with contact info and social media (development only)
+    if (process.env.NODE_ENV === "development") {
+        app.post("/api/import-enhanced-stores", async (req, res) => {
         try {
             const { importEnhancedStores } = await import(
                 "./importEnhancedStores"
@@ -554,7 +563,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 message: "Failed to import enhanced stores",
             });
         }
-    });
+        });
+    }
 
     // Submit event or location submissions via email
     app.post("/api/submissions", CsrfService.middleware(), async (req, res) => {
