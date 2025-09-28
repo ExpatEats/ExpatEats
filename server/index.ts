@@ -64,7 +64,11 @@ app.use((req, res, next) => {
     // Run seed data import on startup - only when explicitly requested
     if (process.env.SEED_DATA === "true") {
         log("🌱 Running seed data import...");
-        await runSeedData();
+        try {
+            await runSeedData();
+        } catch (error) {
+            log("💥 Seed data import failed:", error.message);
+        }
     }
 
     const server = await registerRoutes(app);
