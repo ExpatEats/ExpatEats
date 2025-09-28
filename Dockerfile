@@ -74,6 +74,7 @@ COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 # Copy built application
 COPY --from=build --chown=nextjs:nodejs /app/dist ./dist
 COPY --from=build --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=build --chown=nextjs:nodejs /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=build --chown=nextjs:nodejs /app/migrations ./migrations
 COPY --from=build --chown=nextjs:nodejs /app/shared ./shared
 
