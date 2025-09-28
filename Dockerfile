@@ -85,7 +85,7 @@ COPY --chown=nextjs:nodejs healthcheck.js ./
 USER nextjs
 
 # Expose port
-EXPOSE 3001
+EXPOSE 10000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
