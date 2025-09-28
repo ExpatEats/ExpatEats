@@ -87,9 +87,9 @@ app.use((req, res, next) => {
         serveStatic(app);
     }
 
-    // Serve the app on the configured port (default 3001)
+    // Serve the app on the configured port (default 10000 for Render)
     // this serves both the API and the client.
-    const port = parseInt(process.env.PORT || "3001", 10);
+    const port = parseInt(process.env.PORT || "10000", 10);
     server.listen(
         {
             port,
