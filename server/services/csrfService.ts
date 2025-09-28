@@ -42,10 +42,21 @@ export class CsrfService {
             }
 
             const token = req.headers['x-csrf-token'] as string || req.body._csrf;
-            
+
             if (!CsrfService.validateToken(req, token)) {
+                // Add debugging in production
+                if (process.env.NODE_ENV === "production") {
+                    console.error("CSRF validation failed:", {
+                        hasSession: !!req.session,
+                        hasSecret: !!(req.session as any)?.csrfSecret,
+                        tokenProvided: !!token,
+                        sessionId: (req.session as any)?.id,
+                        userAgent: req.headers['user-agent']
+                    });
+                }
+
                 return res.status(403).json({
-                    message: "Invalid CSRF token",
+                    message: "Security token has expired. Please refresh the page and try again.",
                     code: "CSRF_ERROR"
                 });
             }
