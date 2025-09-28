@@ -167,13 +167,13 @@ if (isStandaloneScript && process.env.NODE_ENV === "development") {
     runSeedData()
         .then(() => {
             console.log("Seed data script completed");
-            process.exit(0);
+            // No process.exit() - let the script end naturally
         })
         .catch((error) => {
             console.error("Seed data script failed:", error);
-            process.exit(1);
+            // No process.exit() - let the script end naturally
         });
 } else if (isStandaloneScript) {
     console.log("⚠️ Seed data script disabled in production mode");
-    process.exit(0);
+    // Script will end naturally without process.exit()
 }
