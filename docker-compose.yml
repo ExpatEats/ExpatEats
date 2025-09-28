@@ -28,8 +28,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: development
+      dockerfile: Dockerfile.dev
     container_name: expat-app
     restart: unless-stopped
     depends_on:
