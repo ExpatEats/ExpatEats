@@ -8,8 +8,6 @@ import { AuthService } from "./services/authService.js";
 import { db } from "./db.js";
 import { sql } from "drizzle-orm";
 
-export { runSeedData };
-
 async function createAdminUser() {
     try {
         // Check if admin user already exists
