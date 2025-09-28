@@ -1,4 +1,6 @@
 # Multi-stage build for ExpatEats application
+# For production deployment, use: docker build --target production
+# For development, use: docker build --target development
 FROM node:18-alpine AS base
 
 # Install dependencies for native modules
@@ -41,7 +43,7 @@ CMD ["npm", "run", "dev"]
 FROM base AS prod-deps
 
 # Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # Build stage
 FROM base AS build
