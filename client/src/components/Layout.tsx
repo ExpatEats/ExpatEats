@@ -9,7 +9,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
-        <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
+        <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden bg-background">
             <Header />
             <main className="flex-grow w-full max-w-full">{children}</main>
             <WhatsAppChat />

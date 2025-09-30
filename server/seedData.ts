@@ -7,6 +7,7 @@ import { importAdditionalFoodSources } from "./importAdditionalFoodSources.js";
 import { AuthService } from "./services/authService.js";
 import { db } from "./db.js";
 import { sql } from "drizzle-orm";
+import * as schema from "../shared/schema.js";
 
 async function createAdminUser() {
     try {
@@ -35,17 +36,118 @@ async function createAdminUser() {
     }
 }
 
+async function clearAllTables() {
+    try {
+        console.log("🧹 Clearing all database tables...");
+
+        // Delete in order to respect foreign key constraints
+        await db.delete(schema.postLikes);
+        console.log("  ✓ Cleared post_likes");
+
+        await db.delete(schema.comments);
+        console.log("  ✓ Cleared comments");
+
+        await db.delete(schema.posts);
+        console.log("  ✓ Cleared posts");
+
+        await db.delete(schema.savedStores);
+        console.log("  ✓ Cleared saved_stores");
+
+        await db.delete(schema.reviews);
+        console.log("  ✓ Cleared reviews");
+
+        await db.delete(schema.nutrition);
+        console.log("  ✓ Cleared nutrition");
+
+        await db.delete(schema.places);
+        console.log("  ✓ Cleared places");
+
+        await db.delete(schema.users);
+        console.log("  ✓ Cleared users");
+
+        console.log("✅ All tables cleared successfully");
+    } catch (error) {
+        console.error("❌ Failed to clear tables:", error);
+        throw error;
+    }
+}
+
+async function deduplicatePlaces() {
+    try {
+        console.log("🔍 Checking for duplicate places...");
+
+        // Get all places grouped by name
+        const allPlaces = await db.select().from(schema.places);
+
+        // Create a map to track duplicates by name (case-insensitive)
+        const placesByName = new Map<string, typeof allPlaces>();
+
+        for (const place of allPlaces) {
+            const normalizedName = place.name.toLowerCase().trim();
+            if (!placesByName.has(normalizedName)) {
+                placesByName.set(normalizedName, []);
+            }
+            placesByName.get(normalizedName)!.push(place);
+        }
+
+        // Find and merge duplicates
+        let duplicatesFound = 0;
+        let duplicatesRemoved = 0;
+
+        for (const [name, places] of placesByName.entries()) {
+            if (places.length > 1) {
+                duplicatesFound += places.length - 1;
+                console.log(`  Found ${places.length} entries for "${places[0].name}"`);
+
+                // Keep the first one, merge tags from others, then delete the rest
+                const [keepPlace, ...duplicates] = places;
+                const allTags = new Set(keepPlace.tags || []);
+
+                // Collect all unique tags from duplicates
+                for (const dup of duplicates) {
+                    if (dup.tags) {
+                        dup.tags.forEach(tag => allTags.add(tag));
+                    }
+                }
+
+                // Update the kept place with merged tags
+                await db
+                    .update(schema.places)
+                    .set({ tags: Array.from(allTags) })
+                    .where(sql`${schema.places.id} = ${keepPlace.id}`);
+
+                // Delete duplicates
+                for (const dup of duplicates) {
+                    await db.delete(schema.places).where(sql`${schema.places.id} = ${dup.id}`);
+                    duplicatesRemoved++;
+                }
+
+                console.log(`  ✓ Merged and removed ${duplicates.length} duplicate(s) for "${places[0].name}"`);
+            }
+        }
+
+        if (duplicatesFound === 0) {
+            console.log("✅ No duplicate places found");
+        } else {
+            console.log(`✅ Removed ${duplicatesRemoved} duplicate places`);
+        }
+    } catch (error) {
+        console.error("❌ Failed to deduplicate places:", error);
+        throw error;
+    }
+}
+
 async function verifyDatabaseTables() {
     try {
         // Verify savedStores table exists
         const result = await db.execute(sql`
             SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
+                SELECT FROM information_schema.tables
+                WHERE table_schema = 'public'
                 AND table_name = 'saved_stores'
             )
         `);
-        
+
         const tableExists = result.rows[0]?.exists;
         if (tableExists) {
             console.log("✅ savedStores table verified");
@@ -64,6 +166,9 @@ export async function runSeedData() {
         // Verify database tables exist
         console.log("🔍 Verifying database tables...");
         await verifyDatabaseTables();
+
+        // Clear all tables before seeding
+        await clearAllTables();
         // Import food sources
         console.log("📦 Importing food sources...");
         const foodSourcesResult = await importFoodSources();
@@ -148,10 +253,14 @@ export async function runSeedData() {
             );
         }
 
+        // Deduplicate places after all imports
+        console.log("🔄 Deduplicating places...");
+        await deduplicatePlaces();
+
         // Create admin user if it doesn't exist
         console.log("👤 Creating admin user...");
         await createAdminUser();
-        
+
         console.log("🎉 Seed data import completed!");
         return { success: true };
     } catch (error) {
