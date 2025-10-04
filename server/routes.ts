@@ -305,6 +305,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
+    // Admin: Create a new city
+    app.post("/api/admin/cities", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const { name, country, region } = req.body;
+            if (!name || !country) {
+                return res.status(400).json({ message: "Name and country are required" });
+            }
+
+            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+            const newCity = await storage.createCity({
+                name,
+                slug,
+                country,
+                region: region || null,
+            });
+
+            res.json(newCity);
+        } catch (error) {
+            console.error("Error creating city:", error);
+            res.status(500).json({ message: "Failed to create city" });
+        }
+    });
+
     // Get all users (admin only)
     app.get("/api/users", requireAdmin, async (req: AuthenticatedRequest, res) => {
         try {

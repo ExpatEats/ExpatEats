@@ -15,23 +15,36 @@ async function createAdminUser() {
         const existingAdmin = await AuthService.getUserByUsername("admin");
         if (existingAdmin) {
             console.log("✅ Admin user already exists");
-            return;
+        } else {
+            // Create admin user with credentials from ADMININFO.txt
+            await AuthService.createUser({
+                username: "admin",
+                email: "admin@expateats.com",
+                password: "ExpAt2024!SecureAdmin",
+                name: "Admin User",
+                role: "admin"
+            });
+            console.log("✅ Admin user created successfully");
+            console.log("📋 Admin credentials available in ADMININFO.txt");
         }
 
-        // Create admin user with credentials from ADMININFO.txt
-        const adminUser = await AuthService.createUser({
-            username: "admin",
-            email: "admin@expateats.com",
-            password: "ExpAt2024!SecureAdmin",
-            name: "Admin User",
-            role: "admin"
-        });
-
-        console.log("✅ Admin user created successfully");
-        console.log("📋 Admin credentials available in ADMININFO.txt");
-        return adminUser;
+        // Check if Aaron user already exists
+        const existingAaron = await AuthService.getUserByUsername("aaronrous");
+        if (existingAaron) {
+            console.log("✅ Aaron user already exists");
+        } else {
+            // Create Aaron user
+            await AuthService.createUser({
+                username: "aaronrous",
+                email: "aaron145165@gmail.com",
+                password: "Cool!123129",
+                name: "Aaron Roussel",
+                role: "admin"
+            });
+            console.log("✅ Aaron user created successfully");
+        }
     } catch (error) {
-        console.error("❌ Failed to create admin user:", error);
+        console.error("❌ Failed to create users:", error);
         throw error;
     }
 }
@@ -64,6 +77,9 @@ async function clearAllTables() {
 
         await db.delete(schema.users);
         console.log("  ✓ Cleared users");
+
+        await db.delete(schema.cities);
+        console.log("  ✓ Cleared cities");
 
         console.log("✅ All tables cleared successfully");
     } catch (error) {
@@ -137,6 +153,32 @@ async function deduplicatePlaces() {
     }
 }
 
+async function seedCities() {
+    try {
+        console.log("🏙️  Seeding cities...");
+
+        const citiesToSeed = [
+            { name: "Lisbon", slug: "lisbon", country: "Portugal", region: "Lisbon" },
+            { name: "Cascais", slug: "cascais", country: "Portugal", region: "Lisbon" },
+            { name: "Sintra", slug: "sintra", country: "Portugal", region: "Lisbon" },
+            { name: "Oeiras", slug: "oeiras", country: "Portugal", region: "Lisbon" },
+            { name: "Mafra", slug: "mafra", country: "Portugal", region: "Lisbon" },
+            { name: "Parede", slug: "parede", country: "Portugal", region: "Lisbon" },
+            { name: "Ourém", slug: "ourem", country: "Portugal", region: "Santarém" },
+            { name: "Online", slug: "online", country: "Online", region: null },
+        ];
+
+        for (const city of citiesToSeed) {
+            await db.insert(schema.cities).values(city);
+        }
+
+        console.log(`✅ Seeded ${citiesToSeed.length} cities`);
+    } catch (error) {
+        console.error("❌ Failed to seed cities:", error);
+        throw error;
+    }
+}
+
 async function verifyDatabaseTables() {
     try {
         // Verify savedStores table exists
@@ -169,6 +211,10 @@ export async function runSeedData() {
 
         // Clear all tables before seeding
         await clearAllTables();
+
+        // Seed cities first
+        await seedCities();
+
         // Import food sources
         console.log("📦 Importing food sources...");
         const foodSourcesResult = await importFoodSources();

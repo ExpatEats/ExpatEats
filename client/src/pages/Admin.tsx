@@ -36,10 +36,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-    Users,
-    Mail,
-    MapPin,
-    User,
     LogOut,
     Clock,
     CheckCircle,
@@ -61,6 +57,14 @@ const foodSourceSchema = z.object({
 
 type FoodSourceFormValues = z.infer<typeof foodSourceSchema>;
 
+const citySchema = z.object({
+    name: z.string().min(2, { message: "City name must be at least 2 characters" }),
+    country: z.string().min(2, { message: "Country is required" }),
+    region: z.string().optional(),
+});
+
+type CityFormValues = z.infer<typeof citySchema>;
+
 const dietaryPreferences = [
     { id: "gluten-free", label: "Gluten Free" },
     { id: "dairy-free", label: "Dairy Free" },
@@ -72,21 +76,12 @@ const dietaryPreferences = [
     { id: "zero-waste", label: "Zero Waste" },
 ];
 
-interface User {
-    id: number;
-    username: string;
-    email: string;
-    name?: string;
-    city?: string;
-    country?: string;
-    bio?: string;
-}
-
 export default function Admin() {
     // All hooks must be declared first
     const [, setLocation] = useLocation();
     const { toast } = useToast();
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+    const [selectedCountry, setSelectedCountry] = React.useState<string>("");
     const { user, isAuthenticated, logout, isLoading } = useAuth();
 
     const form = useForm<FoodSourceFormValues>({
@@ -103,15 +98,37 @@ export default function Admin() {
         },
     });
 
-    const { data: users = [], isLoading: usersLoading } = useQuery<User[]>({
-        queryKey: ["/api/users"],
-        enabled: isAuthenticated && user?.role === "admin",
+    const cityForm = useForm<CityFormValues>({
+        resolver: zodResolver(citySchema),
+        defaultValues: {
+            name: "",
+            country: "Portugal",
+            region: "",
+        },
     });
+
 
     const { data: pendingPlaces = [], refetch: refetchPending } = useQuery({
         queryKey: ["/api/admin/pending-places"],
         enabled: isAuthenticated && user?.role === "admin",
     });
+
+    const { data: cities = [], isLoading: citiesLoading } = useQuery<{id: number, name: string, slug: string, country: string}[]>({
+        queryKey: ["/api/cities"],
+        enabled: isAuthenticated && user?.role === "admin",
+    });
+
+    // Get unique countries from cities
+    const countries = React.useMemo(() => {
+        const uniqueCountries = [...new Set(cities.map(city => city.country))];
+        return uniqueCountries.sort();
+    }, [cities]);
+
+    // Filter cities by selected country
+    const filteredCities = React.useMemo(() => {
+        if (!selectedCountry) return [];
+        return cities.filter(city => city.country === selectedCountry);
+    }, [cities, selectedCountry]);
 
     const addFoodSourceMutation = useMutation({
         mutationFn: async (values: FoodSourceFormValues) => {
@@ -219,6 +236,27 @@ export default function Admin() {
         },
     });
 
+    const addCityMutation = useMutation({
+        mutationFn: async (values: CityFormValues) => {
+            return await apiRequest("POST", "/api/admin/cities", values);
+        },
+        onSuccess: () => {
+            toast({
+                title: "Success",
+                description: "City added successfully",
+            });
+            cityForm.reset();
+            queryClient.invalidateQueries({ queryKey: ["/api/cities"] });
+        },
+        onError: (error) => {
+            toast({
+                title: "Error",
+                description: `Failed to add city: ${error.message}`,
+                variant: "destructive",
+            });
+        },
+    });
+
     // Effects and handlers
     useEffect(() => {
         if (!isLoading) {
@@ -256,6 +294,10 @@ export default function Admin() {
         setSelectedTags((prev) =>
             prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
         );
+    };
+
+    const onCitySubmit = (values: CityFormValues) => {
+        addCityMutation.mutate(values);
     };
 
     if (isLoading) {
@@ -445,91 +487,6 @@ export default function Admin() {
                 </CardContent>
             </Card>
 
-            {/* User Management Section */}
-            <Card className="w-full mb-8">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Users className="h-5 w-5 text-[#E07A5F]" />
-                        User Management
-                    </CardTitle>
-                    <CardDescription>
-                        View all registered users and their information
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {usersLoading ? (
-                        <div className="text-center py-4">Loading users...</div>
-                    ) : users.length === 0 ? (
-                        <div className="text-center py-4 text-gray-500">
-                            No users registered yet
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {users.map((user) => (
-                                <div
-                                    key={user.id}
-                                    className="border border-gray-200 rounded-lg p-4"
-                                >
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-[#94AF9F]" />
-                                            <span className="font-medium text-gray-900">
-                                                {user.username}
-                                            </span>
-                                        </div>
-                                        <Badge
-                                            variant="secondary"
-                                            className="text-xs"
-                                        >
-                                            ID: {user.id}
-                                        </Badge>
-                                    </div>
-
-                                    <div className="space-y-2 text-sm">
-                                        {user.name && (
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-medium text-gray-700">
-                                                    Name:
-                                                </span>
-                                                <span className="text-gray-600">
-                                                    {user.name}
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        <div className="flex items-center gap-2">
-                                            <Mail className="h-3 w-3 text-gray-400" />
-                                            <span className="text-gray-600 text-xs">
-                                                {user.email}
-                                            </span>
-                                        </div>
-
-                                        {(user.city || user.country) && (
-                                            <div className="flex items-center gap-2">
-                                                <MapPin className="h-3 w-3 text-gray-400" />
-                                                <span className="text-gray-600 text-xs">
-                                                    {[user.city, user.country]
-                                                        .filter(Boolean)
-                                                        .join(", ")}
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        {user.bio && (
-                                            <div className="pt-2">
-                                                <span className="text-xs text-gray-500 line-clamp-2">
-                                                    {user.bio}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-
             <Card className="w-full max-w-3xl mx-auto">
                 <CardHeader>
                     <CardTitle>Add New Food Source</CardTitle>
@@ -599,16 +556,62 @@ export default function Admin() {
 
                                 <FormField
                                     control={form.control}
+                                    name="country"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Country</FormLabel>
+                                            <Select
+                                                onValueChange={(value) => {
+                                                    field.onChange(value);
+                                                    setSelectedCountry(value);
+                                                    // Reset city when country changes
+                                                    form.setValue("city", "");
+                                                }}
+                                                defaultValue={field.value}
+                                                disabled={citiesLoading}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder={citiesLoading ? "Loading..." : "Select country"} />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {countries.map((country) => (
+                                                        <SelectItem key={country} value={country}>
+                                                            {country}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
                                     name="city"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>City</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="City"
-                                                    {...field}
-                                                />
-                                            </FormControl>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                disabled={!selectedCountry || citiesLoading}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder={!selectedCountry ? "Select country first" : citiesLoading ? "Loading cities..." : "Select city"} />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {filteredCities.map((city) => (
+                                                        <SelectItem key={city.id} value={city.name}>
+                                                            {city.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -616,22 +619,6 @@ export default function Admin() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="country"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Country</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Country"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
 
                                 <FormField
                                     control={form.control}
@@ -734,6 +721,86 @@ export default function Admin() {
                                 {addFoodSourceMutation.isPending
                                     ? "Adding..."
                                     : "Add Food Source"}
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
+
+            <Card className="w-full max-w-3xl mx-auto mt-8">
+                <CardHeader>
+                    <CardTitle>Add New City/Location</CardTitle>
+                    <CardDescription>
+                        Add a new city to the system to make it available in dropdown menus
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Form {...cityForm}>
+                        <form
+                            onSubmit={cityForm.handleSubmit(onCitySubmit)}
+                            className="space-y-6"
+                        >
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                    control={cityForm.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>City Name *</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="e.g., Porto"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={cityForm.control}
+                                    name="country"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Country *</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="e.g., Portugal"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <FormField
+                                control={cityForm.control}
+                                name="region"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Region (optional)</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="e.g., Porto District"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={addCityMutation.isPending}
+                            >
+                                {addCityMutation.isPending
+                                    ? "Adding..."
+                                    : "Add City"}
                             </Button>
                         </form>
                     </Form>

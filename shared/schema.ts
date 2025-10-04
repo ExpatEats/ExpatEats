@@ -11,6 +11,16 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const cities = pgTable("cities", {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull().unique(),
+    slug: text("slug").notNull().unique(),
+    country: text("country").notNull(),
+    region: text("region"),
+    isActive: boolean("is_active").default(true),
+    createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const users = pgTable("users", {
     id: serial("id").primaryKey(),
     username: text("username").notNull().unique(),
@@ -208,8 +218,16 @@ export const insertPostLikeSchema = createInsertSchema(postLikes).omit({
     createdAt: true,
 });
 
+export const insertCitySchema = createInsertSchema(cities).omit({
+    id: true,
+    createdAt: true,
+});
+
 
 // Types
+export type InsertCity = z.infer<typeof insertCitySchema>;
+export type City = typeof cities.$inferSelect;
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 

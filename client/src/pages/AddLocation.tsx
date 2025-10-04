@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
     Form,
@@ -68,6 +68,24 @@ const availableTags = [
 export default function AddLocation() {
     const { toast } = useToast();
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+    const [selectedCountry, setSelectedCountry] = React.useState<string>("");
+
+    // Fetch cities from API
+    const { data: cities = [], isLoading: citiesLoading } = useQuery<{id: number, name: string, slug: string, country: string}[]>({
+        queryKey: ["/api/cities"],
+    });
+
+    // Get unique countries from cities
+    const countries = React.useMemo(() => {
+        const uniqueCountries = [...new Set(cities.map(city => city.country))];
+        return uniqueCountries.sort();
+    }, [cities]);
+
+    // Filter cities by selected country
+    const filteredCities = React.useMemo(() => {
+        if (!selectedCountry) return [];
+        return cities.filter(city => city.country === selectedCountry);
+    }, [cities, selectedCountry]);
 
     const form = useForm<LocationFormValues>({
         resolver: zodResolver(locationSchema),
@@ -271,16 +289,33 @@ export default function AddLocation() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <FormField
                                         control={form.control}
-                                        name="city"
+                                        name="country"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>City *</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="e.g., Lisbon"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <FormLabel>Country *</FormLabel>
+                                                <Select
+                                                    onValueChange={(value) => {
+                                                        field.onChange(value);
+                                                        setSelectedCountry(value);
+                                                        // Reset city when country changes
+                                                        form.setValue("city", "");
+                                                    }}
+                                                    defaultValue={field.value}
+                                                    disabled={citiesLoading}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={citiesLoading ? "Loading..." : "Select country"} />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {countries.map((country) => (
+                                                            <SelectItem key={country} value={country}>
+                                                                {country}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -288,16 +323,28 @@ export default function AddLocation() {
 
                                     <FormField
                                         control={form.control}
-                                        name="country"
+                                        name="city"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Country *</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="e.g., Portugal"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <FormLabel>City *</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                    disabled={!selectedCountry || citiesLoading}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={!selectedCountry ? "Select country first" : citiesLoading ? "Loading cities..." : "Select city"} />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {filteredCities.map((city) => (
+                                                            <SelectItem key={city.id} value={city.name}>
+                                                                {city.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

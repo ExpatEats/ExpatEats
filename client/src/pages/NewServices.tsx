@@ -30,14 +30,6 @@ export default function NewServices() {
             path: "/services/stock-pantry",
         },
         {
-            id: "downloadable-guides",
-            name: "Downloadable Guides",
-            description:
-                "Comprehensive guides for sustainable living, shopping lists, and local food source directories.",
-            icon: <FileText className="h-8 w-8" />,
-            path: "/services/downloadable-guides",
-        },
-        {
             id: "grocery-tour",
             name: "Grocery Store and Personal Shopping Tour",
             description:
