@@ -1,3 +1,12 @@
 /node_modules
+/dist
+/.idea
+.env
+.env.local
+.env.production
 ADMININFO.txt
 cookies.txt
+*.log
+.DS_Store
+user_cookies.txt
+admin_cookies.txt
