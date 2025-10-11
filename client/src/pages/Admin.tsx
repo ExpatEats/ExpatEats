@@ -40,6 +40,9 @@ import {
     Clock,
     CheckCircle,
     XCircle,
+    Database,
+    FileCheck,
+    LayoutDashboard,
 } from "lucide-react";
 
 const foodSourceSchema = z.object({
@@ -76,12 +79,34 @@ const dietaryPreferences = [
     { id: "zero-waste", label: "Zero Waste" },
 ];
 
+const ADMIN_SECTIONS = [
+    {
+        id: "overview",
+        name: "Overview",
+        description: "Dashboard and statistics",
+        icon: LayoutDashboard
+    },
+    {
+        id: "data-admin",
+        name: "Data Admin",
+        description: "Add food sources and cities",
+        icon: Database
+    },
+    {
+        id: "pending-approvals",
+        name: "Pending Approvals",
+        description: "Review submitted locations",
+        icon: FileCheck
+    }
+] as const;
+
 export default function Admin() {
     // All hooks must be declared first
     const [, setLocation] = useLocation();
     const { toast } = useToast();
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
     const [selectedCountry, setSelectedCountry] = React.useState<string>("");
+    const [activeSection, setActiveSection] = React.useState<string>("data-admin");
     const { user, isAuthenticated, logout, isLoading } = useAuth();
 
     const form = useForm<FoodSourceFormValues>({
@@ -316,178 +341,82 @@ export default function Admin() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-            <div className="text-center mb-8">
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                    Admin Panel
-                </h1>
-                <p className="text-gray-600 mb-4">
-                    Manage food sources and view registered users.
-                </p>
-                <div className="flex justify-center">
-                    <Button
-                        onClick={handleLogout}
-                        variant="outline"
-                        className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
-                    >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Logout
-                    </Button>
-                </div>
-            </div>
-
-            {/* Pending Location Reviews */}
-            <Card className="w-full mb-8">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-[#E07A5F]" />
-                        Pending Location Reviews
-                        {pendingPlaces.length > 0 && (
-                            <Badge variant="destructive" className="ml-2">
-                                {pendingPlaces.length}
-                            </Badge>
-                        )}
-                    </CardTitle>
-                    <CardDescription>
-                        Review and approve user-submitted locations before they
-                        appear publicly
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {pendingPlaces.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                            <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                            <p>No pending locations to review</p>
+        <div className="min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8 flex items-center justify-between">
+                        <div>
+                            <h1 className="font-montserrat text-3xl font-bold mb-2">
+                                Admin Panel
+                            </h1>
+                            <p className="text-gray-600">
+                                Manage food sources, cities, and review submissions.
+                            </p>
                         </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {pendingPlaces.map((place: any) => (
-                                <div
-                                    key={place.id}
-                                    className="border border-gray-200 rounded-lg p-4"
-                                >
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div>
-                                            <h3 className="font-semibold text-lg">
-                                                {place.name}
-                                            </h3>
-                                            <p className="text-sm text-gray-600">
-                                                {place.category}
-                                            </p>
-                                        </div>
-                                        <Badge
-                                            variant="outline"
-                                            className="border-orange-200 text-orange-700"
-                                        >
-                                            Pending Review
-                                        </Badge>
-                                    </div>
+                        <Button
+                            onClick={handleLogout}
+                            variant="outline"
+                            className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                        >
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Logout
+                        </Button>
+                    </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <p className="text-sm">
-                                                <strong>Description:</strong>{" "}
-                                                {place.description}
-                                            </p>
-                                            <p className="text-sm mt-2">
-                                                <strong>Address:</strong>{" "}
-                                                {place.address}
-                                            </p>
-                                            <p className="text-sm">
-                                                <strong>Location:</strong>{" "}
-                                                {place.city}, {place.country}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            {place.tags &&
-                                                place.tags.length > 0 && (
-                                                    <div>
-                                                        <p className="text-sm font-medium mb-1">
-                                                            Tags:
-                                                        </p>
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {place.tags.map(
-                                                                (
-                                                                    tag: string,
-                                                                    index: number,
-                                                                ) => (
-                                                                    <Badge
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        variant="secondary"
-                                                                        className="text-xs"
-                                                                    >
-                                                                        {tag}
-                                                                    </Badge>
-                                                                ),
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            {place.website && (
-                                                <p className="text-sm mt-2">
-                                                    <strong>Website:</strong>{" "}
-                                                    {place.website}
-                                                </p>
-                                            )}
-                                            <p className="text-sm mt-2">
-                                                <strong>Submitted:</strong>{" "}
-                                                {new Date(
-                                                    place.createdAt,
-                                                ).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-2 pt-3 border-t">
-                                        <Button
-                                            onClick={() =>
-                                                approvePlaceMutation.mutate({
-                                                    placeId: place.id,
-                                                })
-                                            }
-                                            disabled={
-                                                approvePlaceMutation.isPending ||
-                                                rejectPlaceMutation.isPending
-                                            }
-                                            className="bg-green-600 hover:bg-green-700 text-white"
-                                            size="sm"
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Sidebar */}
+                        <div className="lg:col-span-1">
+                            <Card className="sticky top-4">
+                                <CardHeader>
+                                    <CardTitle className="text-lg font-semibold">Admin Sections</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    {ADMIN_SECTIONS.map((section) => (
+                                        <button
+                                            key={section.id}
+                                            onClick={() => setActiveSection(section.id)}
+                                            className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                                activeSection === section.id
+                                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                                    : "hover:bg-gray-100 text-gray-700"
+                                            }`}
                                         >
-                                            <CheckCircle className="h-4 w-4 mr-1" />
-                                            Approve
-                                        </Button>
-                                        <Button
-                                            onClick={() => {
-                                                const reason = prompt(
-                                                    "Please provide a reason for rejection:",
-                                                );
-                                                if (reason) {
-                                                    rejectPlaceMutation.mutate({
-                                                        placeId: place.id,
-                                                        adminNotes: reason,
-                                                    });
-                                                }
-                                            }}
-                                            disabled={
-                                                approvePlaceMutation.isPending ||
-                                                rejectPlaceMutation.isPending
-                                            }
-                                            variant="destructive"
-                                            size="sm"
-                                        >
-                                            <XCircle className="h-4 w-4 mr-1" />
-                                            Reject
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+                                            <div className="flex items-center gap-2 font-medium">
+                                                <section.icon className="h-4 w-4" />
+                                                {section.name}
+                                            </div>
+                                            <div className="text-sm text-gray-500 mt-1">
+                                                {section.description}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </CardContent>
+                            </Card>
                         </div>
-                    )}
-                </CardContent>
-            </Card>
 
-            <Card className="w-full max-w-3xl mx-auto">
+                        {/* Main Content */}
+                        <div className="lg:col-span-3">
+                            {activeSection === "overview" && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <LayoutDashboard className="h-5 w-5" />
+                                            Dashboard Overview
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-center py-8 text-gray-500">
+                                            <p>Dashboard statistics and overview coming soon...</p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {activeSection === "data-admin" && (
+                                <div className="space-y-6">
+                                    {/* Add Food Source Form */}
+            <Card className="w-full">
                 <CardHeader>
                     <CardTitle>Add New Food Source</CardTitle>
                     <CardDescription>
@@ -727,7 +656,7 @@ export default function Admin() {
                 </CardContent>
             </Card>
 
-            <Card className="w-full max-w-3xl mx-auto mt-8">
+            <Card className="w-full mt-6">
                 <CardHeader>
                     <CardTitle>Add New City/Location</CardTitle>
                     <CardDescription>
@@ -806,6 +735,164 @@ export default function Admin() {
                     </Form>
                 </CardContent>
             </Card>
+                                </div>
+                            )}
+
+                            {activeSection === "pending-approvals" && (
+                                <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-[#E07A5F]" />
+                        Pending Location Reviews
+                        {pendingPlaces.length > 0 && (
+                            <Badge variant="destructive" className="ml-2">
+                                {pendingPlaces.length}
+                            </Badge>
+                        )}
+                    </CardTitle>
+                    <CardDescription>
+                        Review and approve user-submitted locations before they
+                        appear publicly
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {pendingPlaces.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                            <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                            <p>No pending locations to review</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {pendingPlaces.map((place: any) => (
+                                <div
+                                    key={place.id}
+                                    className="border border-gray-200 rounded-lg p-4"
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 className="font-semibold text-lg">
+                                                {place.name}
+                                            </h3>
+                                            <p className="text-sm text-gray-600">
+                                                {place.category}
+                                            </p>
+                                        </div>
+                                        <Badge
+                                            variant="outline"
+                                            className="border-orange-200 text-orange-700"
+                                        >
+                                            Pending Review
+                                        </Badge>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <p className="text-sm">
+                                                <strong>Description:</strong>{" "}
+                                                {place.description}
+                                            </p>
+                                            <p className="text-sm mt-2">
+                                                <strong>Address:</strong>{" "}
+                                                {place.address}
+                                            </p>
+                                            <p className="text-sm">
+                                                <strong>Location:</strong>{" "}
+                                                {place.city}, {place.country}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            {place.tags &&
+                                                place.tags.length > 0 && (
+                                                    <div>
+                                                        <p className="text-sm font-medium mb-1">
+                                                            Tags:
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {place.tags.map(
+                                                                (
+                                                                    tag: string,
+                                                                    index: number,
+                                                                ) => (
+                                                                    <Badge
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        variant="secondary"
+                                                                        className="text-xs"
+                                                                    >
+                                                                        {tag}
+                                                                    </Badge>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            {place.website && (
+                                                <p className="text-sm mt-2">
+                                                    <strong>Website:</strong>{" "}
+                                                    {place.website}
+                                                </p>
+                                            )}
+                                            <p className="text-sm mt-2">
+                                                <strong>Submitted:</strong>{" "}
+                                                {new Date(
+                                                    place.createdAt,
+                                                ).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-2 pt-3 border-t">
+                                        <Button
+                                            onClick={() =>
+                                                approvePlaceMutation.mutate({
+                                                    placeId: place.id,
+                                                })
+                                            }
+                                            disabled={
+                                                approvePlaceMutation.isPending ||
+                                                rejectPlaceMutation.isPending
+                                            }
+                                            className="bg-green-600 hover:bg-green-700 text-white"
+                                            size="sm"
+                                        >
+                                            <CheckCircle className="h-4 w-4 mr-1" />
+                                            Approve
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                const reason = prompt(
+                                                    "Please provide a reason for rejection:",
+                                                );
+                                                if (reason) {
+                                                    rejectPlaceMutation.mutate({
+                                                        placeId: place.id,
+                                                        adminNotes: reason,
+                                                    });
+                                                }
+                                            }}
+                                            disabled={
+                                                approvePlaceMutation.isPending ||
+                                                rejectPlaceMutation.isPending
+                                            }
+                                            variant="destructive"
+                                            size="sm"
+                                        >
+                                            <XCircle className="h-4 w-4 mr-1" />
+                                            Reject
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

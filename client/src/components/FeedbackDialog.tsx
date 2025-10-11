@@ -35,7 +35,11 @@ const feedbackSchema = z.object({
 
 type FeedbackFormValues = z.infer<typeof feedbackSchema>;
 
-export function FeedbackDialog() {
+interface FeedbackDialogProps {
+    buttonClassName?: string;
+}
+
+export function FeedbackDialog({ buttonClassName = "" }: FeedbackDialogProps) {
     const { toast } = useToast();
     const [open, setOpen] = React.useState(false);
 
@@ -90,7 +94,7 @@ export function FeedbackDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2 bg-white">
+                <Button variant="outline" className={`gap-2 bg-white ${buttonClassName}`}>
                     <MessageSquare className="h-4 w-4" />
                     Feedback
                 </Button>

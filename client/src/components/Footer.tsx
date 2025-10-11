@@ -1,5 +1,7 @@
 import { Link } from "wouter";
 import { Facebook, Instagram, Twitter } from "lucide-react";
+import { FeedbackDialog } from "./FeedbackDialog";
+import { ShareDialog } from "./ShareDialog";
 
 const Footer = () => {
     return (
@@ -14,7 +16,7 @@ const Footer = () => {
                         <p className="text-[#F7F4EF] opacity-80 mb-4">
                             Your Guide to Sustainable Living Abroad
                         </p>
-                        <div className="flex space-x-4">
+                        <div className="flex space-x-4 mb-4">
                             <a
                                 href="#"
                                 className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition"
@@ -33,6 +35,17 @@ const Footer = () => {
                             >
                                 <Twitter className="h-5 w-5" />
                             </a>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <ShareDialog
+                                buttonVariant="outline"
+                                buttonSize="sm"
+                                buttonText="Share"
+                                buttonClassName="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
+                            />
+                            <FeedbackDialog
+                                buttonClassName="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
+                            />
                         </div>
                     </div>
 

@@ -1,0 +1,569 @@
+EVENT SUBMISSION & MANAGEMENT SYSTEM - IMPLEMENTATION CHECKLIST
+================================================================================
+
+CURRENT STATUS:
+- Event submissions only log to console (server/routes.ts:594-616)
+- No database storage for events
+- No admin approval workflow
+- Events page shows 3 hardcoded examples (client/src/pages/Events.tsx:37-77)
+- SubmissionForm component exists and collects data, but data goes nowhere
+
+GOAL:
+Create a full event management system matching the location submission workflow,
+where users can submit events, admins can review/approve them, and approved
+events appear on the Events page.
+
+================================================================================
+PHASE 1: DATABASE SCHEMA & BACKEND STORAGE
+================================================================================
+
+[ ] 1.1 Create Events Table Schema
+    File: shared/schema.ts
+    - Add events table definition with fields:
+      * id (serial, primary key)
+      * title (text, required) - Event name
+      * description (text, required) - Event description
+      * date (timestamp, required) - Event date
+      * time (text, required) - Event time
+      * location (text, required) - Event location/address
+      * city (text, required) - City where event takes place
+      * country (text) - Country
+      * organizerName (text) - Who is organizing
+      * organizerRole (text) - Organizer's role/title
+      * organizerEmail (text) - Contact email
+      * category (text) - Event type (e.g., "Workshop", "Market Tour", "Social")
+      * imageUrl (text) - Event image
+      * website (text) - Link to more info
+      * maxAttendees (integer) - Maximum number of attendees
+      * currentAttendees (integer, default 0) - Current registration count
+      * submittedBy (text, required) - Submitter name
+      * submitterEmail (text, required) - Submitter email
+      * userId (integer, references users.id) - If authenticated user
+      * status (text, default "pending") - 'pending', 'approved', 'rejected'
+      * adminNotes (text) - Admin review notes
+      * reviewedAt (timestamp) - When reviewed
+      * reviewedBy (integer, references users.id) - Admin who reviewed
+      * createdAt (timestamp, defaultNow)
+      * updatedAt (timestamp, defaultNow)
+
+[ ] 1.2 Create Event Insert Schema
+    File: shared/schema.ts
+    - Add insertEventSchema using createInsertSchema(events)
+    - Omit: id, createdAt, updatedAt, reviewedAt, reviewedBy
+    - Export InsertEvent type
+    - Export Event type
+
+[ ] 1.3 Run Database Migration
+    Command: npm run db:push
+    - Push schema changes to database
+    - Verify events table created successfully
+
+================================================================================
+PHASE 2: STORAGE LAYER (Database Operations)
+================================================================================
+
+[ ] 2.1 Add Event Storage Methods
+    File: server/storage.ts
+
+    [ ] createEvent(eventData: InsertEvent): Promise<Event>
+        - Insert new event into events table
+        - Return created event
+
+    [ ] getEvents(filters?: { city?: string, category?: string, status?: string }): Promise<Event[]>
+        - Get all events with optional filters
+        - Default to only approved events for public
+        - Order by date ascending (upcoming events first)
+        - Filter out past events by default
+
+    [ ] getEventById(id: number): Promise<Event | null>
+        - Get single event by ID
+        - Include all details
+
+    [ ] getPendingEvents(): Promise<Event[]>
+        - Get all events with status='pending'
+        - For admin review
+        - Order by createdAt (oldest first)
+
+    [ ] approveEvent(id: number, adminNotes?: string): Promise<void>
+        - Update event status to 'approved'
+        - Set reviewedAt to now
+        - Set reviewedBy to admin user ID
+        - Add adminNotes if provided
+
+    [ ] rejectEvent(id: number, adminNotes: string): Promise<void>
+        - Update event status to 'rejected'
+        - Set reviewedAt to now
+        - Set reviewedBy to admin user ID
+        - Add adminNotes (required for rejection)
+
+    [ ] updateEvent(id: number, eventData: Partial<InsertEvent>): Promise<Event>
+        - Update event details
+        - Set updatedAt to now
+        - Return updated event
+
+    [ ] deleteEvent(id: number): Promise<void>
+        - Delete event from database
+        - Or soft delete by setting status to 'deleted'
+
+    [ ] getUpcomingEvents(limit?: number): Promise<Event[]>
+        - Get approved events with date >= today
+        - Order by date ascending
+        - Optional limit for homepage/featured events
+
+    [ ] getPastEvents(limit?: number): Promise<Event[]>
+        - Get approved events with date < today
+        - Order by date descending
+        - For event archive/history
+
+================================================================================
+PHASE 3: API ROUTES (Backend Endpoints)
+================================================================================
+
+[ ] 3.1 Public Event Routes
+    File: server/routes.ts
+
+    [ ] GET /api/events
+        - Get all approved events
+        - Accept query params: ?city=Lisbon&category=Workshop
+        - Filter out past events by default
+        - Add ?includePast=true to show past events
+        - Return JSON array of events
+
+    [ ] GET /api/events/:id
+        - Get single event by ID
+        - Return 404 if not found
+        - Only show if approved (unless admin)
+
+    [ ] GET /api/events/upcoming
+        - Get upcoming approved events
+        - Accept ?limit=5 query param
+        - For homepage/featured sections
+
+[ ] 3.2 Event Submission Route
+    File: server/routes.ts
+
+    [ ] POST /api/events
+        - Replace current /api/submissions endpoint for events
+        - Validate with insertEventSchema
+        - Create event with status='pending'
+        - CSRF protection required
+        - Return success message
+        - Send notification email to admin (optional)
+
+[ ] 3.3 Admin Event Routes
+    File: server/routes.ts
+
+    [ ] GET /api/admin/pending-events
+        - Require admin authentication
+        - Get all pending events
+        - Return with submitter details
+
+    [ ] POST /api/admin/approve-event/:id
+        - Require admin authentication
+        - CSRF protection
+        - Accept { adminNotes?: string } in body
+        - Approve event
+        - Return success message
+
+    [ ] POST /api/admin/reject-event/:id
+        - Require admin authentication
+        - CSRF protection
+        - Accept { adminNotes: string } in body (required)
+        - Reject event
+        - Return success message
+
+    [ ] PUT /api/admin/events/:id
+        - Require admin authentication
+        - CSRF protection
+        - Update event details
+        - Allow editing approved events
+
+    [ ] DELETE /api/admin/events/:id
+        - Require admin authentication
+        - CSRF protection
+        - Delete event
+        - Return success message
+
+[ ] 3.4 Update Submission Route
+    File: server/routes.ts
+
+    [ ] Modify POST /api/submissions endpoint
+        - Check if type === 'event'
+        - Route to new event creation logic instead of just logging
+        - Keep logging for backward compatibility
+        - Or deprecate in favor of dedicated /api/events endpoint
+
+================================================================================
+PHASE 4: FRONTEND - EVENT SUBMISSION FORM
+================================================================================
+
+[ ] 4.1 Update SubmissionForm Component
+    File: client/src/components/SubmissionForm.tsx
+
+    [ ] Add event-specific fields to schema:
+        - date (required)
+        - time (required)
+        - organizerName (optional)
+        - organizerRole (optional)
+        - category (optional, with predefined options)
+
+    [ ] Update form to show/hide fields based on type:
+        - Show date/time fields only for events
+        - Show organizer fields only for events
+        - Show category dropdown for events
+
+    [ ] Update API call:
+        - Change from /api/submissions to /api/events when type='event'
+        - Keep /api/submissions for locations (or update those too)
+
+    [ ] Add category options:
+        - Market Tour
+        - Workshop
+        - Social
+        - Food Tasting
+        - Cooking Class
+        - Networking
+        - Other
+
+[ ] 4.2 Create Dedicated AddEventDialog Component (Optional)
+    File: client/src/components/AddEventDialog.tsx
+
+    - More specific to events than generic SubmissionForm
+    - Better UX with event-specific fields
+    - Date/time pickers
+    - Location autocomplete
+    - Category selection
+    - Image upload (future)
+
+================================================================================
+PHASE 5: FRONTEND - EVENTS PAGE
+================================================================================
+
+[ ] 5.1 Update Events Page to Fetch from API
+    File: client/src/pages/Events.tsx
+
+    [ ] Remove hardcoded events array (lines 37-77)
+
+    [ ] Create useQuery to fetch events:
+        - Endpoint: GET /api/events
+        - Handle loading state
+        - Handle error state
+        - Cache with React Query
+
+    [ ] Add filters:
+        - City filter dropdown
+        - Category filter dropdown
+        - Date range filter
+        - Search by title
+
+    [ ] Add sorting options:
+        - By date (ascending/descending)
+        - By category
+        - By popularity (if tracking attendees)
+
+    [ ] Update EventCard to handle real data:
+        - Format dates properly
+        - Handle missing images (placeholder)
+        - Handle missing organizer info
+        - Add registration/interest button (future)
+
+    [ ] Add empty state:
+        - Show message when no events found
+        - Encourage users to submit events
+
+    [ ] Add pagination or infinite scroll:
+        - If many events, don't load all at once
+        - Implement cursor-based or offset pagination
+
+[ ] 5.2 Remove Old Add Event Form
+    File: client/src/pages/Events.tsx
+
+    [ ] Remove showAddEventForm state (line 300)
+    [ ] Remove eventForm state (lines 301-308)
+    [ ] Remove handleInputChange function (lines 311-319)
+    [ ] Remove handleSubmitEvent function (lines 321-337)
+    [ ] Remove inline form card (lines 364-501)
+    [ ] Remove second "Add Event" button (lines 514-520)
+
+    - SubmissionForm component already handles this
+    - Remove duplicate functionality
+
+[ ] 5.3 Add Event Detail Page (Optional)
+    File: client/src/pages/EventDetail.tsx
+
+    - Show full event details
+    - Registration/RSVP functionality (future)
+    - Google Maps integration
+    - Share event
+    - Add to calendar button
+
+================================================================================
+PHASE 6: FRONTEND - ADMIN PANEL
+================================================================================
+
+[ ] 6.1 Create Pending Events Admin Page
+    File: client/src/pages/admin/PendingEvents.tsx
+
+    [ ] Create page layout similar to PendingPlaces
+
+    [ ] Fetch pending events:
+        - Endpoint: GET /api/admin/pending-events
+        - Show in table or card grid
+        - Display: title, date, location, submitter, submitted date
+
+    [ ] Add review actions for each event:
+        - Approve button (green)
+        - Reject button (red)
+        - View details button
+
+    [ ] Add approve dialog:
+        - Optional admin notes
+        - Confirm approve action
+        - Show success toast on approve
+
+    [ ] Add reject dialog:
+        - Required rejection reason
+        - Confirm reject action
+        - Show success toast on reject
+
+    [ ] Add filters:
+        - Filter by date
+        - Filter by city
+        - Filter by category
+        - Search by title
+
+    [ ] Show event count badge:
+        - Display number of pending events
+        - Update in real-time after review
+
+[ ] 6.2 Update Admin Dashboard Navigation
+    File: client/src/pages/admin/AdminDashboard.tsx (or equivalent)
+
+    [ ] Add "Pending Events" link to admin menu
+    [ ] Add event count badge to show pending count
+    [ ] Add "All Events" link to manage approved events
+
+[ ] 6.3 Create All Events Admin Page
+    File: client/src/pages/admin/AllEvents.tsx
+
+    [ ] List all events (approved, pending, rejected)
+
+    [ ] Add status filter tabs:
+        - All
+        - Approved
+        - Pending
+        - Rejected
+
+    [ ] Add actions for each event:
+        - Edit event details
+        - Delete event
+        - Change status
+
+    [ ] Add bulk actions:
+        - Select multiple events
+        - Bulk approve/reject
+        - Bulk delete
+
+    [ ] Add search and filters:
+        - Search by title
+        - Filter by city
+        - Filter by category
+        - Filter by date range
+
+[ ] 6.4 Create Edit Event Admin Page
+    File: client/src/pages/admin/EditEvent.tsx
+
+    [ ] Form to edit all event fields
+    [ ] Save changes with PUT /api/admin/events/:id
+    [ ] Show success/error messages
+    [ ] Option to change event status
+    [ ] Delete event button with confirmation
+
+================================================================================
+PHASE 7: ENHANCEMENTS & FEATURES (Optional/Future)
+================================================================================
+
+[ ] 7.1 Event Registration/RSVP System
+    - Add registrations table to track who's attending
+    - Add maxAttendees field to events
+    - Add "Register" button to events
+    - Send confirmation emails
+    - Allow users to view their registered events
+    - Send reminders before event
+
+[ ] 7.2 Event Image Upload
+    - Add image upload to submission form
+    - Store images in cloud storage (S3, Cloudinary, etc.)
+    - Generate thumbnails
+    - Add default placeholder images by category
+
+[ ] 7.3 Recurring Events
+    - Add recurrence pattern field
+    - Auto-generate future instances
+    - Allow editing single instance vs. series
+
+[ ] 7.4 Event Calendar View
+    - Add calendar component to Events page
+    - Show events on calendar grid
+    - Click date to see events that day
+    - Month/week/day views
+
+[ ] 7.5 Event Notifications
+    - Email notifications to admins on new submission
+    - Email to submitter on approval/rejection
+    - Reminder emails to registered attendees
+    - Integration with SendGrid (already setup)
+
+[ ] 7.6 Event Analytics
+    - Track event views
+    - Track registration conversion
+    - Show popular events
+    - Admin dashboard with event metrics
+
+[ ] 7.7 Event Search & Discovery
+    - Full-text search across events
+    - Recommended events based on user preferences
+    - Similar events suggestions
+    - Filter by dietary restrictions (matching places)
+
+[ ] 7.8 Social Features
+    - Allow users to comment on events
+    - Allow users to rate past events
+    - Share events on social media
+    - Create event from place (e.g., market tour at specific location)
+
+[ ] 7.9 Integration with Places
+    - Link events to places
+    - Show upcoming events on place detail page
+    - Filter events by place category
+    - Auto-suggest location from places database
+
+[ ] 7.10 Mobile Optimization
+    - Responsive event cards
+    - Touch-friendly date picker
+    - Mobile-optimized event detail view
+    - Add to device calendar
+
+================================================================================
+TESTING CHECKLIST
+================================================================================
+
+[ ] 8.1 Backend Testing
+    [ ] Test event creation with valid data
+    [ ] Test event creation with invalid data (validation)
+    [ ] Test getting all events (with filters)
+    [ ] Test getting single event
+    [ ] Test admin approve event
+    [ ] Test admin reject event
+    [ ] Test unauthorized access to admin endpoints
+    [ ] Test CSRF protection on mutation endpoints
+
+[ ] 8.2 Frontend Testing
+    [ ] Test submission form validation
+    [ ] Test successful event submission
+    [ ] Test error handling on submission
+    [ ] Test events page loads correctly
+    [ ] Test filtering and search
+    [ ] Test admin can see pending events
+    [ ] Test admin can approve/reject events
+    [ ] Test approved events appear on public page
+
+[ ] 8.3 Integration Testing
+    [ ] Full flow: Submit → Pending → Approve → Appears on page
+    [ ] Full flow: Submit → Pending → Reject → Doesn't appear
+    [ ] Test with authenticated user
+    [ ] Test with unauthenticated user
+    [ ] Test concurrent submissions
+
+[ ] 8.4 User Acceptance Testing
+    [ ] Have users submit test events
+    [ ] Verify admin workflow is clear
+    [ ] Check mobile responsiveness
+    [ ] Verify email notifications work (if implemented)
+    [ ] Check performance with many events
+
+================================================================================
+DEPLOYMENT CHECKLIST
+================================================================================
+
+[ ] 9.1 Database Migration
+    [ ] Run db:push on staging environment
+    [ ] Verify events table created
+    [ ] Test with sample data
+    [ ] Backup database before production migration
+    [ ] Run db:push on production
+
+[ ] 9.2 Environment Variables
+    [ ] Verify SENDGRID_API_KEY is set (for notifications)
+    [ ] Add any new config variables
+    [ ] Update .env.example file
+
+[ ] 9.3 Documentation
+    [ ] Update README with event features
+    [ ] Document admin workflow
+    [ ] Create user guide for event submission
+    [ ] Document API endpoints
+
+[ ] 9.4 Seed Data (Optional)
+    [ ] Create seed script for sample events
+    [ ] Add to seedData.ts
+    [ ] Include variety of event types
+    [ ] Include both upcoming and past events
+
+================================================================================
+PRIORITY LEVELS
+================================================================================
+
+HIGH PRIORITY (Must Have):
+- Phase 1: Database Schema (1.1, 1.2, 1.3)
+- Phase 2: Storage Layer (all methods)
+- Phase 3: API Routes (3.1, 3.2, 3.3)
+- Phase 4: Event Submission (4.1)
+- Phase 5: Events Page (5.1, 5.2)
+- Phase 6: Admin Panel (6.1, 6.2)
+
+MEDIUM PRIORITY (Should Have):
+- Phase 6: All Events Management (6.3, 6.4)
+- Phase 5: Event Detail Page (5.3)
+- Phase 4: Dedicated Event Dialog (4.2)
+- Phase 7: Image Upload (7.2)
+- Phase 7: Event Notifications (7.5)
+
+LOW PRIORITY (Nice to Have):
+- Phase 7: All other enhancements
+- Advanced search and discovery
+- Social features
+- Analytics
+
+================================================================================
+ESTIMATED TIME
+================================================================================
+
+Phase 1: Database Schema - 1 hour
+Phase 2: Storage Layer - 2-3 hours
+Phase 3: API Routes - 2-3 hours
+Phase 4: Submission Form - 1-2 hours
+Phase 5: Events Page - 2-3 hours
+Phase 6: Admin Panel - 3-4 hours
+Testing - 2-3 hours
+
+TOTAL: 13-19 hours for core functionality
+Additional 20-40 hours for all enhancements
+
+================================================================================
+NOTES
+================================================================================
+
+- This checklist assumes the location submission system is working correctly
+  and can be used as a reference implementation
+- Some items may need adjustment based on specific requirements
+- Consider adding event attendance tracking in future iterations
+- Integration with Google Calendar API could be valuable
+- Consider time zones for international events
+- Add validation for past dates (don't allow creating events in the past)
+- Consider adding event cancellation workflow
+- Add event archive for past events instead of deleting
+
+================================================================================
+END OF CHECKLIST
+================================================================================

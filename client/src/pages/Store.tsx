@@ -344,6 +344,24 @@ export default function Store() {
                             </p>
 
                             <div className="space-y-3">
+                                {/* Website */}
+                                {store.website && (
+                                    <div className="flex items-start gap-3">
+                                        <ExternalLink className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0" />
+                                        <div>
+                                            <p className="font-medium">Website</p>
+                                            <a
+                                                href={store.website.startsWith('http') ? store.website : `https://${store.website}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[#E07A5F] hover:text-[#d06851] font-medium break-all"
+                                            >
+                                                {store.website}
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="flex items-start gap-3">
                                     <MapPin className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0" />
                                     <div className="flex-1">

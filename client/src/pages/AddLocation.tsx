@@ -31,7 +31,20 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { MapPin, Plus } from "lucide-react";
+import {
+    MapPin,
+    Plus,
+    Wheat,
+    Cherry,
+    Apple,
+    Leaf,
+    Truck,
+    Carrot,
+    Egg,
+    Package2,
+    Baby,
+    ShoppingBag,
+} from "lucide-react";
 
 const locationSchema = z.object({
     name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -51,18 +64,18 @@ const locationSchema = z.object({
 type LocationFormValues = z.infer<typeof locationSchema>;
 
 const availableTags = [
-    { id: "organic", label: "Organic" },
-    { id: "bio", label: "Bio" },
-    { id: "vegan", label: "Vegan" },
-    { id: "vegetarian", label: "Vegetarian" },
-    { id: "gluten-free", label: "Gluten Free" },
-    { id: "dairy-free", label: "Dairy Free" },
-    { id: "nut-free", label: "Nut Free" },
-    { id: "farm-raised-meat", label: "Farm Raised Meat" },
-    { id: "fresh-vegetables", label: "Fresh Vegetables" },
-    { id: "bulk-buying", label: "Bulk Buying" },
-    { id: "zero-waste", label: "Zero Waste" },
-    { id: "sustainable", label: "Sustainable" },
+    { id: "gluten-free", label: "Gluten-Free", icon: Wheat },
+    { id: "dairy-free", label: "Dairy-Free", icon: Cherry },
+    { id: "nut-free", label: "Nut-Free", icon: Apple },
+    { id: "vegan", label: "Vegan", icon: Leaf },
+    { id: "organic", label: "Bio/Organic", icon: Apple },
+    { id: "local-farms", label: "Local Farms", icon: Truck },
+    { id: "fresh-vegetables", label: "Fresh Vegetables", icon: Carrot },
+    { id: "farm-raised-meat", label: "Farm-Raised Meat", icon: Egg },
+    { id: "no-processed", label: "No Processed Foods", icon: Package2 },
+    { id: "kid-friendly", label: "Kid-Friendly Snacks", icon: Baby },
+    { id: "bulk-buying", label: "Bulk Buying Options", icon: ShoppingBag },
+    { id: "zero-waste", label: "Zero Waste Packaging", icon: Leaf },
 ];
 
 export default function AddLocation() {
@@ -116,8 +129,8 @@ export default function AddLocation() {
         },
         onSuccess: () => {
             toast({
-                title: "Success!",
-                description: "Location added successfully",
+                title: "Submission Received!",
+                description: "Your location has been submitted for admin approval. It will appear on the site once reviewed.",
             });
             form.reset();
             setSelectedTags([]);
@@ -379,33 +392,37 @@ export default function AddLocation() {
                                         find this location
                                     </p>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {availableTags.map((tag) => (
-                                            <div
-                                                key={tag.id}
-                                                className="flex items-center space-x-2"
-                                            >
-                                                <Checkbox
-                                                    id={tag.id}
-                                                    checked={selectedTags.includes(
-                                                        tag.id,
-                                                    )}
-                                                    onCheckedChange={(
-                                                        checked,
-                                                    ) =>
-                                                        handleTagChange(
-                                                            tag.id,
-                                                            checked as boolean,
-                                                        )
-                                                    }
-                                                />
-                                                <label
-                                                    htmlFor={tag.id}
-                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        {availableTags.map((tag) => {
+                                            const IconComponent = tag.icon;
+                                            return (
+                                                <div
+                                                    key={tag.id}
+                                                    className="flex items-center space-x-2"
                                                 >
-                                                    {tag.label}
-                                                </label>
-                                            </div>
-                                        ))}
+                                                    <Checkbox
+                                                        id={tag.id}
+                                                        checked={selectedTags.includes(
+                                                            tag.id,
+                                                        )}
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) =>
+                                                            handleTagChange(
+                                                                tag.id,
+                                                                checked as boolean,
+                                                            )
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor={tag.id}
+                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer"
+                                                    >
+                                                        <IconComponent className="h-4 w-4 text-[#E07A5F]" />
+                                                        {tag.label}
+                                                    </label>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 

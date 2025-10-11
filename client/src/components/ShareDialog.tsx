@@ -19,6 +19,7 @@ interface ShareDialogProps {
     buttonVariant?: "default" | "outline" | "ghost";
     buttonSize?: "default" | "sm" | "lg" | "icon";
     buttonText?: string;
+    buttonClassName?: string;
     dialogTitle?: string;
     dialogDescription?: string;
 }
@@ -27,6 +28,7 @@ export const ShareDialog = ({
     buttonVariant = "outline",
     buttonSize = "default",
     buttonText = "Share ExpatEats",
+    buttonClassName = "",
     dialogTitle = "Share ExpatEats",
     dialogDescription = "Invite friends to discover Lisbon's food sources",
 }: ShareDialogProps) => {
@@ -63,7 +65,7 @@ export const ShareDialog = ({
                 <Button
                     variant={buttonVariant}
                     size={buttonSize}
-                    className="gap-1"
+                    className={`gap-1 ${buttonClassName}`}
                 >
                     <Share2 className="h-4 w-4" />
                     {buttonText}

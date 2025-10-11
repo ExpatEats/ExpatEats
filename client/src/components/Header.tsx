@@ -9,8 +9,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FeedbackDialog } from "./FeedbackDialog";
-import { ShareDialog } from "./ShareDialog";
 import { LoginModal } from "./LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -100,18 +98,6 @@ const Header = () => {
 
                 {/* Right side - Actions */}
                 <div className="flex items-center space-x-4 flex-1 justify-end">
-                    <div className="hidden lg:block">
-                        <ShareDialog
-                            buttonVariant="outline"
-                            buttonSize="sm"
-                            buttonText="Share"
-                        />
-                    </div>
-
-                    <div className="hidden lg:block">
-                        <FeedbackDialog />
-                    </div>
-
                     {/* Desktop Login/User Menu */}
                     <div className="hidden md:block">
                         {isAuthenticated ? (
@@ -221,16 +207,7 @@ const Header = () => {
                                         ADD LOCATION
                                     </Link>
                                 </div>
-                                <div className="py-2 px-4 rounded-md transition text-gray-800 hover:bg-primary/5 mt-6">
-                                    <ShareDialog
-                                        buttonVariant="ghost"
-                                        buttonText="Share"
-                                    />
-                                </div>
-                                <div className="py-2 px-4 rounded-md transition text-gray-800 hover:bg-primary/5">
-                                    <FeedbackDialog />
-                                </div>
-                                
+
                                 {/* Mobile Login/User Menu */}
                                 <div className="mt-6 space-y-3">
                                     {isAuthenticated ? (
