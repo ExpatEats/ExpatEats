@@ -311,17 +311,18 @@ export function registerCommunityRoutes(app: Express) {
         }
     });
 
-    // Delete post (auth required, owner only)
+    // Delete post (auth required, owner or admin)
     app.delete("/api/community/posts/:id", requireAuth, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
         try {
             const postId = parseInt(req.params.id);
             const userId = req.session.userId!;
+            const isAdmin = req.session.isAdmin || false;
 
             if (!postId || isNaN(postId)) {
                 return res.status(400).json({ message: "Invalid post ID" });
             }
 
-            // Check if post exists and user owns it
+            // Check if post exists and user owns it or is admin
             const [existingPost] = await db
                 .select({ userId: posts.userId })
                 .from(posts)
@@ -331,7 +332,8 @@ export function registerCommunityRoutes(app: Express) {
                 return res.status(404).json({ message: "Post not found" });
             }
 
-            if (existingPost.userId !== userId) {
+            // Allow deletion if user owns the post OR is an admin
+            if (existingPost.userId !== userId && !isAdmin) {
                 return res.status(403).json({ message: "Not authorized to delete this post" });
             }
 
@@ -472,17 +474,18 @@ export function registerCommunityRoutes(app: Express) {
         }
     });
 
-    // Delete comment (auth required, owner only)
+    // Delete comment (auth required, owner or admin)
     app.delete("/api/community/comments/:id", requireAuth, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
         try {
             const commentId = parseInt(req.params.id);
             const userId = req.session.userId!;
+            const isAdmin = req.session.isAdmin || false;
 
             if (!commentId || isNaN(commentId)) {
                 return res.status(400).json({ message: "Invalid comment ID" });
             }
 
-            // Check if comment exists and user owns it
+            // Check if comment exists and user owns it or is admin
             const [existingComment] = await db
                 .select({ userId: comments.userId })
                 .from(comments)
@@ -492,7 +495,8 @@ export function registerCommunityRoutes(app: Express) {
                 return res.status(404).json({ message: "Comment not found" });
             }
 
-            if (existingComment.userId !== userId) {
+            // Allow deletion if user owns the comment OR is an admin
+            if (existingComment.userId !== userId && !isAdmin) {
                 return res.status(403).json({ message: "Not authorized to delete this comment" });
             }
 

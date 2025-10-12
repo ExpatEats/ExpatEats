@@ -18,7 +18,6 @@ import {
     Share2,
     Mail,
     Check,
-    X,
 } from "lucide-react";
 import {
     Dialog,

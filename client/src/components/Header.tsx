@@ -11,14 +11,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LoginModal } from "./LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 
 const Header = () => {
     const [location] = useLocation();
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const { user, isAuthenticated, logout, isLoading } = useAuth();
-    const { toast } = useToast();
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const isActive = (path: string) => {
         return location === path;
@@ -31,17 +44,10 @@ const Header = () => {
     const handleLogout = async () => {
         try {
             await logout();
-            toast({
-                title: "Logged out successfully",
-                description: "You have been logged out of your account.",
-            });
+            showNotification("Logged out successfully", "You have been logged out of your account.", "success");
         } catch (error) {
             console.error('Logout error:', error);
-            toast({
-                title: "Logout error",
-                description: "There was an issue logging out. Please try again.",
-                variant: "destructive",
-            });
+            showNotification("Logout error", "There was an issue logging out. Please try again.", "error");
         }
     };
 
@@ -276,9 +282,17 @@ const Header = () => {
             </div>
             
             {/* Login Modal */}
-            <LoginModal 
-                open={loginModalOpen} 
-                onOpenChange={setLoginModalOpen} 
+            <LoginModal
+                open={loginModalOpen}
+                onOpenChange={setLoginModalOpen}
+            />
+
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
             />
         </header>
     );

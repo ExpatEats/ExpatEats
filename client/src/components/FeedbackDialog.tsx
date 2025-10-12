@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 import { MessageSquare } from "lucide-react";
 
 const feedbackSchema = z.object({
@@ -40,8 +40,23 @@ interface FeedbackDialogProps {
 }
 
 export function FeedbackDialog({ buttonClassName = "" }: FeedbackDialogProps) {
-    const { toast } = useToast();
     const [open, setOpen] = React.useState(false);
+
+    // Notification dialog states
+    const [notificationOpen, setNotificationOpen] = React.useState(false);
+    const [notificationConfig, setNotificationConfig] = React.useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const form = useForm<FeedbackFormValues>({
         resolver: zodResolver(feedbackSchema),
@@ -69,21 +84,12 @@ export function FeedbackDialog({ buttonClassName = "" }: FeedbackDialogProps) {
             return response.json();
         },
         onSuccess: () => {
-            toast({
-                title: "Feedback received",
-                description:
-                    "Thank you for your feedback! It helps us improve ExpatEats.",
-            });
+            showNotification("Feedback received", "Thank you for your feedback! It helps us improve ExpatEats.");
             form.reset();
             setOpen(false);
         },
         onError: () => {
-            toast({
-                variant: "destructive",
-                title: "Submission failed",
-                description:
-                    "There was a problem submitting your feedback. Please try again.",
-            });
+            showNotification("Submission failed", "There was a problem submitting your feedback. Please try again.", "error");
         },
     });
 
@@ -185,6 +191,15 @@ export function FeedbackDialog({ buttonClassName = "" }: FeedbackDialogProps) {
                     </form>
                 </Form>
             </DialogContent>
+
+            {/* Notification Dialog */}
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </Dialog>
     );
 }

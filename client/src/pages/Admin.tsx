@@ -24,7 +24,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
+import { InputDialog } from "@/components/InputDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Card,
@@ -103,11 +104,28 @@ const ADMIN_SECTIONS = [
 export default function Admin() {
     // All hooks must be declared first
     const [, setLocation] = useLocation();
-    const { toast } = useToast();
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
     const [selectedCountry, setSelectedCountry] = React.useState<string>("");
     const [activeSection, setActiveSection] = React.useState<string>("data-admin");
     const { user, isAuthenticated, logout, isLoading } = useAuth();
+    const [notificationOpen, setNotificationOpen] = React.useState(false);
+    const [notificationConfig, setNotificationConfig] = React.useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
+
+    // Input dialog state for rejection reason
+    const [inputDialogOpen, setInputDialogOpen] = React.useState(false);
+    const [placeToReject, setPlaceToReject] = React.useState<number | null>(null);
 
     const form = useForm<FoodSourceFormValues>({
         resolver: zodResolver(foodSourceSchema),
@@ -184,20 +202,13 @@ export default function Admin() {
             return response.json();
         },
         onSuccess: () => {
-            toast({
-                title: "Food source added",
-                description: "Your submission has been added successfully",
-            });
+            showNotification("Food source added", "Your submission has been added successfully", "success");
             form.reset();
             setSelectedTags([]);
             queryClient.invalidateQueries({ queryKey: ["/api/places"] });
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: "Failed to add food source. Please try again.",
-                variant: "destructive",
-            });
+            showNotification("Error", "Failed to add food source. Please try again.", "error");
         },
     });
 
@@ -216,18 +227,11 @@ export default function Admin() {
             );
         },
         onSuccess: () => {
-            toast({
-                title: "Success",
-                description: "Location approved successfully",
-            });
+            showNotification("Success", "Location approved successfully", "success");
             refetchPending();
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: `Failed to approve location: ${error.message}`,
-                variant: "destructive",
-            });
+            showNotification("Error", `Failed to approve location: ${error.message}`, "error");
         },
     });
 
@@ -246,18 +250,11 @@ export default function Admin() {
             );
         },
         onSuccess: () => {
-            toast({
-                title: "Success",
-                description: "Location rejected successfully",
-            });
+            showNotification("Success", "Location rejected successfully", "success");
             refetchPending();
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: `Failed to reject location: ${error.message}`,
-                variant: "destructive",
-            });
+            showNotification("Error", `Failed to reject location: ${error.message}`, "error");
         },
     });
 
@@ -266,19 +263,12 @@ export default function Admin() {
             return await apiRequest("POST", "/api/admin/cities", values);
         },
         onSuccess: () => {
-            toast({
-                title: "Success",
-                description: "City added successfully",
-            });
+            showNotification("Success", "City added successfully", "success");
             cityForm.reset();
             queryClient.invalidateQueries({ queryKey: ["/api/cities"] });
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: `Failed to add city: ${error.message}`,
-                variant: "destructive",
-            });
+            showNotification("Error", `Failed to add city: ${error.message}`, "error");
         },
     });
 
@@ -291,15 +281,11 @@ export default function Admin() {
             }
             if (user?.role !== "admin") {
                 setLocation("/find-my-food");
-                toast({
-                    title: "Access Denied",
-                    description: "Admin privileges required to access this page.",
-                    variant: "destructive",
-                });
+                showNotification("Access Denied", "Admin privileges required to access this page.", "error");
                 return;
             }
         }
-    }, [isAuthenticated, user, isLoading, setLocation, toast]);
+    }, [isAuthenticated, user, isLoading, setLocation]);
 
     const handleLogout = async () => {
         try {
@@ -323,6 +309,16 @@ export default function Admin() {
 
     const onCitySubmit = (values: CityFormValues) => {
         addCityMutation.mutate(values);
+    };
+
+    const handleRejectPlace = (reason: string) => {
+        if (placeToReject !== null) {
+            rejectPlaceMutation.mutate({
+                placeId: placeToReject,
+                adminNotes: reason,
+            });
+            setPlaceToReject(null);
+        }
     };
 
     if (isLoading) {
@@ -861,15 +857,8 @@ export default function Admin() {
                                         </Button>
                                         <Button
                                             onClick={() => {
-                                                const reason = prompt(
-                                                    "Please provide a reason for rejection:",
-                                                );
-                                                if (reason) {
-                                                    rejectPlaceMutation.mutate({
-                                                        placeId: place.id,
-                                                        adminNotes: reason,
-                                                    });
-                                                }
+                                                setPlaceToReject(place.id);
+                                                setInputDialogOpen(true);
                                             }}
                                             disabled={
                                                 approvePlaceMutation.isPending ||
@@ -893,6 +882,28 @@ export default function Admin() {
                     </div>
                 </div>
             </div>
+
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
+
+            <InputDialog
+                open={inputDialogOpen}
+                onOpenChange={setInputDialogOpen}
+                title="Reject Location"
+                description="Please provide a reason for rejecting this location submission."
+                placeholder="Enter rejection reason..."
+                confirmText="Reject"
+                cancelText="Cancel"
+                onConfirm={handleRejectPlace}
+                multiline={true}
+                required={true}
+                isLoading={rejectPlaceMutation.isPending}
+            />
         </div>
     );
 }

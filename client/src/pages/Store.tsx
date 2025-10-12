@@ -23,7 +23,7 @@ import {
     ExternalLink
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 import { MapView } from "@/components/MapView";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -95,9 +95,22 @@ const generateGoogleMapsUrl = (address: string, city: string, country: string) =
 export default function Store() {
     const [, params] = useRoute("/store/:id");
     const [, setLocation] = useLocation();
-    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [isSaved, setIsSaved] = useState(false);
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const storeId = params?.id ? parseInt(params.id) : null;
 
@@ -149,23 +162,19 @@ export default function Store() {
         },
         onSuccess: (data, action) => {
             setIsSaved(action === "save");
-            toast({
-                title: action === "save" ? "Store Saved" : "Store Removed",
-                description:
-                    action === "save"
-                        ? "Added to your favorites"
-                        : "Removed from your favorites",
-            });
+            showNotification(
+                action === "save" ? "Store Saved" : "Store Removed",
+                action === "save"
+                    ? "Added to your favorites"
+                    : "Removed from your favorites",
+                "success"
+            );
             queryClient.invalidateQueries({
                 queryKey: ["/api/user/saved-stores"],
             });
         },
         onError: () => {
-            toast({
-                title: "Error",
-                description: "Please log in to save stores",
-                variant: "destructive",
-            });
+            showNotification("Error", "Please log in to save stores", "error");
         },
     });
 
@@ -184,17 +193,11 @@ export default function Store() {
             } catch (error) {
                 // Fallback to clipboard
                 navigator.clipboard.writeText(window.location.href);
-                toast({
-                    title: "Link Copied",
-                    description: "Store link copied to clipboard",
-                });
+                showNotification("Link Copied", "Store link copied to clipboard", "success");
             }
         } else {
             navigator.clipboard.writeText(window.location.href);
-            toast({
-                title: "Link Copied",
-                description: "Store link copied to clipboard",
-            });
+            showNotification("Link Copied", "Store link copied to clipboard", "success");
         }
     };
 
@@ -499,6 +502,13 @@ export default function Store() {
                     </CardContent>
                 </Card>
             </div>
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </div>
     );
 }

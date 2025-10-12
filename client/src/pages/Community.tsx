@@ -1,21 +1,29 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
     MessageSquare,
     Heart,
     User,
     Calendar,
     MoreHorizontal,
-    Plus
+    Plus,
+    Trash2
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 // Types for our API responses
 interface PostComment {
@@ -63,9 +71,29 @@ const SECTIONS = [
 const Community: React.FC = () => {
     const [, setLocation] = useLocation();
     const { user, isAuthenticated } = useAuth();
-    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [activeSection, setActiveSection] = useState<string>("general");
+
+    // Notification dialog states
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    // Confirm dialog states
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [postToDelete, setPostToDelete] = useState<number | null>(null);
+
+    // Helper function to show notifications
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     // Redirect if not authenticated
     React.useEffect(() => {
@@ -148,10 +176,7 @@ const Community: React.FC = () => {
 
             if (response.ok) {
                 const result = await response.json();
-                toast({
-                    title: result.message,
-                    description: `Post ${result.isLiked ? "liked" : "unliked"}`,
-                });
+                showNotification(result.message, `Post ${result.isLiked ? "liked" : "unliked"}`);
                 // Invalidate to sync with server state
                 queryClient.invalidateQueries({ queryKey: ["community-posts", activeSection] });
             } else {
@@ -162,11 +187,55 @@ const Community: React.FC = () => {
         } catch (error) {
             // Revert optimistic update on error
             queryClient.invalidateQueries({ queryKey: ["community-posts", activeSection] });
-            toast({
-                title: "Error",
-                description: "Failed to update like status",
-                variant: "destructive"
+            showNotification("Error", "Failed to update like status", "error");
+        }
+    };
+
+    // Delete post mutation
+    const deletePostMutation = useMutation({
+        mutationFn: async (postId: number) => {
+            // Get CSRF token
+            const csrfResponse = await fetch("/api/csrf-token", {
+                credentials: "include"
             });
+            if (!csrfResponse.ok) throw new Error("Failed to get CSRF token");
+            const { csrfToken } = await csrfResponse.json();
+
+            const response = await fetch(`/api/community/posts/${postId}`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-Token": csrfToken
+                },
+                credentials: "include"
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Failed to delete post");
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            showNotification("Post Deleted", "Post and all associated comments have been removed");
+            // Refresh the posts list
+            queryClient.invalidateQueries({ queryKey: ["community-posts", activeSection] });
+        },
+        onError: (error: Error) => {
+            showNotification("Error", error.message || "Failed to delete post", "error");
+        }
+    });
+
+    const handleDeletePost = (postId: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setPostToDelete(postId);
+        setConfirmOpen(true);
+    };
+
+    const confirmDeletePost = () => {
+        if (postToDelete !== null) {
+            deletePostMutation.mutate(postToDelete);
+            setPostToDelete(null);
         }
     };
 
@@ -288,13 +357,28 @@ const Community: React.FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
+                                                    {(user?.id === post.userId || user?.role === "admin") && (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                >
+                                                                    <MoreHorizontal className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuItem
+                                                                    onClick={(e) => handleDeletePost(post.id, e)}
+                                                                    className="text-red-600 focus:text-red-600"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                                    Delete Post
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    )}
                                                 </div>
 
                                                 {/* Post Content */}
@@ -359,6 +443,28 @@ const Community: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Notification Dialog */}
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
+
+            {/* Confirm Delete Dialog */}
+            <ConfirmDialog
+                open={confirmOpen}
+                onOpenChange={setConfirmOpen}
+                title="Delete Post"
+                description="Are you sure you want to delete this post? This will also delete all comments and cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={confirmDeletePost}
+                variant="destructive"
+                isLoading={deletePostMutation.isPending}
+            />
         </div>
     );
 };

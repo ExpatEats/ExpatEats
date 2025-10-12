@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle, X, Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { RegistrationSuccessModal } from "@/components/RegistrationSuccessModal";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
@@ -61,7 +61,20 @@ const Register = () => {
         emailAvailable: null as boolean | null,
     });
     const { register, isLoading, isAuthenticated } = useAuth();
-    const { toast } = useToast();
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const checkUsernameAvailability = useCallback(async (username: string) => {
         if (username.length < 3) {
@@ -161,11 +174,7 @@ const Register = () => {
             const errorMessage = error instanceof Error ? error.message : "Please try again later.";
             setLocalError(errorMessage);
             
-            toast({
-                title: "Registration failed",
-                description: errorMessage,
-                variant: "destructive",
-            });
+            showNotification("Registration failed", errorMessage, "error");
         }
     };
 
@@ -457,6 +466,14 @@ const Register = () => {
                 open={successModalOpen}
                 onOpenChange={setSuccessModalOpen}
                 userName={registeredUserName || undefined}
+            />
+
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
             />
         </div>
     );

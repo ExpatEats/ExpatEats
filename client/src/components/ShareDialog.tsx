@@ -13,7 +13,7 @@ import {
     DialogClose,
 } from "@/components/ui/dialog";
 import { Share2, Check, Mail } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 
 interface ShareDialogProps {
     buttonVariant?: "default" | "outline" | "ghost";
@@ -35,7 +35,22 @@ export const ShareDialog = ({
     const [email, setEmail] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [isSent, setIsSent] = useState(false);
-    const { toast } = useToast();
+
+    // Notification dialog states
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const handleShare = () => {
         if (!email) return;
@@ -47,10 +62,7 @@ export const ShareDialog = ({
             setIsSending(false);
             setIsSent(true);
 
-            toast({
-                title: "Invitation Sent!",
-                description: `We've sent an invitation to ${email}`,
-            });
+            showNotification("Invitation Sent!", `We've sent an invitation to ${email}`);
 
             setTimeout(() => {
                 setIsSent(false);
@@ -189,6 +201,15 @@ export const ShareDialog = ({
                     </Button>
                 </DialogFooter>
             </DialogContent>
+
+            {/* Notification Dialog */}
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </Dialog>
     );
 };

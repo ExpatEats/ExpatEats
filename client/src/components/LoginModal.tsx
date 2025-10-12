@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 
 const loginSchema = z.object({
     username: z.string().min(1, "Username is required"),
@@ -40,7 +40,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
     const [, navigate] = useLocation();
     const [localError, setLocalError] = useState<string | null>(null);
     const { login, isLoading } = useAuth();
-    const { toast } = useToast();
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -56,11 +69,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
 
         try {
             await login(data.username, data.password, data.rememberMe);
-            
-            toast({
-                title: "Login successful!",
-                description: "Welcome back to ExpatEats.",
-            });
+
+            showNotification("Login successful!", "Welcome back to ExpatEats.", "success");
 
             // Close modal and redirect
             onOpenChange(false);
@@ -69,15 +79,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
             navigate("/find-my-food");
         } catch (error) {
             console.error('Login error:', error);
-            
+
             const errorMessage = error instanceof Error ? error.message : "Please check your credentials and try again.";
             setLocalError(errorMessage);
-            
-            toast({
-                title: "Login failed",
-                description: errorMessage,
-                variant: "destructive",
-            });
+
+            showNotification("Login failed", errorMessage, "error");
         }
     };
 
@@ -196,10 +202,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                                     variant="ghost"
                                     className="w-full text-sm text-gray-600"
                                     onClick={() => {
-                                        toast({
-                                            title: "Coming soon",
-                                            description: "Password reset functionality will be available soon.",
-                                        });
+                                        showNotification("Coming soon", "Password reset functionality will be available soon.", "info");
                                     }}
                                     disabled={isLoading}
                                 >
@@ -210,6 +213,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                     </Form>
                 </div>
             </DialogContent>
+
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </Dialog>
     );
 };
