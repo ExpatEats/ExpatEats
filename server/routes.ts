@@ -818,6 +818,212 @@ ${feedback}
         }
     });
 
+    // ================================================================================
+    // EVENT ROUTES
+    // ================================================================================
+
+    // Public event routes
+    app.get("/api/events", async (req, res) => {
+        try {
+            const { city, category, includePast } = req.query;
+
+            const events = await storage.getEvents({
+                city: city as string,
+                category: category as string,
+                status: "approved",
+                includePast: includePast === "true",
+            });
+
+            res.json(events);
+        } catch (error) {
+            console.error("Error fetching events:", error);
+            res.status(500).json({ message: "Failed to fetch events" });
+        }
+    });
+
+    app.get("/api/events/upcoming", async (req, res) => {
+        try {
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+            const events = await storage.getUpcomingEvents(limit);
+
+            res.json(events);
+        } catch (error) {
+            console.error("Error fetching upcoming events:", error);
+            res.status(500).json({ message: "Failed to fetch upcoming events" });
+        }
+    });
+
+    app.get("/api/events/:id", async (req, res) => {
+        try {
+            const eventId = parseInt(req.params.id);
+
+            if (isNaN(eventId)) {
+                return res.status(400).json({ message: "Invalid event ID" });
+            }
+
+            const event = await storage.getEventById(eventId);
+
+            if (!event) {
+                return res.status(404).json({ message: "Event not found" });
+            }
+
+            // Only show approved events to public (unless admin)
+            if (event.status !== "approved" && !(req as any).session?.isAdmin) {
+                return res.status(404).json({ message: "Event not found" });
+            }
+
+            res.json(event);
+        } catch (error) {
+            console.error("Error fetching event:", error);
+            res.status(500).json({ message: "Failed to fetch event" });
+        }
+    });
+
+    // Event submission route
+    app.post("/api/events", CsrfService.middleware(), async (req, res) => {
+        try {
+            const {
+                title,
+                description,
+                date,
+                time,
+                location,
+                city,
+                country,
+                organizerName,
+                organizerRole,
+                organizerEmail,
+                category,
+                imageUrl,
+                website,
+                maxAttendees,
+                submittedBy,
+                submitterEmail,
+            } = req.body;
+
+            // Validate required fields
+            if (!title || !description || !date || !time || !location || !city || !submittedBy || !submitterEmail) {
+                return res.status(400).json({
+                    message: "Missing required fields: title, description, date, time, location, city, submittedBy, and submitterEmail are required"
+                });
+            }
+
+            // Get userId if user is authenticated
+            const userId = (req as any).session?.userId || null;
+
+            const newEvent = await storage.createEvent({
+                title,
+                description,
+                date: new Date(date),
+                time,
+                location,
+                city,
+                country: country || "Portugal",
+                organizerName: organizerName || null,
+                organizerRole: organizerRole || null,
+                organizerEmail: organizerEmail || null,
+                category: category || null,
+                imageUrl: imageUrl || null,
+                website: website || null,
+                maxAttendees: maxAttendees ? parseInt(maxAttendees) : null,
+                currentAttendees: 0,
+                submittedBy,
+                submitterEmail,
+                userId,
+                status: "pending",
+                adminNotes: null,
+                reviewedAt: null,
+                reviewedBy: null,
+            });
+
+            res.status(201).json({
+                message: "Event submitted successfully and is pending approval",
+                eventId: newEvent.id,
+            });
+        } catch (error) {
+            console.error("Error creating event:", error);
+            res.status(500).json({ message: "Failed to submit event" });
+        }
+    });
+
+    // Admin event routes
+    app.get("/api/admin/pending-events", requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const pendingEvents = await storage.getPendingEvents();
+            res.json(pendingEvents);
+        } catch (error) {
+            console.error("Error fetching pending events:", error);
+            res.status(500).json({ message: "Failed to fetch pending events" });
+        }
+    });
+
+    app.post("/api/admin/approve-event/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const eventId = parseInt(req.params.id);
+            const { adminNotes } = req.body;
+            const adminId = req.session!.userId;
+
+            await storage.approveEvent(eventId, adminId, adminNotes);
+
+            res.json({ message: "Event approved successfully" });
+        } catch (error) {
+            console.error("Error approving event:", error);
+            res.status(500).json({ message: "Failed to approve event" });
+        }
+    });
+
+    app.post("/api/admin/reject-event/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const eventId = parseInt(req.params.id);
+            const { adminNotes } = req.body;
+            const adminId = req.session!.userId;
+
+            if (!adminNotes) {
+                return res.status(400).json({ message: "Admin notes are required for rejection" });
+            }
+
+            await storage.rejectEvent(eventId, adminId, adminNotes);
+
+            res.json({ message: "Event rejected successfully" });
+        } catch (error) {
+            console.error("Error rejecting event:", error);
+            res.status(500).json({ message: "Failed to reject event" });
+        }
+    });
+
+    app.put("/api/admin/events/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const eventId = parseInt(req.params.id);
+            const eventData = req.body;
+
+            // Remove fields that shouldn't be updated directly
+            delete eventData.id;
+            delete eventData.createdAt;
+            delete eventData.reviewedAt;
+            delete eventData.reviewedBy;
+
+            const updatedEvent = await storage.updateEvent(eventId, eventData);
+
+            res.json({ message: "Event updated successfully", event: updatedEvent });
+        } catch (error) {
+            console.error("Error updating event:", error);
+            res.status(500).json({ message: "Failed to update event" });
+        }
+    });
+
+    app.delete("/api/admin/events/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const eventId = parseInt(req.params.id);
+
+            await storage.deleteEvent(eventId);
+
+            res.json({ message: "Event deleted successfully" });
+        } catch (error) {
+            console.error("Error deleting event:", error);
+            res.status(500).json({ message: "Failed to delete event" });
+        }
+    });
+
     // Register community routes
     registerCommunityRoutes(app);
 

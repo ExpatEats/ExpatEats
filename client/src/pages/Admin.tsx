@@ -44,6 +44,7 @@ import {
     Database,
     FileCheck,
     LayoutDashboard,
+    Calendar,
 } from "lucide-react";
 
 const foodSourceSchema = z.object({
@@ -95,9 +96,15 @@ const ADMIN_SECTIONS = [
     },
     {
         id: "pending-approvals",
-        name: "Pending Approvals",
+        name: "Pending Locations",
         description: "Review submitted locations",
         icon: FileCheck
+    },
+    {
+        id: "pending-events",
+        name: "Pending Events",
+        description: "Review submitted events",
+        icon: Calendar
     }
 ] as const;
 
@@ -126,6 +133,7 @@ export default function Admin() {
     // Input dialog state for rejection reason
     const [inputDialogOpen, setInputDialogOpen] = React.useState(false);
     const [placeToReject, setPlaceToReject] = React.useState<number | null>(null);
+    const [eventToReject, setEventToReject] = React.useState<number | null>(null);
 
     const form = useForm<FoodSourceFormValues>({
         resolver: zodResolver(foodSourceSchema),
@@ -153,6 +161,11 @@ export default function Admin() {
 
     const { data: pendingPlaces = [], refetch: refetchPending } = useQuery({
         queryKey: ["/api/admin/pending-places"],
+        enabled: isAuthenticated && user?.role === "admin",
+    });
+
+    const { data: pendingEvents = [], refetch: refetchPendingEvents } = useQuery({
+        queryKey: ["/api/admin/pending-events"],
         enabled: isAuthenticated && user?.role === "admin",
     });
 
@@ -258,6 +271,52 @@ export default function Admin() {
         },
     });
 
+    const approveEventMutation = useMutation({
+        mutationFn: async ({
+            eventId,
+            adminNotes,
+        }: {
+            eventId: number;
+            adminNotes?: string;
+        }) => {
+            return await apiRequest(
+                "POST",
+                `/api/admin/approve-event/${eventId}`,
+                { adminNotes },
+            );
+        },
+        onSuccess: () => {
+            showNotification("Success", "Event approved successfully", "success");
+            refetchPendingEvents();
+        },
+        onError: (error) => {
+            showNotification("Error", `Failed to approve event: ${error.message}`, "error");
+        },
+    });
+
+    const rejectEventMutation = useMutation({
+        mutationFn: async ({
+            eventId,
+            adminNotes,
+        }: {
+            eventId: number;
+            adminNotes: string;
+        }) => {
+            return await apiRequest(
+                "POST",
+                `/api/admin/reject-event/${eventId}`,
+                { adminNotes },
+            );
+        },
+        onSuccess: () => {
+            showNotification("Success", "Event rejected successfully", "success");
+            refetchPendingEvents();
+        },
+        onError: (error) => {
+            showNotification("Error", `Failed to reject event: ${error.message}`, "error");
+        },
+    });
+
     const addCityMutation = useMutation({
         mutationFn: async (values: CityFormValues) => {
             return await apiRequest("POST", "/api/admin/cities", values);
@@ -280,7 +339,7 @@ export default function Admin() {
                 return;
             }
             if (user?.role !== "admin") {
-                setLocation("/find-my-food");
+                setLocation("/");
                 showNotification("Access Denied", "Admin privileges required to access this page.", "error");
                 return;
             }
@@ -318,6 +377,16 @@ export default function Admin() {
                 adminNotes: reason,
             });
             setPlaceToReject(null);
+        }
+    };
+
+    const handleRejectEvent = (reason: string) => {
+        if (eventToReject !== null) {
+            rejectEventMutation.mutate({
+                eventId: eventToReject,
+                adminNotes: reason,
+            });
+            setEventToReject(null);
         }
     };
 
@@ -878,6 +947,143 @@ export default function Admin() {
                 </CardContent>
             </Card>
                             )}
+
+                            {/* Pending Events Section */}
+                            {activeSection === "pending-events" && (
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle className="text-2xl font-bold">
+                                Pending Event Reviews
+                                {pendingEvents.length > 0 && (
+                                    <Badge className="ml-2" variant="secondary">
+                                        {pendingEvents.length}
+                                    </Badge>
+                                )}
+                            </CardTitle>
+                            <CardDescription>
+                                Review and approve or reject event submissions
+                            </CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {pendingEvents.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                            <Calendar className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                            <p>No pending events to review</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {pendingEvents.map((event: any) => (
+                                <Card key={event.id} className="border-l-4 border-l-orange-500">
+                                    <CardContent className="pt-6">
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold text-lg">{event.title}</h3>
+                                                    {event.category && (
+                                                        <Badge className="mt-1 bg-[#6D9075]">{event.category}</Badge>
+                                                    )}
+                                                </div>
+                                                <Badge className="bg-orange-500">
+                                                    <Clock className="h-3 w-3 mr-1" />
+                                                    Pending Review
+                                                </Badge>
+                                            </div>
+
+                                            <p className="text-gray-700">{event.description}</p>
+
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Date & Time</p>
+                                                    <p className="text-gray-900">
+                                                        {new Date(event.date).toLocaleDateString()} at {event.time}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Location</p>
+                                                    <p className="text-gray-900">{event.location}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">City</p>
+                                                    <p className="text-gray-900">{event.city}</p>
+                                                </div>
+                                                {event.organizerName && (
+                                                    <div>
+                                                        <p className="text-gray-500 font-medium">Organizer</p>
+                                                        <p className="text-gray-900">
+                                                            {event.organizerName}
+                                                            {event.organizerRole && ` · ${event.organizerRole}`}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Submitted By</p>
+                                                    <p className="text-gray-900">{event.submittedBy}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Contact Email</p>
+                                                    <p className="text-gray-900">{event.submitterEmail}</p>
+                                                </div>
+                                                {event.website && (
+                                                    <div>
+                                                        <p className="text-gray-500 font-medium">Website</p>
+                                                        <a
+                                                            href={event.website}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-600 hover:underline"
+                                                        >
+                                                            {event.website}
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex gap-2 pt-4">
+                                                <Button
+                                                    onClick={() =>
+                                                        approveEventMutation.mutate({
+                                                            eventId: event.id,
+                                                        })
+                                                    }
+                                                    disabled={
+                                                        approveEventMutation.isPending ||
+                                                        rejectEventMutation.isPending
+                                                    }
+                                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                                    size="sm"
+                                                >
+                                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                                    Approve
+                                                </Button>
+                                                <Button
+                                                    onClick={() => {
+                                                        setEventToReject(event.id);
+                                                        setInputDialogOpen(true);
+                                                    }}
+                                                    disabled={
+                                                        approveEventMutation.isPending ||
+                                                        rejectEventMutation.isPending
+                                                    }
+                                                    variant="destructive"
+                                                    size="sm"
+                                                >
+                                                    <XCircle className="h-4 w-4 mr-1" />
+                                                    Reject
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -894,15 +1100,15 @@ export default function Admin() {
             <InputDialog
                 open={inputDialogOpen}
                 onOpenChange={setInputDialogOpen}
-                title="Reject Location"
-                description="Please provide a reason for rejecting this location submission."
+                title={eventToReject !== null ? "Reject Event" : "Reject Location"}
+                description={eventToReject !== null ? "Please provide a reason for rejecting this event submission." : "Please provide a reason for rejecting this location submission."}
                 placeholder="Enter rejection reason..."
                 confirmText="Reject"
                 cancelText="Cancel"
-                onConfirm={handleRejectPlace}
+                onConfirm={eventToReject !== null ? handleRejectEvent : handleRejectPlace}
                 multiline={true}
                 required={true}
-                isLoading={rejectPlaceMutation.isPending}
+                isLoading={eventToReject !== null ? rejectEventMutation.isPending : rejectPlaceMutation.isPending}
             />
         </div>
     );

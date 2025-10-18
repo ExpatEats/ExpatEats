@@ -11,10 +11,10 @@ const Unauthorized = () => {
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const { isAuthenticated } = useAuth();
 
-    // Redirect authenticated users to find-my-food
+    // Redirect authenticated users to home
     useEffect(() => {
         if (isAuthenticated) {
-            setLocation("/find-my-food");
+            setLocation("/");
         }
     }, [isAuthenticated, setLocation]);
 
@@ -40,7 +40,7 @@ const Unauthorized = () => {
                         Log In
                     </Button>
                     <Button
-                        onClick={() => setLocation("/")}
+                        onClick={() => setLocation("/register")}
                         variant="outline"
                         className="w-full border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
                         size="lg"

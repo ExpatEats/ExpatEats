@@ -18,6 +18,7 @@ import {
     Share2,
     Mail,
     Check,
+    Loader2,
 } from "lucide-react";
 import {
     Dialog,
@@ -31,49 +32,8 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { SubmissionForm } from "@/components/SubmissionForm";
-
-// Example event data - in a real app this would come from the backend
-const events = [
-    {
-        id: 1,
-        title: "Organic Market Tour in Principe Real",
-        description:
-            "Join us for a guided tour of the Mercado Biológico do Principe Real. Learn how to select the best organic produce and meet local farmers.",
-        date: "2025-06-01T10:00:00",
-        location: "Principe Real Garden, Lisbon",
-        organizerName: "Maria Santos",
-        organizerRole: "Local Food Guide",
-        category: "Market Tour",
-        imageUrl:
-            "https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
-    },
-    {
-        id: 2,
-        title: "Zero Waste Shopping Workshop",
-        description:
-            "Learn practical tips for shopping without plastic and reducing food waste. We'll visit Maria Granel and other zero waste shops in central Lisbon.",
-        date: "2025-06-15T14:00:00",
-        location: "Maria Granel, Rua da Assunção 7, Lisbon",
-        organizerName: "João Silva",
-        organizerRole: "Zero Waste Advocate",
-        category: "Workshop",
-        imageUrl:
-            "https://images.unsplash.com/photo-1579113800032-c38bd7635818?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
-    },
-    {
-        id: 3,
-        title: "Expat Dinner: Portuguese Cuisine with Dietary Adaptations",
-        description:
-            "Join fellow expats for a community dinner featuring traditional Portuguese dishes adapted for various dietary needs (gluten-free, vegan, etc.).",
-        date: "2025-06-20T19:00:00",
-        location: "Community Kitchen, Av. Almirante Reis 45, Lisbon",
-        organizerName: "ExpatEats Community",
-        organizerRole: "Community Organization",
-        category: "Social",
-        imageUrl:
-            "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
-    },
-];
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface ShareDialogProps {
     eventTitle: string;
@@ -296,44 +256,10 @@ const EventCard: React.FC<{ event: any }> = ({ event }) => {
 };
 
 const Events = () => {
-    const [showAddEventForm, setShowAddEventForm] = useState(false);
-    const [eventForm, setEventForm] = useState({
-        name: "",
-        location: "",
-        date: "",
-        time: "",
-        description: "",
-        infoLink: "",
+    // Fetch events from API
+    const { data: events = [], isLoading, error } = useQuery({
+        queryKey: ["/api/events"],
     });
-    const { toast } = useToast();
-
-    const handleInputChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        const { name, value } = e.target;
-        setEventForm((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleSubmitEvent = (e: React.FormEvent) => {
-        e.preventDefault();
-        // In a real app, this would call an API to save the event
-        toast({
-            title: "Event Submitted",
-            description: "Your event has been submitted for review.",
-        });
-        setShowAddEventForm(false);
-        setEventForm({
-            name: "",
-            location: "",
-            date: "",
-            time: "",
-            description: "",
-            infoLink: "",
-        });
-    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -360,173 +286,71 @@ const Events = () => {
                     </div>
                 </div>
 
-                {showAddEventForm && (
-                    <Card className="mb-8 shadow-md">
-                        <CardHeader className="bg-gray-50 border-b">
-                            <CardTitle className="text-xl">
-                                Add New Community Event
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6">
-                            <form
-                                onSubmit={handleSubmitEvent}
-                                className="space-y-4"
-                            >
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label
-                                            htmlFor="name"
-                                            className="block text-sm font-medium"
-                                        >
-                                            Event Name
-                                        </label>
-                                        <Input
-                                            id="name"
-                                            name="name"
-                                            value={eventForm.name}
-                                            onChange={handleInputChange}
-                                            placeholder="E.g., Organic Market Tour"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label
-                                            htmlFor="location"
-                                            className="block text-sm font-medium"
-                                        >
-                                            Location
-                                        </label>
-                                        <Input
-                                            id="location"
-                                            name="location"
-                                            value={eventForm.location}
-                                            onChange={handleInputChange}
-                                            placeholder="E.g., Mercado Biológico, Principe Real"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label
-                                            htmlFor="date"
-                                            className="block text-sm font-medium"
-                                        >
-                                            Date
-                                        </label>
-                                        <Input
-                                            id="date"
-                                            name="date"
-                                            type="date"
-                                            value={eventForm.date}
-                                            onChange={handleInputChange}
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label
-                                            htmlFor="time"
-                                            className="block text-sm font-medium"
-                                        >
-                                            Time
-                                        </label>
-                                        <Input
-                                            id="time"
-                                            name="time"
-                                            type="time"
-                                            value={eventForm.time}
-                                            onChange={handleInputChange}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label
-                                        htmlFor="description"
-                                        className="block text-sm font-medium"
-                                    >
-                                        Short Description
-                                    </label>
-                                    <Input
-                                        id="description"
-                                        name="description"
-                                        value={eventForm.description}
-                                        onChange={handleInputChange}
-                                        placeholder="A brief description of the event"
-                                        className="h-20"
-                                        required
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label
-                                        htmlFor="infoLink"
-                                        className="block text-sm font-medium"
-                                    >
-                                        Link to More Info (Optional)
-                                    </label>
-                                    <Input
-                                        id="infoLink"
-                                        name="infoLink"
-                                        type="url"
-                                        value={eventForm.infoLink}
-                                        onChange={handleInputChange}
-                                        placeholder="https://..."
-                                    />
-                                </div>
-
-                                <div className="flex justify-end space-x-3 pt-4">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() =>
-                                            setShowAddEventForm(false)
-                                        }
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        className="bg-[#6D9075] hover:bg-[#6D9075]/90 text-white"
-                                    >
-                                        Submit Event
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
+                {/* Loading State */}
+                {isLoading && (
+                    <div className="flex justify-center items-center py-16">
+                        <Loader2 className="h-12 w-12 animate-spin text-[#6D9075]" />
+                    </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {events.map((event) => (
-                        <EventCard key={event.id} event={event} />
-                    ))}
-                </div>
-
-                <div className="mt-10 text-center">
-                    <p className="text-lg font-medium text-gray-600 mb-4">
-                        Want to contribute to our community?
-                    </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Button
-                            onClick={() => setShowAddEventForm(true)}
-                            size="lg"
-                            className="bg-[#E07A5F] hover:bg-[#E07A5E]/90 text-white font-medium"
-                        >
-                            Add Event
-                        </Button>
-                        <Link href="/contact">
-                            <Button
-                                size="lg"
-                                className="bg-[#6D9075] hover:bg-[#6D9075]/90"
-                            >
-                                Contact Us
-                            </Button>
-                        </Link>
+                {/* Error State */}
+                {error && (
+                    <div className="text-center py-16">
+                        <p className="text-red-600 mb-4">
+                            Failed to load events. Please try again later.
+                        </p>
                     </div>
-                </div>
+                )}
+
+                {/* Empty State */}
+                {!isLoading && !error && events.length === 0 && (
+                    <div className="text-center py-16">
+                        <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                            No Events Yet
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            Be the first to add an event to the community!
+                        </p>
+                        <SubmissionForm
+                            type="event"
+                            buttonText="Submit First Event"
+                            buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                        />
+                    </div>
+                )}
+
+                {/* Events Grid */}
+                {!isLoading && !error && events.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {events.map((event: any) => (
+                            <EventCard key={event.id} event={event} />
+                        ))}
+                    </div>
+                )}
+
+                {!isLoading && !error && events.length > 0 && (
+                    <div className="mt-10 text-center">
+                        <p className="text-lg font-medium text-gray-600 mb-4">
+                            Want to contribute to our community?
+                        </p>
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                            <SubmissionForm
+                                type="event"
+                                buttonText="Submit An Event"
+                                buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white font-medium text-base px-8 py-6"
+                            />
+                            <Link href="/contact">
+                                <Button
+                                    size="lg"
+                                    className="bg-[#6D9075] hover:bg-[#6D9075]/90"
+                                >
+                                    Contact Us
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

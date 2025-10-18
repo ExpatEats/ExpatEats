@@ -63,7 +63,8 @@ function Router() {
         <Layout>
             <Switch>
                 {/* Public routes */}
-                <Route path="/" component={Register} />
+                <Route path="/" component={FindMyFood} />
+                <Route path="/register" component={Register} />
                 <Route path="/terms" component={Terms} />
                 <Route path="/unauthorized" component={Unauthorized} />
                 <Route path="/onboarding" component={Onboarding} />{" "}

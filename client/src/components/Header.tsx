@@ -71,9 +71,9 @@ const Header = () => {
                 {/* Center - Navigation */}
                 <nav className="hidden md:flex space-x-5 flex-shrink-0">
                     <div
-                        className={`py-2 transition ${isActive("/find-my-food") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition ${isActive("/") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
                     >
-                        <Link href="/find-my-food">FIND MY FOOD</Link>
+                        <Link href="/">FIND MY FOOD</Link>
                     </div>
                     <div
                         className={`py-2 transition ${isActive("/services") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
@@ -174,10 +174,10 @@ const Header = () => {
                             </div>
                             <nav className="flex flex-col space-y-4 mt-8">
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/find-my-food") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-md transition ${isActive("/") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
-                                    <Link href="/find-my-food">
+                                    <Link href="/">
                                         FIND MY FOOD
                                     </Link>
                                 </div>

@@ -166,6 +166,34 @@ export const postLikes = pgTable("post_likes", {
     uniqueUserPost: unique().on(table.userId, table.postId),
 }));
 
+export const events = pgTable("events", {
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    date: timestamp("date").notNull(),
+    time: text("time").notNull(),
+    location: text("location").notNull(),
+    city: text("city").notNull(),
+    country: text("country").default("Portugal"),
+    organizerName: text("organizer_name"),
+    organizerRole: text("organizer_role"),
+    organizerEmail: text("organizer_email"),
+    category: text("category"), // 'Market Tour', 'Workshop', 'Social', 'Food Tasting', 'Cooking Class', 'Networking', 'Other'
+    imageUrl: text("image_url"),
+    website: text("website"),
+    maxAttendees: integer("max_attendees"),
+    currentAttendees: integer("current_attendees").default(0),
+    submittedBy: text("submitted_by").notNull(),
+    submitterEmail: text("submitter_email").notNull(),
+    userId: integer("user_id").references(() => users.id),
+    status: text("status").default("pending"), // 'pending', 'approved', 'rejected'
+    adminNotes: text("admin_notes"),
+    reviewedAt: timestamp("reviewed_at"),
+    reviewedBy: integer("reviewed_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -223,6 +251,14 @@ export const insertCitySchema = createInsertSchema(cities).omit({
     createdAt: true,
 });
 
+export const insertEventSchema = createInsertSchema(events).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    reviewedAt: true,
+    reviewedBy: true,
+});
+
 
 // Types
 export type InsertCity = z.infer<typeof insertCitySchema>;
@@ -251,4 +287,7 @@ export type Comment = typeof comments.$inferSelect;
 
 export type InsertPostLike = z.infer<typeof insertPostLikeSchema>;
 export type PostLike = typeof postLikes.$inferSelect;
+
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+export type Event = typeof events.$inferSelect;
 

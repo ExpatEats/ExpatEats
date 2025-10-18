@@ -76,7 +76,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
             onOpenChange(false);
             form.reset();
             setLocalError(null); // Clear error on close
-            navigate("/find-my-food");
+            navigate("/");
         } catch (error) {
             console.error('Login error:', error);
 
@@ -91,7 +91,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
         onOpenChange(false);
         form.reset();
         setLocalError(null); // Clear error on close
-        navigate("/");
+        navigate("/register");
     };
 
     // Clear error when modal closes

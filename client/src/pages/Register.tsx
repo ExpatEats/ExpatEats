@@ -135,7 +135,7 @@ const Register = () => {
     // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/find-my-food");
+            navigate("/");
         }
     }, [isAuthenticated, navigate]);
 
@@ -448,8 +448,8 @@ const Register = () => {
                                                 newsletter: false,
                                             }),
                                         );
-                                        // Redirect to find my food page
-                                        navigate("/find-my-food");
+                                        // Redirect to home page
+                                        navigate("/");
                                     }}
                                     className="text-gray-600 hover:text-gray-900"
                                 >

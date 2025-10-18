@@ -21,13 +21,21 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
-const submissionSchema = z.object({
+// Base schema for both types
+const baseSchema = {
     name: z.string().min(2, "Name is required"),
     email: z.string().email("Please enter a valid email"),
     title: z.string().min(5, "Title must be at least 5 characters"),
@@ -40,9 +48,26 @@ const submissionSchema = z.object({
         .url("Please enter a valid website URL")
         .optional()
         .or(z.literal("")),
+};
+
+// Event-specific schema
+const eventSchema = z.object({
+    ...baseSchema,
+    date: z.string().min(1, "Date is required"),
+    time: z.string().min(1, "Time is required"),
+    city: z.string().min(2, "City is required"),
+    category: z.string().optional(),
+    organizerName: z.string().optional(),
+    organizerRole: z.string().optional(),
+    organizerEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
 });
 
-type SubmissionFormValues = z.infer<typeof submissionSchema>;
+// Location schema (original)
+const locationSchema = z.object(baseSchema);
+
+type EventFormValues = z.infer<typeof eventSchema>;
+type LocationFormValues = z.infer<typeof locationSchema>;
+type SubmissionFormValues = EventFormValues | LocationFormValues;
 
 interface SubmissionFormProps {
     type: "event" | "location";
@@ -58,25 +83,65 @@ export function SubmissionForm({
     const { toast } = useToast();
     const [open, setOpen] = React.useState(false);
 
+    const schema = type === "event" ? eventSchema : locationSchema;
+
     const form = useForm<SubmissionFormValues>({
-        resolver: zodResolver(submissionSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            title: "",
-            description: "",
-            location: "",
-            website: "",
-        },
+        resolver: zodResolver(schema),
+        defaultValues: type === "event"
+            ? {
+                name: "",
+                email: "",
+                title: "",
+                description: "",
+                location: "",
+                website: "",
+                date: "",
+                time: "",
+                city: "",
+                category: "",
+                organizerName: "",
+                organizerRole: "",
+                organizerEmail: "",
+            }
+            : {
+                name: "",
+                email: "",
+                title: "",
+                description: "",
+                location: "",
+                website: "",
+            },
     });
 
     const submissionMutation = useMutation({
         mutationFn: async (values: SubmissionFormValues) => {
-            return await apiRequest(`/api/submissions`, "POST", {
-                ...values,
-                type,
-                submittedAt: new Date().toISOString(),
-            });
+            if (type === "event") {
+                // Route to event endpoint with proper field mapping
+                const eventData = values as EventFormValues;
+                return await apiRequest("POST", `/api/events`, {
+                    title: eventData.title,
+                    description: eventData.description,
+                    date: eventData.date,
+                    time: eventData.time,
+                    location: eventData.location,
+                    city: eventData.city,
+                    country: "Portugal",
+                    organizerName: eventData.organizerName || null,
+                    organizerRole: eventData.organizerRole || null,
+                    organizerEmail: eventData.organizerEmail || null,
+                    category: eventData.category || null,
+                    website: eventData.website || null,
+                    submittedBy: eventData.name,
+                    submitterEmail: eventData.email,
+                });
+            } else {
+                // Route to location/submissions endpoint
+                return await apiRequest("POST", `/api/submissions`, {
+                    ...values,
+                    type,
+                    submittedAt: new Date().toISOString(),
+                });
+            }
         },
         onSuccess: () => {
             toast({
@@ -99,7 +164,7 @@ export function SubmissionForm({
         submissionMutation.mutate(data);
     }
 
-    const defaultButtonText = type === "event" ? "Add Event" : "Add Location";
+    const defaultButtonText = type === "event" ? "Submit An Event" : "Add Location";
     const dialogTitle =
         type === "event" ? "Submit New Event" : "Submit New Location";
     const dialogDescription =
@@ -227,10 +292,16 @@ export function SubmissionForm({
                                 name="location"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Location</FormLabel>
+                                        <FormLabel>
+                                            {type === "event" ? "Event Location" : "Location"}
+                                        </FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="City, address, or area"
+                                                placeholder={
+                                                    type === "event"
+                                                        ? "Venue or address"
+                                                        : "City, address, or area"
+                                                }
                                                 {...field}
                                             />
                                         </FormControl>
@@ -258,6 +329,156 @@ export function SubmissionForm({
                                 )}
                             />
                         </div>
+
+                        {/* Event-specific fields */}
+                        {type === "event" && (
+                            <>
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="date"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Event Date</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="date"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="time"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Event Time</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="time"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="city"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>City</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Lisbon, Cascais, etc."
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="category"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Category (Optional)</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select a category" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Market Tour">Market Tour</SelectItem>
+                                                        <SelectItem value="Workshop">Workshop</SelectItem>
+                                                        <SelectItem value="Social">Social</SelectItem>
+                                                        <SelectItem value="Food Tasting">Food Tasting</SelectItem>
+                                                        <SelectItem value="Cooking Class">Cooking Class</SelectItem>
+                                                        <SelectItem value="Networking">Networking</SelectItem>
+                                                        <SelectItem value="Other">Other</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div className="border-t pt-4 mt-2">
+                                    <h4 className="text-sm font-medium mb-3 text-gray-700">
+                                        Organizer Information (Optional)
+                                    </h4>
+
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="organizerName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Organizer Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="Organization or person name"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="organizerRole"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Organizer Role</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="e.g., Community Leader, Chef"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <FormField
+                                        control={form.control}
+                                        name="organizerEmail"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Organizer Contact Email</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="email"
+                                                        placeholder="organizer@example.com"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                            </>
+                        )}
 
                         <DialogFooter className="pt-4">
                             <Button

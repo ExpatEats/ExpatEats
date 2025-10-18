@@ -194,7 +194,7 @@ export default function Favorites() {
                             Explore stores and add them to your favorites by clicking the heart icon on store detail pages.
                         </p>
                         <Button
-                            onClick={() => setLocation("/find-my-food")}
+                            onClick={() => setLocation("/")}
                             className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
                         >
                             Find Stores
