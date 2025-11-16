@@ -15,11 +15,11 @@ export default function NewServices() {
     const services = [
         {
             id: "meal-planning",
-            name: "Meal Planning",
+            name: "Personalized Meal Plans",
             description:
                 "Personalized meal plans tailored to your dietary preferences and local ingredients available in Portugal.",
             icon: <ChefHat className="h-8 w-8" />,
-            path: "/services/meal-planning",
+            path: "/meal-plans",
         },
         {
             id: "stock-pantry",
@@ -51,7 +51,7 @@ export default function NewServices() {
             description:
                 "Essential preparation guide with everything you need to know before moving to Portugal.",
             icon: <Info className="h-8 w-8" />,
-            path: "/services/before-you-go",
+            path: "/before-you-go",
         },
     ];
 

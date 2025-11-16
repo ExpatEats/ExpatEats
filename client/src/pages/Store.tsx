@@ -3,11 +3,11 @@ import { useRoute, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-    MapPin, 
-    ArrowLeft, 
-    Heart, 
-    Share2, 
+import {
+    MapPin,
+    ArrowLeft,
+    Heart,
+    Share2,
     Clock,
     Apple,
     Leaf,
@@ -20,12 +20,17 @@ import {
     Truck,
     ShoppingBag,
     Search,
-    ExternalLink
+    ExternalLink,
+    Award,
+    MessageSquare,
+    Edit
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { NotificationDialog } from "@/components/NotificationDialog";
+import { EditNotesDialog } from "@/components/EditNotesDialog";
 import { MapView } from "@/components/MapView";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Place {
     id: number;
@@ -51,6 +56,8 @@ interface Place {
 
     imageUrl?: string;
     averageRating?: number;
+    softRating?: string;
+    michaelesNotes?: string;
     createdAt?: string;
 }
 
@@ -96,8 +103,10 @@ export default function Store() {
     const [, params] = useRoute("/store/:id");
     const [, setLocation] = useLocation();
     const queryClient = useQueryClient();
+    const { user } = useAuth();
     const [isSaved, setIsSaved] = useState(false);
     const [notificationOpen, setNotificationOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [notificationConfig, setNotificationConfig] = useState<{
         title: string;
         description?: string;
@@ -182,6 +191,30 @@ export default function Store() {
         saveMutation.mutate(isSaved ? "unsave" : "save");
     };
 
+    // Update place notes and rating mutation
+    const updatePlaceMutation = useMutation({
+        mutationFn: async ({ softRating, michaelesNotes }: { softRating: string; michaelesNotes: string }) => {
+            return await apiRequest("PATCH", `/api/admin/update-place-notes/${storeId}`, {
+                softRating,
+                michaelesNotes,
+            });
+        },
+        onSuccess: () => {
+            showNotification("Success", "Notes and rating updated successfully", "success");
+            // Refetch the place data to show updated information
+            queryClient.invalidateQueries({
+                queryKey: ["/api/places", storeId],
+            });
+        },
+        onError: () => {
+            showNotification("Error", "Failed to update notes and rating", "error");
+        },
+    });
+
+    const handleUpdateNotesAndRating = (softRating: string, michaelesNotes: string) => {
+        updatePlaceMutation.mutate({ softRating, michaelesNotes });
+    };
+
     const handleShare = async () => {
         if (navigator.share && store) {
             try {
@@ -252,6 +285,18 @@ export default function Store() {
                     </Button>
 
                     <div className="flex gap-2">
+                        {user?.role === "admin" && (
+                            <Button
+                                onClick={() => setEditDialogOpen(true)}
+                                variant="outline"
+                                size="sm"
+                                className="border-amber-600 text-amber-700 hover:bg-amber-600 hover:text-white"
+                            >
+                                <Edit className="h-4 w-4 mr-1" />
+                                Edit Notes & Rating
+                            </Button>
+                        )}
+
                         <Button
                             onClick={handleSave}
                             variant="outline"
@@ -291,6 +336,19 @@ export default function Store() {
                             <p className="text-lg text-gray-600 mb-3">
                                 {store.category}
                             </p>
+
+                            {/* Soft Rating */}
+                            {store.softRating && (
+                                <div className="mb-4">
+                                    <Badge
+                                        variant="secondary"
+                                        className="bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-2 px-4 py-2 text-base font-medium w-fit"
+                                    >
+                                        <Award className="h-5 w-5" />
+                                        {store.softRating}
+                                    </Badge>
+                                </div>
+                            )}
 
                             {/* Tags */}
                             <div className="flex flex-wrap gap-2 mb-4">
@@ -487,6 +545,25 @@ export default function Store() {
                     </Card>
                 </div>
 
+                {/* Michaele's Notes Section */}
+                {store.michaelesNotes && (
+                    <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 mb-6">
+                        <CardContent className="p-6">
+                            <div className="flex items-start gap-3 mb-3">
+                                <MessageSquare className="h-6 w-6 text-amber-700 mt-0.5 flex-shrink-0" />
+                                <h3 className="text-xl font-semibold text-amber-900">
+                                    Michaele's Notes
+                                </h3>
+                            </div>
+                            <div className="pl-9">
+                                <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                                    {store.michaelesNotes}
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
                 {/* Contact Info Note */}
                 <Card className="bg-[#E8F4F0] border-[#94AF9F]/20">
                     <CardContent className="p-6">
@@ -508,6 +585,16 @@ export default function Store() {
                 title={notificationConfig.title}
                 description={notificationConfig.description}
                 variant={notificationConfig.variant}
+            />
+            <EditNotesDialog
+                open={editDialogOpen}
+                onOpenChange={setEditDialogOpen}
+                title="Edit Notes & Rating"
+                description="Update Michaele's notes and soft rating for this location."
+                initialSoftRating={store?.softRating || ""}
+                initialMichaelesNotes={store?.michaelesNotes || ""}
+                onConfirm={handleUpdateNotesAndRating}
+                isLoading={updatePlaceMutation.isPending}
             />
         </div>
     );

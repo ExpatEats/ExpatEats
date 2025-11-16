@@ -25,6 +25,9 @@ import Store from "./pages/Store";
 import Favorites from "./pages/Favorites";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/not-found";
+import PersonalizedMealPlans from "./pages/PersonalizedMealPlans";
+import BeforeYouGo from "./pages/BeforeYouGo";
+import ArrivalPackages from "./pages/ArrivalPackages";
 import { useEffect } from "react";
 
 // Authentication guard component
@@ -86,6 +89,15 @@ function Router() {
                 </Route>
                 <Route path="/services">
                     <RequireAuth component={NewServices} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/meal-plans">
+                    <RequireAuth component={PersonalizedMealPlans} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/before-you-go">
+                    <RequireAuth component={BeforeYouGo} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/services/arrival-packages">
+                    <RequireAuth component={ArrivalPackages} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/events">
                     <RequireAuth component={Events} redirectTo="/unauthorized" />

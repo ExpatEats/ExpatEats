@@ -59,8 +59,9 @@ interface Storage {
 
     // Admin methods for place review
     getPendingPlaces(): Promise<Place[]>;
-    approvePlace(placeId: number, adminNotes?: string): Promise<void>;
+    approvePlace(placeId: number, adminNotes?: string, softRating?: string, michaelesNotes?: string): Promise<void>;
     rejectPlace(placeId: number, adminNotes: string): Promise<void>;
+    updatePlaceNotesAndRating(placeId: number, softRating?: string, michaelesNotes?: string): Promise<void>;
 
     // Saved stores methods
     saveStore(userId: number, placeId: number): Promise<SavedStore>;
@@ -226,12 +227,14 @@ class DatabaseStorage implements Storage {
             .where(eq(places.status, "pending"));
     }
 
-    async approvePlace(placeId: number, adminNotes?: string): Promise<void> {
+    async approvePlace(placeId: number, adminNotes?: string, softRating?: string, michaelesNotes?: string): Promise<void> {
         await db
             .update(places)
             .set({
                 status: "approved",
                 adminNotes,
+                softRating,
+                michaelesNotes,
                 reviewedAt: new Date(),
             })
             .where(eq(places.id, placeId));
@@ -244,6 +247,16 @@ class DatabaseStorage implements Storage {
                 status: "rejected",
                 adminNotes,
                 reviewedAt: new Date(),
+            })
+            .where(eq(places.id, placeId));
+    }
+
+    async updatePlaceNotesAndRating(placeId: number, softRating?: string, michaelesNotes?: string): Promise<void> {
+        await db
+            .update(places)
+            .set({
+                softRating,
+                michaelesNotes,
             })
             .where(eq(places.id, placeId));
     }

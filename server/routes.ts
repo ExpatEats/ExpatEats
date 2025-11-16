@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import passport from "./config/passport";
 import { storage } from "./storage";
 import {
     insertPlaceSchema,
@@ -195,6 +196,128 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
+    // =========================================================================
+    // GOOGLE OAUTH ROUTES
+    // =========================================================================
+
+    /**
+     * Initiate Google OAuth flow
+     * Redirects user to Google sign-in page
+     */
+    app.get(
+        "/api/auth/google",
+        RateLimitService.authLimiter,
+        passport.authenticate("google", {
+            scope: ["profile", "email"],
+        })
+    );
+
+    /**
+     * Google OAuth callback
+     * Handles response from Google after user grants/denies permission
+     */
+    app.get(
+        "/api/auth/google/callback",
+        RateLimitService.authLimiter,
+        passport.authenticate("google", {
+            failureRedirect: "/login?error=oauth_failed",
+            session: false, // We'll handle session manually
+        }),
+        async (req: AuthenticatedRequest, res) => {
+            try {
+                const user = req.user as any;
+
+                if (!user) {
+                    console.error("[OAuth] No user returned from Google authentication");
+                    return res.redirect("/login?error=auth_failed");
+                }
+
+                // Set up session
+                const session = req.session as AuthenticatedRequest["session"];
+                session.userId = user.id;
+                session.username = user.username || user.email;
+                session.isAdmin = user.role === "admin";
+                session.lastActivity = new Date();
+
+                // Save session before redirect
+                req.session.save((err) => {
+                    if (err) {
+                        console.error("[OAuth] Session save error:", err);
+                        return res.redirect("/login?error=session_failed");
+                    }
+
+                    // Check if there's a returnTo URL stored in session
+                    const returnTo = (session as any).returnTo || "/";
+                    delete (session as any).returnTo;
+
+                    console.log(`[OAuth] User ${user.email} logged in successfully via Google`);
+                    res.redirect(returnTo);
+                });
+            } catch (error) {
+                console.error("[OAuth] Callback error:", error);
+                res.redirect("/login?error=callback_failed");
+            }
+        }
+    );
+
+    /**
+     * Get Google OAuth status for current user
+     * Returns whether user has Google account linked
+     */
+    app.get("/api/auth/google/status", requireAuth, async (req: AuthenticatedRequest, res) => {
+        try {
+            const user = await AuthService.getUserById(req.session.userId!);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            res.json({
+                isLinked: !!user.googleId,
+                authProvider: user.authProvider || "local",
+                googleEmail: user.googleEmail || null,
+                hasPassword: !!user.password,
+            });
+        } catch (error) {
+            console.error("[OAuth] Status check error:", error);
+            res.status(500).json({ message: "Failed to get OAuth status" });
+        }
+    });
+
+    /**
+     * Unlink Google account from current user
+     * Only allowed if user has username/password
+     */
+    app.post(
+        "/api/auth/google/unlink",
+        requireAuth,
+        RateLimitService.authLimiter,
+        CsrfService.middleware(),
+        async (req: AuthenticatedRequest, res) => {
+            try {
+                const userId = req.session.userId!;
+
+                await AuthService.unlinkGoogleAccount(userId);
+
+                console.log(`[OAuth] User ${userId} unlinked Google account`);
+
+                res.json({
+                    message: "Google account unlinked successfully",
+                    success: true,
+                });
+            } catch (error) {
+                console.error("[OAuth] Unlink error:", error);
+
+                const errorMessage = error instanceof Error ? error.message : "Failed to unlink Google account";
+
+                res.status(400).json({
+                    message: errorMessage,
+                    success: false,
+                });
+            }
+        }
+    );
+
     // Get all places with optional filters
     app.get("/api/places", async (req, res) => {
         try {
@@ -277,8 +400,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.post("/api/admin/approve-place/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
         try {
             const placeId = parseInt(req.params.id);
-            const { adminNotes } = req.body;
-            await storage.approvePlace(placeId, adminNotes);
+            const { adminNotes, softRating, michaelesNotes } = req.body;
+            await storage.approvePlace(placeId, adminNotes, softRating, michaelesNotes);
             res.json({ success: true, message: "Place approved successfully" });
         } catch (error) {
             console.error("Error approving place:", error);
@@ -302,6 +425,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
             console.error("Error rejecting place:", error);
             res.status(500).json({ message: "Failed to reject place" });
+        }
+    });
+
+    // Admin: Update place notes and rating
+    app.patch("/api/admin/update-place-notes/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const placeId = parseInt(req.params.id);
+            const { softRating, michaelesNotes } = req.body;
+            await storage.updatePlaceNotesAndRating(placeId, softRating, michaelesNotes);
+            res.json({ success: true, message: "Place notes and rating updated successfully" });
+        } catch (error) {
+            console.error("Error updating place notes and rating:", error);
+            res.status(500).json({ message: "Failed to update place notes and rating" });
         }
     });
 
@@ -667,6 +803,482 @@ ${feedback}
         } catch (error) {
             console.error("Error sending feedback:", error);
             res.status(500).json({ message: "Failed to send feedback" });
+        }
+    });
+
+    // Before You Go guide purchase endpoint
+    app.post("/api/before-you-go/purchase", requireAuth, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
+        try {
+            const purchaseSchema = z.object({
+                email: z.string().email(),
+            });
+
+            const { email } = purchaseSchema.parse(req.body);
+            const userId = req.session.userId!;
+            const user = await AuthService.getUserById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            // Send email to customer using SendGrid
+            const sgMail = require("@sendgrid/mail");
+
+            if (!process.env.SENDGRID_API_KEY) {
+                return res
+                    .status(500)
+                    .json({ message: "Email service not configured" });
+            }
+
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+            const customerMsg = {
+                to: email,
+                from: "noreply@expateatsguide.com",
+                subject: "Your 'What to Know Before You Go' Guide is Ready!",
+                text: `
+Welcome to Expat Eats!
+
+Thank you for purchasing "What to Know Before You Go" - your essential preparation guide for moving to Portugal.
+
+Your guide is now ready for download:
+[DOWNLOAD_LINK]
+
+This comprehensive guide includes:
+✓ Pre-move checklist for wellness-minded families and individuals
+✓ Tips for sourcing clean food, water, and personal care in Portugal
+✓ Guide to grocery store chains
+✓ Cultural insights and common market phrases
+✓ What to bring vs. what to buy locally
+✓ Local wellness spots, markets, and trusted vendors
+✓ Expat Eats member tips and favorite finds
+
+BONUS: You're also invited to join the Expat Eats community - the place where wellness meets connection. Click here to join: [COMMUNITY_LINK]
+
+Need more personalized support? We also offer:
+- Personalized Meal Plans
+- Grocery Store Tours
+- Arrival Packages
+- And more!
+
+Visit our Services page to learn more: [SERVICES_LINK]
+
+Welcome to the journey,
+The Expat Eats Team
+
+Questions? Reply to this email and we'll be happy to help.
+                `,
+                html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #94AF9F 0%, #DDB892 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 300;
+        }
+        .content {
+            background-color: #F9F5F0;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .download-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px solid #94AF9F;
+        }
+        .download-button {
+            display: inline-block;
+            background-color: #E07A5F;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 30px;
+            margin: 15px 0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .features {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+        .checkmark {
+            color: #94AF9F;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .bonus-box {
+            background: linear-gradient(135deg, #E07A5F 0%, #DDB892 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: white;
+            color: #94AF9F;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px;
+            font-weight: 600;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧭 Your Guide is Ready!</h1>
+        <p style="margin: 10px 0 0 0; font-size: 18px;">What to Know Before You Go to Portugal</p>
+    </div>
+
+    <div class="content">
+        <p style="font-size: 18px; color: #94AF9F; font-weight: 600;">Welcome to Expat Eats, ${user.name || user.username}!</p>
+
+        <p>Thank you for purchasing <strong>"What to Know Before You Go"</strong> - your essential preparation guide for moving to Portugal.</p>
+
+        <div class="download-box">
+            <h2 style="color: #94AF9F; margin-top: 0;">📥 Download Your Guide</h2>
+            <p>Click the button below to access your comprehensive guide:</p>
+            <a href="[DOWNLOAD_LINK]" class="download-button">Download Guide Now</a>
+            <p style="font-size: 12px; color: #666; margin-top: 15px;">Link expires in 30 days • PDF format • 50+ pages</p>
+        </div>
+
+        <div class="features">
+            <h3 style="color: #94AF9F; margin-top: 0;">What's Inside Your Guide:</h3>
+            <div class="feature-item">
+                <span class="checkmark">✓</span> Pre-move checklist for wellness-minded families and individuals
+            </div>
+            <div class="feature-item">
+                <span class="checkmark">✓</span> Tips for sourcing clean food, water, and personal care in Portugal
+            </div>
+            <div class="feature-item">
+                <span class="checkmark">✓</span> Complete guide to grocery store chains
+            </div>
+            <div class="feature-item">
+                <span class="checkmark">✓</span> Cultural insights and common phrases for markets
+            </div>
+            <div class="feature-item">
+                <span class="checkmark">✓</span> What to bring vs. what to buy locally
+            </div>
+            <div class="feature-item">
+                <span class="checkmark">✓</span> Local wellness spots, markets, and trusted vendors
+            </div>
+            <div class="feature-item">
+                <span class="checkmark">✓</span> Real tips from Expat Eats community members
+            </div>
+        </div>
+
+        <div class="bonus-box">
+            <h3 style="margin-top: 0;">🎁 Special Bonus!</h3>
+            <p>You're invited to join the <strong>Expat Eats community</strong> - where wellness meets connection.</p>
+            <a href="[COMMUNITY_LINK]" class="cta-button">Join the Community</a>
+        </div>
+
+        <p style="margin-top: 25px;">Need more personalized support? We also offer:</p>
+        <ul style="color: #666;">
+            <li>Personalized Meal Plans</li>
+            <li>Grocery Store & Shopping Tours</li>
+            <li>Arrival Packages & Assistance</li>
+        </ul>
+        <p style="text-align: center;">
+            <a href="[SERVICES_LINK]" class="cta-button" style="background-color: #94AF9F; color: white;">Explore Our Services</a>
+        </p>
+
+        <p style="margin-top: 30px; font-style: italic; color: #666;">Welcome to the journey,<br>
+        The Expat Eats Team</p>
+
+        <p style="font-size: 14px; color: #999; margin-top: 20px;">Questions? Reply to this email and we'll be happy to help.</p>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 Expat Eats. All rights reserved.</p>
+    </div>
+</body>
+</html>
+                `,
+            };
+
+            await sgMail.send(customerMsg);
+
+            // Send notification to admin
+            const adminMsg = {
+                to: "admin@expateatsguide.com",
+                from: "noreply@expateatsguide.com",
+                subject: "New Guide Purchase - Before You Go",
+                text: `
+New "What to Know Before You Go" guide purchase:
+
+Customer: ${user.name || user.username}
+Email: ${email}
+User ID: ${userId}
+Price: €25
+
+Please ensure the download link is sent to the customer.
+                `,
+                html: `
+<h2>New Guide Purchase</h2>
+<p><strong>Guide:</strong> What to Know Before You Go</p>
+<p><strong>Price:</strong> €25</p>
+<p><strong>Customer:</strong> ${user.name || user.username}</p>
+<p><strong>Email:</strong> ${email}</p>
+<p><strong>User ID:</strong> ${userId}</p>
+<p>Please ensure the download link is sent to the customer.</p>
+                `,
+            };
+
+            await sgMail.send(adminMsg);
+
+            res.status(200).json({
+                message: "Purchase successful! Check your email for the download link.",
+                success: true,
+            });
+        } catch (error) {
+            console.error("Error processing guide purchase:", error);
+            res.status(500).json({ message: "Failed to process purchase" });
+        }
+    });
+
+    // Meal plan purchase endpoint
+    app.post("/api/meal-plans/purchase", requireAuth, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
+        try {
+            const purchaseSchema = z.object({
+                planType: z.string(),
+                price: z.number(),
+                email: z.string().email(),
+            });
+
+            const { planType, price, email } = purchaseSchema.parse(req.body);
+            const userId = req.session.userId!;
+            const user = await AuthService.getUserById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            // Send email to customer using SendGrid
+            const sgMail = require("@sendgrid/mail");
+
+            if (!process.env.SENDGRID_API_KEY) {
+                return res
+                    .status(500)
+                    .json({ message: "Email service not configured" });
+            }
+
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+            const planName = planType === "weekly" ? "7-Day Plan" : "Monthly Plan";
+
+            const customerMsg = {
+                to: email,
+                from: "noreply@expateatsguide.com",
+                subject: "Your personalized meal plan is on its way!",
+                text: `
+Way to go, you're about to fall in love with cooking again.
+
+You've taken a huge step toward simplifying your new life in Portugal. No more standing in front of the fridge wondering what to make—your personalized meal plan is designed to remove the daily stress of "what's for dinner?" and help you eat well, feel energized, and settle into your new home with confidence.
+
+Whether you're navigating new grocery stores, adjusting to unfamiliar ingredients, or just too busy to meal plan every week, this guide will lift a big burden off your shoulders.
+
+Here's what to do next:
+
+1. Book your discovery call (required before your plan is delivered):
+   Schedule your 20-minute call here: [BOOKING_LINK]
+
+2. Complete your intake form so we can tailor your plan to your lifestyle and goals:
+   Complete your intake form: [FORM_LINK]
+
+Once your call is complete, your 7-day PDF plan will be delivered within 3–5 business days. It will include recipes, shopping lists, and optional product links to make your next market trip a breeze.
+
+Thanks for letting us be part of your Expat Eats journey. You're not just meal planning—you're building a life that nourishes you.
+
+Warmly,
+Michaele & the Expat Eats Team
+                `,
+                html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #94AF9F;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+        .content {
+            background-color: #F9F5F0;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .highlight {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #E07A5F;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #94AF9F;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+        .steps {
+            margin: 20px 0;
+        }
+        .step {
+            background-color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #DDB892;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Your personalized meal plan is on its way!</h1>
+    </div>
+
+    <div class="content">
+        <p style="font-size: 18px; font-weight: 600; color: #94AF9F;">Way to go, you're about to fall in love with cooking again.</p>
+
+        <p>You've taken a huge step toward simplifying your new life in Portugal. No more standing in front of the fridge wondering what to make—your personalized meal plan is designed to remove the daily stress of "what's for dinner?" and help you eat well, feel energized, and settle into your new home with confidence.</p>
+
+        <p>Whether you're navigating new grocery stores, adjusting to unfamiliar ingredients, or just too busy to meal plan every week, this guide will lift a big burden off your shoulders.</p>
+
+        <div class="highlight">
+            <h2 style="color: #94AF9F; margin-top: 0;">Here's what to do next:</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <h3 style="margin-top: 0; color: #E07A5F;">1. Book your discovery call</h3>
+                    <p>Required before your plan is delivered. Schedule your 20-minute call here:</p>
+                    <a href="[BOOKING_LINK]" class="cta-button">Schedule Your Call</a>
+                </div>
+
+                <div class="step">
+                    <h3 style="margin-top: 0; color: #E07A5F;">2. Complete your intake form</h3>
+                    <p>Tell us about your lifestyle and goals so we can tailor your plan:</p>
+                    <a href="[FORM_LINK]" class="cta-button">Complete Intake Form</a>
+                </div>
+            </div>
+        </div>
+
+        <p>Once your call is complete, your 7-day PDF plan will be delivered within <strong>3–5 business days</strong>. It will include recipes, shopping lists, and optional product links to make your next market trip a breeze.</p>
+
+        <p style="margin-top: 30px;">Thanks for letting us be part of your Expat Eats journey. You're not just meal planning—you're building a life that nourishes you.</p>
+
+        <p style="font-style: italic; color: #666;">Warmly,<br>
+        Michaele & the Expat Eats Team</p>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 Expat Eats. All rights reserved.</p>
+    </div>
+</body>
+</html>
+                `,
+            };
+
+            await sgMail.send(customerMsg);
+
+            // Send notification to admin
+            const adminMsg = {
+                to: "admin@expateatsguide.com",
+                from: "noreply@expateatsguide.com",
+                subject: `New Meal Plan Purchase - ${planName}`,
+                text: `
+New meal plan purchase received:
+
+Plan: ${planName}
+Price: €${price}
+Customer: ${user.name || user.username}
+Email: ${email}
+User ID: ${userId}
+
+Please follow up with the customer to schedule their discovery call.
+                `,
+                html: `
+<h2>New Meal Plan Purchase</h2>
+<p><strong>Plan:</strong> ${planName}</p>
+<p><strong>Price:</strong> €${price}</p>
+<p><strong>Customer:</strong> ${user.name || user.username}</p>
+<p><strong>Email:</strong> ${email}</p>
+<p><strong>User ID:</strong> ${userId}</p>
+<p>Please follow up with the customer to schedule their discovery call.</p>
+                `,
+            };
+
+            await sgMail.send(adminMsg);
+
+            res.status(200).json({
+                message: "Purchase successful! Check your email for next steps.",
+                success: true,
+            });
+        } catch (error) {
+            console.error("Error processing meal plan purchase:", error);
+            res.status(500).json({ message: "Failed to process purchase" });
         }
     });
 

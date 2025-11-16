@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { NotificationDialog } from "@/components/NotificationDialog";
 import { InputDialog } from "@/components/InputDialog";
+import { ApprovalDialog } from "@/components/ApprovalDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Card,
@@ -58,6 +59,8 @@ const foodSourceSchema = z.object({
     type: z.string({ required_error: "Please select a type" }),
     tags: z.array(z.string()).optional(),
     imageUrl: z.string().optional(),
+    softRating: z.string().optional(),
+    michaelesNotes: z.string().optional(),
 });
 
 type FoodSourceFormValues = z.infer<typeof foodSourceSchema>;
@@ -135,6 +138,10 @@ export default function Admin() {
     const [placeToReject, setPlaceToReject] = React.useState<number | null>(null);
     const [eventToReject, setEventToReject] = React.useState<number | null>(null);
 
+    // Approval dialog state
+    const [approvalDialogOpen, setApprovalDialogOpen] = React.useState(false);
+    const [placeToApprove, setPlaceToApprove] = React.useState<number | null>(null);
+
     const form = useForm<FoodSourceFormValues>({
         resolver: zodResolver(foodSourceSchema),
         defaultValues: {
@@ -146,6 +153,8 @@ export default function Admin() {
             type: "",
             tags: [],
             imageUrl: "",
+            softRating: "none",
+            michaelesNotes: "",
         },
     });
 
@@ -198,6 +207,8 @@ export default function Admin() {
                 category: values.type,
                 tags: values.tags || [],
                 imageUrl: values.imageUrl || null,
+                softRating: values.softRating === "none" ? "" : values.softRating || null,
+                michaelesNotes: values.michaelesNotes || null,
             };
 
             const response = await fetch("/api/places", {
@@ -229,14 +240,18 @@ export default function Admin() {
         mutationFn: async ({
             placeId,
             adminNotes,
+            softRating,
+            michaelesNotes,
         }: {
             placeId: number;
             adminNotes?: string;
+            softRating?: string;
+            michaelesNotes?: string;
         }) => {
             return await apiRequest(
                 "POST",
                 `/api/admin/approve-place/${placeId}`,
-                { adminNotes },
+                { adminNotes, softRating, michaelesNotes },
             );
         },
         onSuccess: () => {
@@ -368,6 +383,17 @@ export default function Admin() {
 
     const onCitySubmit = (values: CityFormValues) => {
         addCityMutation.mutate(values);
+    };
+
+    const handleApprovePlace = (softRating: string, michaelesNotes: string) => {
+        if (placeToApprove !== null) {
+            approvePlaceMutation.mutate({
+                placeId: placeToApprove,
+                softRating,
+                michaelesNotes,
+            });
+            setPlaceToApprove(null);
+        }
     };
 
     const handleRejectPlace = (reason: string) => {
@@ -675,6 +701,51 @@ export default function Admin() {
                                 )}
                             />
 
+                            <FormField
+                                control={form.control}
+                                name="softRating"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Soft Rating (optional)</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select rating" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="none">None</SelectItem>
+                                                <SelectItem value="Gold Standard">Gold Standard</SelectItem>
+                                                <SelectItem value="Great Choice">Great Choice</SelectItem>
+                                                <SelectItem value="This Will Do in a Pinch">This Will Do in a Pinch</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="michaelesNotes"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Michaele's Notes (optional)</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Personal notes and observations about this location"
+                                                className="min-h-[100px]"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
                             <div className="space-y-3">
                                 <FormLabel>
                                     Dietary Preferences Available
@@ -909,11 +980,10 @@ export default function Admin() {
 
                                     <div className="flex gap-2 pt-3 border-t">
                                         <Button
-                                            onClick={() =>
-                                                approvePlaceMutation.mutate({
-                                                    placeId: place.id,
-                                                })
-                                            }
+                                            onClick={() => {
+                                                setPlaceToApprove(place.id);
+                                                setApprovalDialogOpen(true);
+                                            }}
                                             disabled={
                                                 approvePlaceMutation.isPending ||
                                                 rejectPlaceMutation.isPending
@@ -1109,6 +1179,15 @@ export default function Admin() {
                 multiline={true}
                 required={true}
                 isLoading={eventToReject !== null ? rejectEventMutation.isPending : rejectPlaceMutation.isPending}
+            />
+
+            <ApprovalDialog
+                open={approvalDialogOpen}
+                onOpenChange={setApprovalDialogOpen}
+                title="Approve Location"
+                description="Add optional rating and notes before approving this location."
+                onConfirm={handleApprovePlace}
+                isLoading={approvePlaceMutation.isPending}
             />
         </div>
     );

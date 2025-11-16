@@ -1,0 +1,1151 @@
+=============================================================================
+EMAIL SERVICE IMPLEMENTATION PLAN
+ExpatEats Application
+=============================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. Current Email System Analysis
+2. Email Service Requirements
+3. SendGrid Setup & Configuration
+4. Email Service Architecture
+5. Password Recovery Implementation
+6. Email Verification Implementation
+7. Welcome Email Implementation
+8. Newsletter System Implementation
+9. Email Templates Design
+10. Testing Strategy
+11. Monitoring & Analytics
+12. Compliance & Best Practices
+13. Implementation Timeline
+14. Rollback & Troubleshooting
+
+=============================================================================
+1. CURRENT EMAIL SYSTEM ANALYSIS
+=============================================================================
+
+WHAT EXISTS:
+-----------
+✓ SendGrid library installed (@sendgrid/mail v8.1.5)
+✓ Database schema ready:
+  - emailVerified (boolean)
+  - emailVerificationToken (text)
+  - passwordResetToken (text)
+  - passwordResetExpires (timestamp)
+✓ Ad-hoc email sending in routes.ts for:
+  - Feedback form submissions (to admin)
+  - Purchase confirmations (to customer)
+  - Meal plan purchases (to customer)
+
+CURRENT IMPLEMENTATION PATTERN:
+-------------------------------
+```typescript
+// Currently done inline in routes (NOT IDEAL):
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const msg = { to, from, subject, text, html };
+await sgMail.send(msg);
+```
+
+PROBLEMS WITH CURRENT APPROACH:
+-------------------------------
+❌ No centralized email service
+❌ Duplicated SendGrid initialization in multiple routes
+❌ No email template management
+❌ No error handling consistency
+❌ No email queuing or retry logic
+❌ No email logging/tracking
+❌ Hard-coded email addresses in routes
+❌ No development/production email switching
+❌ No email preview functionality
+
+WHAT'S MISSING:
+--------------
+❌ Password reset flow (forgot password)
+❌ Email verification for new accounts
+❌ Welcome email after registration
+❌ Newsletter subscription system
+❌ Email templates (HTML/CSS)
+❌ Email sending service layer
+❌ Email queue system
+❌ Email analytics/tracking
+❌ Unsubscribe management
+❌ Email preferences for users
+
+ENVIRONMENT VARIABLES NEEDED:
+----------------------------
+Currently missing from .env:
+- SENDGRID_API_KEY
+- SENDGRID_VERIFIED_SENDER
+- ADMIN_EMAIL
+- FRONTEND_URL (for links in emails)
+
+=============================================================================
+2. EMAIL SERVICE REQUIREMENTS
+=============================================================================
+
+CORE EMAIL TYPES NEEDED:
+------------------------
+
+1. TRANSACTIONAL EMAILS (High Priority):
+   - Password Reset
+   - Email Verification
+   - Welcome Email (new user)
+   - Password Changed Confirmation
+   - Account Created (OAuth)
+   - Purchase Confirmations (existing)
+
+2. NOTIFICATION EMAILS (Medium Priority):
+   - New Location Approved (for submitter)
+   - Comment Reply Notifications
+   - Event Reminders
+   - Saved Store Updates
+
+3. MARKETING EMAILS (Lower Priority):
+   - Newsletter
+   - Feature Announcements
+   - Monthly Digest
+   - Special Offers
+
+FUNCTIONAL REQUIREMENTS:
+-----------------------
+□ Send transactional emails reliably
+□ Handle email failures gracefully
+□ Track email delivery status
+□ Support HTML and plain text emails
+□ Use branded email templates
+□ Respect user email preferences
+□ Comply with anti-spam regulations
+□ Support unsubscribe functionality
+□ Log all email activities
+□ Rate limit email sending
+□ Queue emails for batch sending
+□ Preview emails before sending
+□ Test emails in development
+
+NON-FUNCTIONAL REQUIREMENTS:
+---------------------------
+□ 99.9% delivery rate
+□ <5 second average send time
+□ Support 10,000+ emails/month
+□ GDPR compliant
+□ CAN-SPAM compliant
+□ Mobile-responsive templates
+□ Accessible HTML emails
+□ Fast loading images
+
+=============================================================================
+3. SENDGRID SETUP & CONFIGURATION
+=============================================================================
+
+3.1 SENDGRID ACCOUNT SETUP
+---------------------------
+
+STEPS TO GET STARTED:
+1. Create SendGrid account at https://sendgrid.com/
+2. Choose appropriate plan:
+   - Free Tier: 100 emails/day (for testing)
+   - Essentials: $19.95/month, 50,000 emails/month
+   - Pro: $89.95/month, 100,000 emails/month
+
+3. Verify Sender Identity:
+   - Single Sender Verification (quick, for development)
+     OR
+   - Domain Authentication (recommended for production)
+
+4. Create API Key:
+   - Go to Settings → API Keys → Create API Key
+   - Give it "Mail Send" permissions
+   - Copy and save the key (shown only once!)
+
+5. Configure Domain Authentication (Production):
+   - Settings → Sender Authentication → Authenticate Your Domain
+   - Follow DNS record instructions
+   - Add CNAME records to your domain
+   - Verify domain ownership
+
+3.2 DOMAIN AUTHENTICATION
+--------------------------
+
+For expateatsguide.com:
+
+DNS Records to Add:
+```
+Type: CNAME
+Host: em1234.expateatsguide.com
+Value: u1234567.wl123.sendgrid.net
+
+Type: CNAME
+Host: s1._domainkey.expateatsguide.com
+Value: s1.domainkey.u1234567.wl123.sendgrid.net
+
+Type: CNAME
+Host: s2._domainkey.expateatsguide.com
+Value: s2.domainkey.u1234567.wl123.sendgrid.net
+```
+
+Benefits:
+- Improved deliverability
+- Brand consistency
+- Remove "via sendgrid.net" label
+- Better spam score
+
+3.3 SENDER EMAIL ADDRESSES
+---------------------------
+
+Recommended structure:
+- noreply@expateatsguide.com - Transactional emails
+- hello@expateatsguide.com - Welcome emails, support
+- newsletter@expateatsguide.com - Marketing emails
+- admin@expateatsguide.com - Admin notifications
+- alerts@expateatsguide.com - System alerts
+
+All must be verified in SendGrid!
+
+3.4 ENVIRONMENT VARIABLES
+--------------------------
+
+Add to .env file:
+
+```bash
+# SendGrid Configuration
+SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxxxxxx
+SENDGRID_VERIFIED_SENDER=noreply@expateatsguide.com
+
+# Email Addresses
+ADMIN_EMAIL=admin@expateatsguide.com
+SUPPORT_EMAIL=hello@expateatsguide.com
+NEWSLETTER_EMAIL=newsletter@expateatsguide.com
+
+# Application URLs
+FRONTEND_URL=http://localhost:3001
+# FRONTEND_URL=https://expateatsguide.com (production)
+
+# Email Settings
+EMAIL_ENABLED=true
+EMAIL_DEBUG=true # Set to false in production
+EMAIL_RATE_LIMIT=100 # emails per hour
+
+# Unsubscribe Settings
+UNSUBSCRIBE_URL=${FRONTEND_URL}/unsubscribe
+```
+
+=============================================================================
+4. EMAIL SERVICE ARCHITECTURE
+=============================================================================
+
+4.1 CREATE CENTRALIZED EMAIL SERVICE
+-------------------------------------
+
+File: server/services/emailService.ts
+
+```typescript
+import sgMail from "@sendgrid/mail";
+import { db } from "../db";
+import { users } from "@shared/schema";
+import { eq } from "drizzle-orm";
+
+// Initialize SendGrid
+if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
+
+interface EmailOptions {
+    to: string;
+    from?: string;
+    subject: string;
+    text: string;
+    html: string;
+    templateId?: string;
+    dynamicTemplateData?: Record<string, any>;
+    categories?: string[];
+    customArgs?: Record<string, string>;
+}
+
+interface EmailResult {
+    success: boolean;
+    messageId?: string;
+    error?: string;
+}
+
+export class EmailService {
+    private static defaultFrom = process.env.SENDGRID_VERIFIED_SENDER || "noreply@expateatsguide.com";
+    private static isEnabled = process.env.EMAIL_ENABLED !== "false";
+    private static isDebug = process.env.EMAIL_DEBUG === "true";
+
+    /**
+     * Send a single email
+     */
+    static async sendEmail(options: EmailOptions): Promise<EmailResult> {
+        try {
+            // Check if email service is enabled
+            if (!this.isEnabled) {
+                console.log("[EMAIL] Service disabled. Email not sent:", options.subject);
+                return { success: false, error: "Email service disabled" };
+            }
+
+            // Validate SendGrid is configured
+            if (!process.env.SENDGRID_API_KEY) {
+                console.error("[EMAIL] SendGrid API key not configured");
+                return { success: false, error: "Email service not configured" };
+            }
+
+            // Debug mode - log email instead of sending
+            if (this.isDebug) {
+                console.log("[EMAIL DEBUG] Would send:", {
+                    to: options.to,
+                    subject: options.subject,
+                    from: options.from || this.defaultFrom,
+                });
+                console.log("[EMAIL DEBUG] Content:", options.text);
+                return { success: true, messageId: "debug-mode" };
+            }
+
+            // Prepare email message
+            const msg = {
+                to: options.to,
+                from: options.from || this.defaultFrom,
+                subject: options.subject,
+                text: options.text,
+                html: options.html,
+                templateId: options.templateId,
+                dynamicTemplateData: options.dynamicTemplateData,
+                categories: options.categories || [],
+                customArgs: options.customArgs || {},
+                trackingSettings: {
+                    clickTracking: { enable: true },
+                    openTracking: { enable: true },
+                },
+            };
+
+            // Send email
+            const [response] = await sgMail.send(msg);
+
+            // Log success
+            console.log("[EMAIL] Sent successfully:", {
+                to: options.to,
+                subject: options.subject,
+                messageId: response.headers["x-message-id"],
+            });
+
+            // Store email log in database (optional)
+            await this.logEmail({
+                to: options.to,
+                subject: options.subject,
+                status: "sent",
+                messageId: response.headers["x-message-id"],
+            });
+
+            return {
+                success: true,
+                messageId: response.headers["x-message-id"],
+            };
+        } catch (error: any) {
+            console.error("[EMAIL] Failed to send:", error);
+
+            // Log failure
+            await this.logEmail({
+                to: options.to,
+                subject: options.subject,
+                status: "failed",
+                error: error.message,
+            });
+
+            return {
+                success: false,
+                error: error.message || "Failed to send email",
+            };
+        }
+    }
+
+    /**
+     * Send password reset email
+     */
+    static async sendPasswordResetEmail(email: string, resetToken: string, userName?: string): Promise<EmailResult> {
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #E07A5F; padding: 40px 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px;">ExpatEats</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <h2 style="color: #333333; margin: 0 0 20px 0;">Reset Your Password</h2>
+                            <p style="color: #666666; line-height: 1.6; margin: 0 0 20px 0;">
+                                ${userName ? `Hi ${userName},` : "Hello,"}
+                            </p>
+                            <p style="color: #666666; line-height: 1.6; margin: 0 0 20px 0;">
+                                We received a request to reset your password for your ExpatEats account.
+                                Click the button below to create a new password.
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${resetUrl}" style="display: inline-block; padding: 15px 40px; background-color: #E07A5F; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                            Reset Password
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="color: #666666; line-height: 1.6; margin: 0 0 10px 0; font-size: 14px;">
+                                Or copy and paste this link into your browser:
+                            </p>
+                            <p style="color: #E07A5F; line-height: 1.6; margin: 0 0 20px 0; font-size: 14px; word-break: break-all;">
+                                ${resetUrl}
+                            </p>
+                            <p style="color: #666666; line-height: 1.6; margin: 0 0 10px 0; font-size: 14px;">
+                                <strong>This link will expire in 1 hour.</strong>
+                            </p>
+                            <p style="color: #666666; line-height: 1.6; margin: 0; font-size: 14px;">
+                                If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8f8f8; padding: 20px 30px; text-align: center; border-top: 1px solid #eeeeee;">
+                            <p style="color: #999999; font-size: 12px; margin: 0 0 10px 0;">
+                                © ${new Date().getFullYear()} ExpatEats. All rights reserved.
+                            </p>
+                            <p style="color: #999999; font-size: 12px; margin: 0;">
+                                <a href="${process.env.FRONTEND_URL}" style="color: #E07A5F; text-decoration: none;">Visit our website</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+        `;
+
+        const text = `
+Reset Your Password
+
+${userName ? `Hi ${userName},` : "Hello,"}
+
+We received a request to reset your password for your ExpatEats account.
+
+To reset your password, please visit:
+${resetUrl}
+
+This link will expire in 1 hour.
+
+If you didn't request a password reset, please ignore this email.
+
+Best regards,
+The ExpatEats Team
+
+© ${new Date().getFullYear()} ExpatEats
+        `;
+
+        return this.sendEmail({
+            to: email,
+            subject: "Reset Your Password - ExpatEats",
+            html,
+            text,
+            categories: ["password-reset"],
+            customArgs: { emailType: "password-reset" },
+        });
+    }
+
+    /**
+     * Send email verification email
+     */
+    static async sendEmailVerification(email: string, verificationToken: string, userName?: string): Promise<EmailResult> {
+        const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+
+        // Use template similar to password reset
+        const html = `[Similar HTML template for email verification]`;
+        const text = `[Plain text version]`;
+
+        return this.sendEmail({
+            to: email,
+            subject: "Verify Your Email - ExpatEats",
+            html,
+            text,
+            categories: ["email-verification"],
+        });
+    }
+
+    /**
+     * Send welcome email to new users
+     */
+    static async sendWelcomeEmail(email: string, userName?: string): Promise<EmailResult> {
+        // Welcome email template
+        const html = `[Welcome email HTML]`;
+        const text = `[Welcome email text]`;
+
+        return this.sendEmail({
+            to: email,
+            subject: "Welcome to ExpatEats! 🎉",
+            html,
+            text,
+            categories: ["welcome"],
+        });
+    }
+
+    /**
+     * Send newsletter to subscriber
+     */
+    static async sendNewsletter(email: string, content: NewsletterContent): Promise<EmailResult> {
+        // Newsletter template
+        return this.sendEmail({
+            to: email,
+            subject: content.subject,
+            html: content.html,
+            text: content.text,
+            categories: ["newsletter"],
+        });
+    }
+
+    /**
+     * Log email activity to database
+     */
+    private static async logEmail(log: {
+        to: string;
+        subject: string;
+        status: "sent" | "failed";
+        messageId?: string;
+        error?: string;
+    }): Promise<void> {
+        try {
+            // Create email_logs table (see database schema section)
+            // await db.insert(emailLogs).values(log);
+            console.log("[EMAIL LOG]", log);
+        } catch (error) {
+            console.error("[EMAIL] Failed to log email:", error);
+        }
+    }
+}
+
+interface NewsletterContent {
+    subject: string;
+    html: string;
+    text: string;
+}
+```
+
+4.2 DATABASE SCHEMA FOR EMAIL TRACKING
+---------------------------------------
+
+Create new table for email logs:
+
+File: migrations/0003_add_email_logs.sql
+
+```sql
+-- Email logs table for tracking sent emails
+CREATE TABLE IF NOT EXISTS email_logs (
+    id SERIAL PRIMARY KEY,
+    to_email VARCHAR(255) NOT NULL,
+    from_email VARCHAR(255),
+    subject VARCHAR(500) NOT NULL,
+    email_type VARCHAR(100), -- 'password-reset', 'verification', 'welcome', 'newsletter'
+    status VARCHAR(50) NOT NULL, -- 'sent', 'failed', 'bounced', 'delivered', 'opened', 'clicked'
+    message_id VARCHAR(255),
+    error_message TEXT,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Newsletter subscribers table
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'subscribed', -- 'subscribed', 'unsubscribed', 'bounced'
+    subscription_source VARCHAR(100), -- 'website', 'registration', 'import'
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    subscribed_at TIMESTAMP DEFAULT NOW(),
+    unsubscribed_at TIMESTAMP,
+    unsubscribe_token VARCHAR(255) UNIQUE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_email_logs_to_email ON email_logs(to_email);
+CREATE INDEX IF NOT EXISTS idx_email_logs_status ON email_logs(status);
+CREATE INDEX IF NOT EXISTS idx_email_logs_type ON email_logs(email_type);
+CREATE INDEX IF NOT EXISTS idx_email_logs_created ON email_logs(created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(email);
+CREATE INDEX IF NOT EXISTS idx_newsletter_status ON newsletter_subscribers(status);
+CREATE INDEX IF NOT EXISTS idx_newsletter_token ON newsletter_subscribers(unsubscribe_token);
+
+-- Comments
+COMMENT ON TABLE email_logs IS 'Logs of all emails sent from the application';
+COMMENT ON TABLE newsletter_subscribers IS 'Newsletter subscription management';
+```
+
+Update shared/schema.ts:
+
+```typescript
+export const emailLogs = pgTable("email_logs", {
+    id: serial("id").primaryKey(),
+    toEmail: text("to_email").notNull(),
+    fromEmail: text("from_email"),
+    subject: text("subject").notNull(),
+    emailType: text("email_type"),
+    status: text("status").notNull(),
+    messageId: text("message_id"),
+    errorMessage: text("error_message"),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+    id: serial("id").primaryKey(),
+    email: text("email").notNull().unique(),
+    name: text("name"),
+    status: text("status").default("subscribed"),
+    subscriptionSource: text("subscription_source"),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    subscribedAt: timestamp("subscribed_at").defaultNow(),
+    unsubscribedAt: timestamp("unsubscribed_at"),
+    unsubscribeToken: text("unsubscribe_token").unique(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+```
+
+=============================================================================
+5. PASSWORD RECOVERY IMPLEMENTATION
+=============================================================================
+
+5.1 GENERATE RESET TOKEN
+-------------------------
+
+Update server/services/authService.ts:
+
+```typescript
+import crypto from "crypto";
+
+export class AuthService {
+    // ... existing methods ...
+
+    /**
+     * Generate password reset token
+     */
+    static async generatePasswordResetToken(email: string): Promise<{
+        success: boolean;
+        message: string;
+    }> {
+        try {
+            const user = await this.getUserByEmail(email);
+
+            if (!user) {
+                // Don't reveal if email exists for security
+                return {
+                    success: true,
+                    message: "If the email exists, a reset link has been sent",
+                };
+            }
+
+            // Generate secure token
+            const resetToken = crypto.randomBytes(32).toString("hex");
+            const resetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+            // Store hashed token in database
+            const hashedToken = crypto
+                .createHash("sha256")
+                .update(resetToken)
+                .digest("hex");
+
+            await db
+                .update(users)
+                .set({
+                    passwordResetToken: hashedToken,
+                    passwordResetExpires: resetExpires,
+                    updatedAt: new Date(),
+                })
+                .where(eq(users.id, user.id));
+
+            // Send password reset email
+            await EmailService.sendPasswordResetEmail(
+                email,
+                resetToken,
+                user.name || undefined
+            );
+
+            return {
+                success: true,
+                message: "If the email exists, a reset link has been sent",
+            };
+        } catch (error) {
+            console.error("Error generating password reset token:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Verify reset token and reset password
+     */
+    static async resetPassword(
+        token: string,
+        newPassword: string
+    ): Promise<{ success: boolean; message: string }> {
+        try {
+            // Hash the provided token
+            const hashedToken = crypto
+                .createHash("sha256")
+                .update(token)
+                .digest("hex");
+
+            // Find user with valid token
+            const [user] = await db
+                .select()
+                .from(users)
+                .where(
+                    and(
+                        eq(users.passwordResetToken, hashedToken),
+                        gte(users.passwordResetExpires, new Date())
+                    )
+                );
+
+            if (!user) {
+                return {
+                    success: false,
+                    message: "Invalid or expired reset token",
+                };
+            }
+
+            // Hash new password
+            const hashedPassword = await this.hashPassword(newPassword);
+
+            // Update password and clear reset token
+            await db
+                .update(users)
+                .set({
+                    password: hashedPassword,
+                    passwordResetToken: null,
+                    passwordResetExpires: null,
+                    failedLoginAttempts: 0,
+                    accountLockedUntil: null,
+                    updatedAt: new Date(),
+                })
+                .where(eq(users.id, user.id));
+
+            // Send confirmation email
+            await EmailService.sendPasswordChangedConfirmation(user.email, user.name);
+
+            return {
+                success: true,
+                message: "Password reset successfully",
+            };
+        } catch (error) {
+            console.error("Error resetting password:", error);
+            throw error;
+        }
+    }
+}
+```
+
+5.2 ADD ROUTES FOR PASSWORD RESET
+----------------------------------
+
+In server/routes.ts:
+
+```typescript
+// Request password reset
+app.post("/api/auth/forgot-password", RateLimitService.authLimiter, CsrfService.middleware(), async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        await AuthService.generatePasswordResetToken(email);
+
+        res.json({
+            message: "If the email exists, a reset link has been sent",
+        });
+    } catch (error) {
+        console.error("Error requesting password reset:", error);
+        res.status(500).json({ message: "Failed to process request" });
+    }
+});
+
+// Reset password with token
+app.post("/api/auth/reset-password", RateLimitService.authLimiter, CsrfService.middleware(), async (req, res) => {
+    try {
+        const { token, password } = req.body;
+
+        if (!token || !password) {
+            return res.status(400).json({ message: "Token and password are required" });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ message: "Password must be at least 8 characters" });
+        }
+
+        const result = await AuthService.resetPassword(token, password);
+
+        if (!result.success) {
+            return res.status(400).json({ message: result.message });
+        }
+
+        res.json({ message: result.message });
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        res.status(500).json({ message: "Failed to reset password" });
+    }
+});
+```
+
+5.3 FRONTEND PAGES
+------------------
+
+File: client/src/pages/ForgotPassword.tsx
+File: client/src/pages/ResetPassword.tsx
+
+[Implementation details for these pages]
+
+=============================================================================
+6. EMAIL VERIFICATION IMPLEMENTATION
+=============================================================================
+
+6.1 GENERATE VERIFICATION TOKEN
+--------------------------------
+
+Update server/services/authService.ts:
+
+```typescript
+export class AuthService {
+    /**
+     * Send email verification
+     */
+    static async sendVerificationEmail(userId: number): Promise<void> {
+        const user = await this.getUserById(userId);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        if (user.emailVerified) {
+            throw new Error("Email already verified");
+        }
+
+        // Generate verification token
+        const verificationToken = crypto.randomBytes(32).toString("hex");
+        const hashedToken = crypto
+            .createHash("sha256")
+            .update(verificationToken)
+            .digest("hex");
+
+        // Store token
+        await db
+            .update(users)
+            .set({
+                emailVerificationToken: hashedToken,
+                updatedAt: new Date(),
+            })
+            .where(eq(users.id, userId));
+
+        // Send verification email
+        await EmailService.sendEmailVerification(
+            user.email,
+            verificationToken,
+            user.name || undefined
+        );
+    }
+
+    /**
+     * Verify email with token
+     */
+    static async verifyEmail(token: string): Promise<{
+        success: boolean;
+        message: string;
+    }> {
+        try {
+            const hashedToken = crypto
+                .createHash("sha256")
+                .update(token)
+                .digest("hex");
+
+            const [user] = await db
+                .select()
+                .from(users)
+                .where(eq(users.emailVerificationToken, hashedToken));
+
+            if (!user) {
+                return {
+                    success: false,
+                    message: "Invalid verification token",
+                };
+            }
+
+            // Mark email as verified
+            await db
+                .update(users)
+                .set({
+                    emailVerified: true,
+                    emailVerificationToken: null,
+                    updatedAt: new Date(),
+                })
+                .where(eq(users.id, user.id));
+
+            return {
+                success: true,
+                message: "Email verified successfully",
+            };
+        } catch (error) {
+            console.error("Error verifying email:", error);
+            throw error;
+        }
+    }
+}
+```
+
+6.2 MODIFY REGISTRATION TO SEND VERIFICATION
+---------------------------------------------
+
+Update registration endpoint in server/routes.ts:
+
+```typescript
+app.post("/api/auth/register", RateLimitService.authLimiter, CsrfService.middleware(), async (req, res) => {
+    try {
+        // ... existing registration logic ...
+
+        const newUser = await AuthService.createUser(userData);
+
+        // Send verification email
+        await AuthService.sendVerificationEmail(newUser.id);
+
+        // Send welcome email
+        await EmailService.sendWelcomeEmail(newUser.email, newUser.name);
+
+        res.status(201).json({
+            message: "Registration successful! Please check your email to verify your account.",
+            user: newUser,
+        });
+    } catch (error) {
+        // ... error handling ...
+    }
+});
+```
+
+6.3 ADD VERIFICATION ROUTES
+----------------------------
+
+```typescript
+// Verify email
+app.get("/api/auth/verify-email/:token", async (req, res) => {
+    try {
+        const { token } = req.params;
+        const result = await AuthService.verifyEmail(token);
+
+        if (!result.success) {
+            return res.status(400).json({ message: result.message });
+        }
+
+        res.json({ message: result.message });
+    } catch (error) {
+        console.error("Error verifying email:", error);
+        res.status(500).json({ message: "Failed to verify email" });
+    }
+});
+
+// Resend verification email
+app.post("/api/auth/resend-verification", requireAuth, RateLimitService.authLimiter, async (req: AuthenticatedRequest, res) => {
+    try {
+        await AuthService.sendVerificationEmail(req.session.userId!);
+        res.json({ message: "Verification email sent" });
+    } catch (error) {
+        console.error("Error resending verification:", error);
+        res.status(500).json({ message: "Failed to send verification email" });
+    }
+});
+```
+
+=============================================================================
+7. WELCOME EMAIL IMPLEMENTATION
+=============================================================================
+
+Implement EmailService.sendWelcomeEmail() with a welcoming template that:
+- Thanks user for joining
+- Explains key features
+- Links to getting started guide
+- Encourages exploration
+
+=============================================================================
+8. NEWSLETTER SYSTEM IMPLEMENTATION
+=============================================================================
+
+8.1 NEWSLETTER SUBSCRIPTION
+----------------------------
+
+Add routes for newsletter:
+
+```typescript
+// Subscribe to newsletter
+app.post("/api/newsletter/subscribe", CsrfService.middleware(), async (req, res) => {
+    try {
+        const { email, name } = req.body;
+
+        // Generate unsubscribe token
+        const unsubToken = crypto.randomBytes(32).toString("hex");
+
+        // Insert or update subscription
+        await db.insert(newsletterSubscribers).values({
+            email,
+            name,
+            status: "subscribed",
+            unsubscribeToken: unsubToken,
+            subscriptionSource: "website",
+        }).onConflictDoUpdate({
+            target: newsletterSubscribers.email,
+            set: {
+                status: "subscribed",
+                subscribedAt: new Date(),
+                unsubscribedAt: null,
+            },
+        });
+
+        // Send confirmation email
+        await EmailService.sendNewsletterWelcome(email, name, unsubToken);
+
+        res.json({ message: "Successfully subscribed to newsletter" });
+    } catch (error) {
+        console.error("Error subscribing to newsletter:", error);
+        res.status(500).json({ message: "Failed to subscribe" });
+    }
+});
+
+// Unsubscribe from newsletter
+app.get("/api/newsletter/unsubscribe/:token", async (req, res) => {
+    try {
+        const { token } = req.params;
+
+        const [subscriber] = await db
+            .select()
+            .from(newsletterSubscribers)
+            .where(eq(newsletterSubscribers.unsubscribeToken, token));
+
+        if (!subscriber) {
+            return res.status(404).json({ message: "Subscription not found" });
+        }
+
+        await db
+            .update(newsletterSubscribers)
+            .set({
+                status: "unsubscribed",
+                unsubscribedAt: new Date(),
+            })
+            .where(eq(newsletterSubscribers.id, subscriber.id));
+
+        res.json({ message: "Successfully unsubscribed" });
+    } catch (error) {
+        console.error("Error unsubscribing:", error);
+        res.status(500).json({ message: "Failed to unsubscribe" });
+    }
+});
+```
+
+=============================================================================
+9. EMAIL TEMPLATES DESIGN
+=============================================================================
+
+9.1 BASE TEMPLATE STRUCTURE
+----------------------------
+
+All email templates should follow responsive design:
+- Width: 600px max
+- Mobile-friendly
+- Accessible (alt text, proper headings)
+- Brand colors: #E07A5F (primary), #94AF9F (secondary)
+- Clear call-to-action buttons
+- Footer with unsubscribe link
+- Social media links
+
+=============================================================================
+10. TESTING STRATEGY
+=============================================================================
+
+10.1 DEVELOPMENT TESTING
+------------------------
+- Use EMAIL_DEBUG=true to log instead of send
+- Test with Ethereal Email (https://ethereal.email/)
+- Preview emails before sending
+- Test all email types
+
+10.2 STAGING TESTING
+--------------------
+- Send to test email addresses
+- Verify links work correctly
+- Check mobile rendering
+- Test unsubscribe flow
+
+10.3 PRODUCTION MONITORING
+--------------------------
+- Monitor SendGrid dashboard
+- Track bounce rates
+- Monitor spam complaints
+- Check delivery rates
+
+=============================================================================
+11. IMPLEMENTATION TIMELINE
+=============================================================================
+
+PHASE 1: Infrastructure (6-8 hours)
+- Set up SendGrid account
+- Create EmailService
+- Add email logging tables
+- Environment configuration
+
+PHASE 2: Password Reset (4-5 hours)
+- Backend implementation
+- Email templates
+- Frontend pages
+- Testing
+
+PHASE 3: Email Verification (3-4 hours)
+- Backend implementation
+- Email templates
+- Frontend integration
+- Testing
+
+PHASE 4: Welcome Emails (2-3 hours)
+- Template design
+- Integration with registration
+- Testing
+
+PHASE 5: Newsletter System (6-8 hours)
+- Database tables
+- Subscription flow
+- Admin panel for sending
+- Templates
+- Testing
+
+TOTAL: 21-28 hours
+
+=============================================================================
+END OF EMAIL SERVICE PLAN
+=============================================================================
+
+Version: 1.0
+Last Updated: [Current Date]
+Author: Claude AI
+Project: ExpatEats Email Service Implementation
