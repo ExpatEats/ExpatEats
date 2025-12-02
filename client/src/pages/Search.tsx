@@ -15,6 +15,7 @@ import {
     Users,
     ArrowRight,
     ExternalLink,
+    Award,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -699,6 +700,15 @@ const Search = () => {
                                                                     : "Food Source"}
                                                             </span>
                                                         </Badge>
+                                                        {source.softRating && (
+                                                            <Badge
+                                                                variant="secondary"
+                                                                className="bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1"
+                                                            >
+                                                                <Award className="h-3 w-3" />
+                                                                {source.softRating}
+                                                            </Badge>
+                                                        )}
                                                         <div className="flex items-center text-sm">
                                                             <MapPin className="h-4 w-4 mr-1" />
                                                             <span>

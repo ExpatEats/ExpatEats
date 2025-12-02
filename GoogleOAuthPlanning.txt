@@ -1,0 +1,1121 @@
+=============================================================================
+GOOGLE OAUTH 2.0 AUTHENTICATION IMPLEMENTATION PLAN
+ExpatEats Application
+=============================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. Current System Analysis
+2. Implementation Strategy
+3. Database Schema Changes
+4. Backend Implementation
+5. Frontend Implementation
+6. Security Considerations
+7. User Experience Flow
+8. Testing Plan
+9. Deployment Checklist
+10. Rollback Plan
+
+=============================================================================
+1. CURRENT SYSTEM ANALYSIS
+=============================================================================
+
+CURRENT AUTHENTICATION:
+----------------------
+- Traditional username/password authentication using bcrypt (12 rounds)
+- Session-based auth with express-session + MemoryStore
+- CSRF protection using 'csrf' package
+- Rate limiting on auth endpoints
+- Account lockout after 5 failed login attempts (30-minute lockout)
+- Session stored in memory (should migrate to PostgreSQL for production)
+- Cookie-based sessions with 24-hour expiry
+- Role-based access control (user/admin)
+
+USER SCHEMA (PostgreSQL):
+------------------------
+Table: users
+- id (serial primary key)
+- username (text, unique, not null) ← Currently required
+- password (text, not null) ← Currently required (bcrypt hashed)
+- email (text, unique, not null)
+- name (text, nullable)
+- city (text, nullable)
+- country (text, nullable)
+- bio (text, nullable)
+- role (text, default 'user') ← 'user' or 'admin'
+- emailVerified (boolean, default false)
+- emailVerificationToken (text, nullable)
+- passwordResetToken (text, nullable)
+- passwordResetExpires (timestamp, nullable)
+- failedLoginAttempts (integer, default 0)
+- accountLockedUntil (timestamp, nullable)
+- lastLoginAt (timestamp, nullable)
+- createdAt (timestamp, default now)
+- updatedAt (timestamp, default now)
+
+SESSION STRUCTURE:
+-----------------
+- userId (number)
+- username (string)
+- isAdmin (boolean)
+- lastActivity (Date)
+- csrfSecret (string)
+
+CURRENT DEPENDENCIES:
+--------------------
+✓ express-session (1.18.1)
+✓ memorystore (1.6.7)
+✓ bcrypt (6.0.0)
+✓ passport (0.7.0) ← INSTALLED BUT NOT CURRENTLY USED
+✓ passport-local (1.0.0) ← INSTALLED BUT NOT CURRENTLY USED
+✓ csrf (3.1.0)
+✓ express-rate-limit (8.0.1)
+✓ connect-pg-simple (10.0.0) ← For PostgreSQL session store
+
+AUTHENTICATION ENDPOINTS:
+------------------------
+POST /api/auth/register - Create new user with username/password
+POST /api/auth/login - Authenticate with username/password
+POST /api/auth/logout - Destroy session
+GET /api/auth/me - Get current user info
+GET /api/auth/check-username/:username - Check username availability
+GET /api/auth/check-email/:email - Check email availability
+
+=============================================================================
+2. IMPLEMENTATION STRATEGY
+=============================================================================
+
+APPROACH: Hybrid Authentication System
+--------------------------------------
+Support BOTH traditional username/password AND Google OAuth authentication
+
+BENEFITS:
+- Existing users continue to use their accounts
+- New users can choose their preferred method
+- Can link Google account to existing account via matching email
+- Gradual migration path
+- Maintains backward compatibility
+
+STRATEGY:
+1. Add Google OAuth as an additional authentication method
+2. Keep existing username/password system fully functional
+3. Add optional account linking for users with matching emails
+4. Make username/password optional for OAuth-only users
+5. Use Passport.js Google OAuth 2.0 strategy
+6. Store OAuth provider data in database
+
+=============================================================================
+3. DATABASE SCHEMA CHANGES
+=============================================================================
+
+MIGRATION: Add OAuth Support to Users Table
+-------------------------------------------
+
+NEW COLUMNS TO ADD:
+------------------
+1. googleId (text, unique, nullable)
+   - Store Google's unique user ID
+   - Used for OAuth login identification
+   - Indexed for fast lookups
+
+2. authProvider (text, default 'local')
+   - Values: 'local', 'google', 'hybrid'
+   - 'local' = traditional username/password
+   - 'google' = Google OAuth only
+   - 'hybrid' = both methods linked
+
+3. profilePicture (text, nullable)
+   - Store Google profile picture URL
+   - Can be used for any profile picture source
+
+4. googleEmail (text, nullable)
+   - Store the email from Google (may differ from primary email)
+   - Used for account linking verification
+
+SCHEMA MODIFICATIONS:
+--------------------
+ALTER TABLE users:
+- Make 'username' nullable (for Google-only users)
+- Make 'password' nullable (for Google-only users)
+- Add constraint: (username IS NOT NULL AND password IS NOT NULL) OR googleId IS NOT NULL
+  - Ensures every user has at least one authentication method
+
+MIGRATION FILE:
+--------------
+migrations/0002_add_google_oauth_support.sql
+
+```sql
+-- Add Google OAuth support to users table
+-- Date: [Current Date]
+-- Description: Enable Google Sign-In authentication
+
+-- Add new columns for OAuth support
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255) UNIQUE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_provider VARCHAR(50) DEFAULT 'local';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_email VARCHAR(255);
+
+-- Make username and password nullable for OAuth-only users
+ALTER TABLE users ALTER COLUMN username DROP NOT NULL;
+ALTER TABLE users ALTER COLUMN password DROP NOT NULL;
+
+-- Add check constraint to ensure at least one auth method exists
+ALTER TABLE users ADD CONSTRAINT auth_method_check
+CHECK (
+  (username IS NOT NULL AND password IS NOT NULL) OR
+  (google_id IS NOT NULL)
+);
+
+-- Create index on google_id for fast OAuth lookups
+CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
+
+-- Add comments
+COMMENT ON COLUMN users.google_id IS 'Google OAuth unique identifier';
+COMMENT ON COLUMN users.auth_provider IS 'Authentication method: local, google, or hybrid';
+COMMENT ON COLUMN users.profile_picture IS 'URL to user profile picture';
+COMMENT ON COLUMN users.google_email IS 'Email address from Google OAuth';
+```
+
+UPDATED DRIZZLE SCHEMA (shared/schema.ts):
+------------------------------------------
+```typescript
+export const users = pgTable("users", {
+    id: serial("id").primaryKey(),
+    username: text("username").unique(), // Now nullable
+    password: text("password"), // Now nullable
+    email: text("email").notNull().unique(),
+    name: text("name"),
+    city: text("city"),
+    country: text("country"),
+    bio: text("bio"),
+    role: text("role").default("user"),
+
+    // OAuth fields
+    googleId: text("google_id").unique(),
+    authProvider: text("auth_provider").default("local"), // 'local', 'google', 'hybrid'
+    profilePicture: text("profile_picture"),
+    googleEmail: text("google_email"),
+
+    // Email verification
+    emailVerified: boolean("email_verified").default(false),
+    emailVerificationToken: text("email_verification_token"),
+
+    // Password reset
+    passwordResetToken: text("password_reset_token"),
+    passwordResetExpires: timestamp("password_reset_expires"),
+
+    // Security
+    failedLoginAttempts: integer("failed_login_attempts").default(0),
+    accountLockedUntil: timestamp("account_locked_until"),
+    lastLoginAt: timestamp("last_login_at"),
+
+    // Timestamps
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+```
+
+=============================================================================
+4. BACKEND IMPLEMENTATION
+=============================================================================
+
+4.1 INSTALL NEW DEPENDENCIES
+-----------------------------
+```bash
+npm install passport-google-oauth20
+npm install --save-dev @types/passport-google-oauth20
+```
+
+4.2 ENVIRONMENT VARIABLES (.env)
+--------------------------------
+Add to .env file:
+```
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_CALLBACK_URL=http://localhost:3001/api/auth/google/callback
+
+# Production values (add to production .env):
+# GOOGLE_CALLBACK_URL=https://yourdomain.com/api/auth/google/callback
+```
+
+HOW TO GET GOOGLE CREDENTIALS:
+1. Go to https://console.cloud.google.com/
+2. Create new project or select existing project
+3. Enable Google+ API (or Google OAuth API)
+4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
+5. Application type: "Web application"
+6. Authorized JavaScript origins:
+   - http://localhost:3001 (development)
+   - https://yourdomain.com (production)
+7. Authorized redirect URIs:
+   - http://localhost:3001/api/auth/google/callback (development)
+   - https://yourdomain.com/api/auth/google/callback (production)
+8. Copy Client ID and Client Secret
+
+4.3 CREATE PASSPORT CONFIGURATION
+----------------------------------
+File: server/config/passport.ts
+
+```typescript
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { AuthService } from "../services/authService";
+
+// Configure Google OAuth Strategy
+passport.use(
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL!,
+            scope: ["profile", "email"],
+        },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
+                // Extract user info from Google profile
+                const googleId = profile.id;
+                const email = profile.emails?.[0]?.value;
+                const name = profile.displayName;
+                const profilePicture = profile.photos?.[0]?.value;
+
+                if (!email) {
+                    return done(new Error("No email provided by Google"), undefined);
+                }
+
+                // Try to find existing user by Google ID
+                let user = await AuthService.getUserByGoogleId(googleId);
+
+                if (user) {
+                    // User exists with this Google ID - log them in
+                    return done(null, user);
+                }
+
+                // Try to find user by email (for account linking)
+                user = await AuthService.getUserByEmail(email);
+
+                if (user) {
+                    // User exists with this email - link Google account
+                    user = await AuthService.linkGoogleAccount(user.id, {
+                        googleId,
+                        googleEmail: email,
+                        profilePicture,
+                        authProvider: user.authProvider === "local" ? "hybrid" : "google",
+                    });
+                    return done(null, user);
+                }
+
+                // Create new user with Google OAuth
+                user = await AuthService.createGoogleUser({
+                    googleId,
+                    email,
+                    name,
+                    profilePicture,
+                    googleEmail: email,
+                });
+
+                return done(null, user);
+            } catch (error) {
+                return done(error as Error, undefined);
+            }
+        }
+    )
+);
+
+// Serialize user for session
+passport.serializeUser((user: any, done) => {
+    done(null, user.id);
+});
+
+// Deserialize user from session
+passport.deserializeUser(async (id: number, done) => {
+    try {
+        const user = await AuthService.getUserById(id);
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+});
+
+export default passport;
+```
+
+4.4 UPDATE AUTH SERVICE
+-----------------------
+File: server/services/authService.ts
+
+Add new methods:
+
+```typescript
+export class AuthService {
+    // ... existing methods ...
+
+    // Get user by Google ID
+    static async getUserByGoogleId(googleId: string) {
+        const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.googleId, googleId));
+
+        if (!user) {
+            return null;
+        }
+
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+    }
+
+    // Create user from Google OAuth
+    static async createGoogleUser(userData: {
+        googleId: string;
+        email: string;
+        name?: string;
+        profilePicture?: string;
+        googleEmail: string;
+    }) {
+        const [newUser] = await db
+            .insert(users)
+            .values({
+                googleId: userData.googleId,
+                email: userData.email,
+                name: userData.name,
+                profilePicture: userData.profilePicture,
+                googleEmail: userData.googleEmail,
+                authProvider: "google",
+                emailVerified: true, // Google emails are pre-verified
+                role: "user",
+            })
+            .returning();
+
+        const { password, ...userWithoutPassword } = newUser;
+        return userWithoutPassword;
+    }
+
+    // Link Google account to existing user
+    static async linkGoogleAccount(
+        userId: number,
+        googleData: {
+            googleId: string;
+            googleEmail: string;
+            profilePicture?: string;
+            authProvider: string;
+        }
+    ) {
+        const [updatedUser] = await db
+            .update(users)
+            .set({
+                googleId: googleData.googleId,
+                googleEmail: googleData.googleEmail,
+                profilePicture: googleData.profilePicture || users.profilePicture,
+                authProvider: googleData.authProvider,
+                emailVerified: true, // Google emails are verified
+                updatedAt: new Date(),
+            })
+            .where(eq(users.id, userId))
+            .returning();
+
+        const { password, ...userWithoutPassword } = updatedUser;
+        return userWithoutPassword;
+    }
+
+    // Unlink Google account
+    static async unlinkGoogleAccount(userId: number) {
+        // Ensure user has username/password before unlinking
+        const user = await this.getUserById(userId);
+
+        if (!user || !user.username || !user.password) {
+            throw new Error("Cannot unlink Google account without setting up username/password first");
+        }
+
+        const [updatedUser] = await db
+            .update(users)
+            .set({
+                googleId: null,
+                googleEmail: null,
+                authProvider: "local",
+                updatedAt: new Date(),
+            })
+            .where(eq(users.id, userId))
+            .returning();
+
+        const { password, ...userWithoutPassword } = updatedUser;
+        return userWithoutPassword;
+    }
+}
+```
+
+4.5 UPDATE ROUTES
+-----------------
+File: server/routes.ts
+
+Add Google OAuth routes:
+
+```typescript
+import passport from "./config/passport";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+    // Initialize Passport
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    // ... existing routes ...
+
+    // Google OAuth Routes
+    // Initiate Google OAuth flow
+    app.get(
+        "/api/auth/google",
+        passport.authenticate("google", {
+            scope: ["profile", "email"],
+        })
+    );
+
+    // Google OAuth callback
+    app.get(
+        "/api/auth/google/callback",
+        passport.authenticate("google", { failureRedirect: "/login?error=oauth_failed" }),
+        (req: AuthenticatedRequest, res) => {
+            // Successful authentication
+            const user = req.user as any;
+
+            // Set up session
+            req.session.userId = user.id;
+            req.session.username = user.username || user.email;
+            req.session.isAdmin = user.role === "admin";
+            req.session.lastActivity = new Date();
+
+            // Redirect to home or intended page
+            const redirectTo = req.session.returnTo || "/";
+            delete req.session.returnTo;
+
+            res.redirect(redirectTo);
+        }
+    );
+
+    // Check Google account link status
+    app.get("/api/auth/google/status", requireAuth, async (req: AuthenticatedRequest, res) => {
+        try {
+            const user = await AuthService.getUserById(req.session.userId!);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            res.json({
+                isLinked: !!user.googleId,
+                authProvider: user.authProvider,
+                googleEmail: user.googleEmail,
+                hasPassword: !!user.password,
+            });
+        } catch (error) {
+            console.error("Error checking Google status:", error);
+            res.status(500).json({ message: "Failed to check Google status" });
+        }
+    });
+
+    // Unlink Google account
+    app.post("/api/auth/google/unlink", requireAuth, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
+        try {
+            await AuthService.unlinkGoogleAccount(req.session.userId!);
+            res.json({ message: "Google account unlinked successfully" });
+        } catch (error) {
+            console.error("Error unlinking Google account:", error);
+            res.status(400).json({
+                message: error instanceof Error ? error.message : "Failed to unlink Google account"
+            });
+        }
+    });
+
+    // ... rest of routes ...
+}
+```
+
+4.6 UPDATE SESSION TYPES
+-------------------------
+File: server/types/session.ts
+
+No changes needed - session structure remains the same
+
+=============================================================================
+5. FRONTEND IMPLEMENTATION
+=============================================================================
+
+5.1 UPDATE AUTH CONTEXT
+------------------------
+File: client/src/contexts/AuthContext.tsx
+
+Add Google OAuth methods:
+
+```typescript
+interface AuthContextType extends AuthState {
+  login: (username: string, password: string, rememberMe?: boolean) => Promise<void>;
+  register: (userData: RegisterData, autoLogin?: boolean) => Promise<void>;
+  logout: () => Promise<void>;
+  checkAuthStatus: () => Promise<void>;
+  loginWithGoogle: () => void; // NEW
+  unlinkGoogle: () => Promise<void>; // NEW
+  checkGoogleLinkStatus: () => Promise<GoogleLinkStatus>; // NEW
+}
+
+interface GoogleLinkStatus {
+  isLinked: boolean;
+  authProvider: string;
+  googleEmail?: string;
+  hasPassword: boolean;
+}
+
+// ... in AuthProvider component ...
+
+const loginWithGoogle = () => {
+  // Redirect to Google OAuth endpoint
+  window.location.href = "/api/auth/google";
+};
+
+const unlinkGoogle = async () => {
+  try {
+    const csrfResponse = await fetch("/api/csrf-token");
+    const { csrfToken } = await csrfResponse.json();
+
+    const response = await fetch("/api/auth/google/unlink", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to unlink Google account");
+    }
+
+    // Refresh user data
+    await checkAuthStatus();
+  } catch (error) {
+    console.error("Error unlinking Google:", error);
+    throw error;
+  }
+};
+
+const checkGoogleLinkStatus = async (): Promise<GoogleLinkStatus> => {
+  const response = await fetch("/api/auth/google/status", {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to check Google link status");
+  }
+
+  return response.json();
+};
+```
+
+5.2 CREATE GOOGLE SIGN-IN BUTTON COMPONENT
+-------------------------------------------
+File: client/src/components/GoogleSignInButton.tsx
+
+```typescript
+import { Button } from "@/components/ui/button";
+
+interface GoogleSignInButtonProps {
+  text?: string;
+  variant?: "default" | "outline";
+  className?: string;
+}
+
+export const GoogleSignInButton = ({
+  text = "Continue with Google",
+  variant = "outline",
+  className = ""
+}: GoogleSignInButtonProps) => {
+  const handleGoogleSignIn = () => {
+    // Store current location to return after OAuth
+    sessionStorage.setItem("returnTo", window.location.pathname);
+    window.location.href = "/api/auth/google";
+  };
+
+  return (
+    <Button
+      type="button"
+      variant={variant}
+      onClick={handleGoogleSignIn}
+      className={`w-full ${className}`}
+    >
+      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        />
+        <path
+          fill="currentColor"
+          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        />
+        <path
+          fill="currentColor"
+          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+        />
+        <path
+          fill="currentColor"
+          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+        />
+      </svg>
+      {text}
+    </Button>
+  );
+};
+```
+
+5.3 UPDATE LOGIN PAGE
+---------------------
+File: client/src/pages/Login.tsx (or similar)
+
+Add Google Sign-In button:
+
+```typescript
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+
+// In the login form:
+<div className="space-y-4">
+  {/* Existing login form */}
+
+  <div className="relative">
+    <div className="absolute inset-0 flex items-center">
+      <span className="w-full border-t" />
+    </div>
+    <div className="relative flex justify-center text-xs uppercase">
+      <span className="bg-background px-2 text-muted-foreground">
+        Or continue with
+      </span>
+    </div>
+  </div>
+
+  <GoogleSignInButton />
+</div>
+```
+
+5.4 UPDATE REGISTER PAGE
+-------------------------
+File: client/src/pages/Register.tsx (or similar)
+
+Add Google Sign-Up option:
+
+```typescript
+<div className="space-y-4">
+  {/* Option to sign up with Google */}
+  <GoogleSignInButton text="Sign up with Google" />
+
+  <div className="relative">
+    <div className="absolute inset-0 flex items-center">
+      <span className="w-full border-t" />
+    </div>
+    <div className="relative flex justify-center text-xs uppercase">
+      <span className="bg-background px-2 text-muted-foreground">
+        Or sign up with email
+      </span>
+    </div>
+  </div>
+
+  {/* Existing registration form */}
+</div>
+```
+
+5.5 ADD ACCOUNT SETTINGS PAGE
+------------------------------
+File: client/src/pages/AccountSettings.tsx
+
+Allow users to link/unlink Google account:
+
+```typescript
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default function AccountSettings() {
+  const { user, checkGoogleLinkStatus, unlinkGoogle } = useAuth();
+  const [googleStatus, setGoogleStatus] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    loadGoogleStatus();
+  }, []);
+
+  const loadGoogleStatus = async () => {
+    try {
+      const status = await checkGoogleLinkStatus();
+      setGoogleStatus(status);
+    } catch (error) {
+      console.error("Failed to load Google status:", error);
+    }
+  };
+
+  const handleUnlink = async () => {
+    if (!confirm("Are you sure you want to unlink your Google account?")) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await unlinkGoogle();
+      await loadGoogleStatus();
+    } catch (error) {
+      alert("Failed to unlink Google account. Make sure you have a password set first.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Connected Accounts</CardTitle>
+          <CardDescription>
+            Manage your authentication methods
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {googleStatus?.isLinked ? (
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  G
+                </div>
+                <div>
+                  <p className="font-medium">Google Account</p>
+                  <p className="text-sm text-gray-500">{googleStatus.googleEmail}</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                onClick={handleUnlink}
+                disabled={!googleStatus.hasPassword || isLoading}
+              >
+                Unlink
+              </Button>
+            </div>
+          ) : (
+            <div className="p-4 border rounded-lg">
+              <p className="mb-4 text-sm text-gray-600">
+                Link your Google account for easier sign-in
+              </p>
+              <GoogleSignInButton text="Link Google Account" />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+```
+
+=============================================================================
+6. SECURITY CONSIDERATIONS
+=============================================================================
+
+6.1 IMPORTANT SECURITY MEASURES
+--------------------------------
+
+1. HTTPS REQUIREMENT (Production):
+   - Google OAuth REQUIRES HTTPS in production
+   - Development: http://localhost is allowed
+   - Production: Must use https://
+
+2. CLIENT ID/SECRET PROTECTION:
+   - NEVER commit Google credentials to git
+   - Store in environment variables only
+   - Use different credentials for dev/staging/production
+   - Rotate secrets periodically
+
+3. CSRF PROTECTION:
+   - Already implemented with csrf package
+   - Continue using CSRF tokens for state-changing operations
+   - OAuth callback is safe (handled by Passport)
+
+4. SESSION SECURITY:
+   - Consider migrating from MemoryStore to connect-pg-simple for production
+   - MemoryStore loses sessions on server restart
+   - PostgreSQL session store provides persistence
+
+5. EMAIL VERIFICATION:
+   - Google-authenticated users have verified emails
+   - Auto-set emailVerified = true for Google users
+   - Keep email verification for traditional signups
+
+6. ACCOUNT LINKING SECURITY:
+   - Only link accounts with matching email addresses
+   - Show warning before linking existing account
+   - Require re-authentication before unlinking
+
+7. SCOPE LIMITATION:
+   - Only request necessary scopes: "profile" and "email"
+   - Don't request additional permissions without need
+
+8. ERROR HANDLING:
+   - Don't expose internal error details to users
+   - Log OAuth errors server-side
+   - Provide user-friendly error messages
+
+=============================================================================
+7. USER EXPERIENCE FLOW
+=============================================================================
+
+FLOW 1: NEW USER SIGNS UP WITH GOOGLE
+--------------------------------------
+1. User clicks "Continue with Google" button
+2. Redirected to Google OAuth consent screen
+3. User approves permissions (profile, email)
+4. Google redirects back to callback URL
+5. Backend creates new user account:
+   - googleId from Google
+   - email from Google (verified)
+   - name from Google
+   - profile picture from Google
+   - authProvider = 'google'
+   - No username/password required
+6. User logged in automatically
+7. Redirect to home page
+
+FLOW 2: EXISTING USER LOGS IN WITH GOOGLE (EMAIL MATCH)
+--------------------------------------------------------
+1. User clicks "Continue with Google"
+2. Google OAuth flow
+3. Backend finds existing account by email
+4. Account linked automatically:
+   - googleId added to existing account
+   - authProvider changed to 'hybrid'
+   - emailVerified set to true
+5. User logged in
+6. Redirect to home page
+7. (Optional) Show notification: "Google account linked"
+
+FLOW 3: EXISTING USER LOGS IN WITH GOOGLE (NEW EMAIL)
+------------------------------------------------------
+1. User clicks "Continue with Google"
+2. Google OAuth flow
+3. Backend doesn't find matching account
+4. New account created with Google email
+5. User logged in with new account
+6. (User now has two separate accounts)
+
+FLOW 4: USER LINKS GOOGLE TO EXISTING ACCOUNT
+----------------------------------------------
+1. User logged in with username/password
+2. Goes to Account Settings
+3. Clicks "Link Google Account"
+4. Google OAuth flow
+5. Backend links Google ID to current user
+6. authProvider changes to 'hybrid'
+7. User can now log in with either method
+
+FLOW 5: USER UNLINKS GOOGLE ACCOUNT
+------------------------------------
+1. User goes to Account Settings
+2. Clicks "Unlink Google Account"
+3. System checks if user has password:
+   - If no password: Show error "Set password first"
+   - If has password: Proceed with unlink
+4. googleId removed from account
+5. authProvider changes to 'local'
+6. User can only log in with username/password
+
+=============================================================================
+8. TESTING PLAN
+=============================================================================
+
+8.1 MANUAL TESTING CHECKLIST
+-----------------------------
+
+GOOGLE OAUTH FLOW:
+□ New user can sign up with Google
+□ Email is correctly captured from Google
+□ Profile picture is saved
+□ User is logged in after OAuth
+□ Session persists across page refreshes
+
+ACCOUNT LINKING:
+□ User with matching email auto-links account
+□ Hybrid auth shows both methods available
+□ Can log in with username/password after linking
+□ Can log in with Google after linking
+
+ACCOUNT UNLINKING:
+□ Cannot unlink without password set
+□ Unlink removes Google ID from account
+□ Can still log in with password after unlink
+□ Cannot log in with Google after unlink
+
+ERROR HANDLING:
+□ OAuth failure shows user-friendly error
+□ Missing email from Google handled gracefully
+□ Network errors don't crash the app
+□ Duplicate email handled correctly
+
+SECURITY:
+□ CSRF tokens work on OAuth routes
+□ Session secured with httpOnly cookies
+□ No sensitive data in client-side code
+□ Credentials not in source control
+
+8.2 AUTOMATED TESTING
+----------------------
+Consider adding:
+- Integration tests for OAuth flow
+- Unit tests for AuthService methods
+- E2E tests for login flows
+
+=============================================================================
+9. DEPLOYMENT CHECKLIST
+=============================================================================
+
+PRE-DEPLOYMENT:
+---------------
+□ Run database migration in staging environment
+□ Test OAuth flow in staging
+□ Set up Google OAuth credentials for production domain
+□ Add production environment variables
+□ Update GOOGLE_CALLBACK_URL to production URL
+□ Ensure HTTPS is configured
+□ Test account linking with real Google accounts
+□ Verify session persistence works
+□ Check error logging is configured
+
+PRODUCTION DEPLOYMENT:
+----------------------
+□ Deploy database migration
+□ Deploy backend code
+□ Deploy frontend code
+□ Verify environment variables are set
+□ Test OAuth flow in production
+□ Monitor error logs for first hour
+□ Have rollback plan ready
+
+POST-DEPLOYMENT:
+---------------
+□ Verify new user sign-ups work
+□ Verify existing user logins work
+□ Check account linking works
+□ Monitor error rates
+□ Check session store performance
+□ Verify CSRF protection still works
+
+=============================================================================
+10. ROLLBACK PLAN
+=============================================================================
+
+IF OAUTH IMPLEMENTATION FAILS:
+-------------------------------
+
+STEP 1: Immediate Rollback (Backend)
+- Remove passport initialization from routes
+- Comment out Google OAuth routes
+- Deploy previous version of backend code
+- Traditional auth continues to work
+
+STEP 2: Frontend Rollback
+- Remove Google Sign-In buttons
+- Deploy previous version of frontend
+- Users can still log in with username/password
+
+STEP 3: Database Rollback (if needed)
+```sql
+-- Remove OAuth-related columns (data preserved for future retry)
+ALTER TABLE users ALTER COLUMN username SET NOT NULL;
+ALTER TABLE users ALTER COLUMN password SET NOT NULL;
+ALTER TABLE users DROP CONSTRAINT IF EXISTS auth_method_check;
+```
+
+DATA PRESERVATION:
+------------------
+- OAuth users created during deployment window will become inaccessible
+- Store their data in separate backup table before rollback
+- Can be restored when OAuth is fixed and redeployed
+
+COMMUNICATION PLAN:
+------------------
+- Notify users if OAuth is temporarily disabled
+- Provide timeline for re-enablement
+- Offer password reset for OAuth-only users if needed
+
+=============================================================================
+IMPLEMENTATION TIMELINE ESTIMATE
+=============================================================================
+
+PHASE 1: Backend Setup (4-6 hours)
+- Install dependencies
+- Database migration
+- Update schema
+- Implement AuthService methods
+- Set up Passport configuration
+
+PHASE 2: Routes & Integration (3-4 hours)
+- Add OAuth routes
+- Test OAuth flow
+- Implement account linking logic
+- Error handling
+
+PHASE 3: Frontend Implementation (4-5 hours)
+- Create GoogleSignInButton component
+- Update login page
+- Update register page
+- Create account settings page
+- Test UI flows
+
+PHASE 4: Testing (3-4 hours)
+- Manual testing of all flows
+- Security testing
+- Cross-browser testing
+- Mobile testing
+
+PHASE 5: Documentation & Deployment (2-3 hours)
+- Update documentation
+- Staging deployment
+- Production deployment
+- Monitoring
+
+TOTAL ESTIMATED TIME: 16-22 hours
+
+=============================================================================
+ADDITIONAL NOTES
+=============================================================================
+
+FUTURE ENHANCEMENTS:
+--------------------
+1. Add Facebook OAuth
+2. Add Apple Sign-In
+3. Add GitHub OAuth
+4. Implement social profile sync
+5. Add profile picture upload for local users
+6. Implement "Remember this device" for OAuth
+
+MONITORING METRICS:
+-------------------
+- Track OAuth sign-up vs traditional sign-up ratio
+- Monitor OAuth success/failure rates
+- Track account linking success rates
+- Monitor session duration for OAuth vs local users
+
+GDPR/PRIVACY CONSIDERATIONS:
+----------------------------
+- Update privacy policy to mention Google OAuth
+- Explain what data is collected from Google
+- Provide data export functionality
+- Allow users to delete their accounts
+- Implement right to be forgotten
+
+=============================================================================
+END OF PLANNING DOCUMENT
+=============================================================================
+
+Version: 1.0
+Last Updated: [Current Date]
+Author: Claude AI
+Project: ExpatEats Google OAuth Implementation
+
+For questions or clarifications, refer to:
+- Google OAuth 2.0 Documentation: https://developers.google.com/identity/protocols/oauth2
+- Passport.js Documentation: http://www.passportjs.org/
+- Express Session Documentation: https://github.com/expressjs/session

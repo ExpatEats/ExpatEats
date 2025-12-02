@@ -21,7 +21,7 @@ import {
     Trash2
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 import { apiRequest } from "@/lib/queryClient";
 
 interface Place {
@@ -79,8 +79,21 @@ const getTagIcon = (tagId: string) => {
 
 export default function Favorites() {
     const [, setLocation] = useLocation();
-    const { toast } = useToast();
     const queryClient = useQueryClient();
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     // Fetch user's saved stores
     const { data: favoriteStores = [], isLoading, error } = useQuery<Place[]>({
@@ -97,20 +110,13 @@ export default function Favorites() {
             });
         },
         onSuccess: () => {
-            toast({
-                title: "Removed from Favorites",
-                description: "Store has been removed from your favorites",
-            });
+            showNotification("Removed from Favorites", "Store has been removed from your favorites", "success");
             queryClient.invalidateQueries({
                 queryKey: ["/api/user/saved-stores"],
             });
         },
         onError: () => {
-            toast({
-                title: "Error",
-                description: "Failed to remove store from favorites",
-                variant: "destructive",
-            });
+            showNotification("Error", "Failed to remove store from favorites", "error");
         },
     });
 
@@ -188,7 +194,7 @@ export default function Favorites() {
                             Explore stores and add them to your favorites by clicking the heart icon on store detail pages.
                         </p>
                         <Button
-                            onClick={() => setLocation("/find-my-food")}
+                            onClick={() => setLocation("/")}
                             className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
                         >
                             Find Stores
@@ -302,6 +308,13 @@ export default function Favorites() {
                     </div>
                 )}
             </div>
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </div>
     );
 }

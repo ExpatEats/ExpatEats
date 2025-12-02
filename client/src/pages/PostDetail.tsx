@@ -8,15 +8,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
     ArrowLeft,
     Heart,
     MessageSquare,
     Calendar,
     Send,
-    MoreHorizontal
+    MoreHorizontal,
+    Trash2
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 // Types for our API responses
 interface PostComment {
@@ -59,14 +67,34 @@ const PostDetail: React.FC = () => {
     const [, setLocation] = useLocation();
     const [match, params] = useRoute("/community/post/:id");
     const { user, isAuthenticated } = useAuth();
-    const { toast } = useToast();
     const queryClient = useQueryClient();
 
     const [newComment, setNewComment] = useState("");
     const [commentError, setCommentError] = useState("");
 
+    // Notification dialog states
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    // Confirm dialog states
+    const [confirmPostDeleteOpen, setConfirmPostDeleteOpen] = useState(false);
+    const [confirmCommentDeleteOpen, setConfirmCommentDeleteOpen] = useState(false);
+    const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
+
     const postId = params?.id ? parseInt(params.id) : null;
 
+    // Helper function to show notifications
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     // Redirect if not authenticated
     React.useEffect(() => {
@@ -143,17 +171,10 @@ const PostDetail: React.FC = () => {
             if (context?.previousResponse) {
                 queryClient.setQueryData(["post-detail", postId], context.previousResponse);
             }
-            toast({
-                title: "Error",
-                description: "Failed to update like status",
-                variant: "destructive"
-            });
+            showNotification("Error", "Failed to update like status", "error");
         },
         onSuccess: (data) => {
-            toast({
-                title: data.message,
-                description: `Post ${data.isLiked ? "liked" : "unliked"}`,
-            });
+            showNotification(data.message, `Post ${data.isLiked ? "liked" : "unliked"}`);
         }
     });
 
@@ -188,19 +209,90 @@ const PostDetail: React.FC = () => {
         onSuccess: () => {
             setNewComment("");
             setCommentError("");
-            toast({
-                title: "Comment added successfully!",
-                description: "Your comment has been posted.",
-            });
+            showNotification("Comment added successfully!", "Your comment has been posted.");
             // Refresh post data to get updated comments
             queryClient.invalidateQueries({ queryKey: ["post-detail", postId] });
         },
         onError: (error: Error) => {
-            toast({
-                title: "Error adding comment",
-                description: error.message,
-                variant: "destructive"
+            showNotification("Error adding comment", error.message, "error");
+        }
+    });
+
+    // Delete post mutation
+    const deletePostMutation = useMutation({
+        mutationFn: async () => {
+            if (!postId) throw new Error("Invalid post ID");
+
+            // Get CSRF token
+            const csrfResponse = await fetch("/api/csrf-token", {
+                credentials: "include"
             });
+            if (!csrfResponse.ok) throw new Error("Failed to get CSRF token");
+            const { csrfToken } = await csrfResponse.json();
+
+            const response = await fetch(`/api/community/posts/${postId}`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-Token": csrfToken
+                },
+                credentials: "include"
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Failed to delete post");
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            // Invalidate all community posts queries to refresh the list
+            queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+
+            showNotification("Post Deleted", "Post and all associated comments have been removed");
+
+            // Navigate back to community page after a short delay to show the notification
+            setTimeout(() => {
+                setLocation("/community");
+            }, 1500);
+        },
+        onError: (error: Error) => {
+            showNotification("Error", error.message || "Failed to delete post", "error");
+        }
+    });
+
+    // Delete comment mutation
+    const deleteCommentMutation = useMutation({
+        mutationFn: async (commentId: number) => {
+            // Get CSRF token
+            const csrfResponse = await fetch("/api/csrf-token", {
+                credentials: "include"
+            });
+            if (!csrfResponse.ok) throw new Error("Failed to get CSRF token");
+            const { csrfToken } = await csrfResponse.json();
+
+            const response = await fetch(`/api/community/comments/${commentId}`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-Token": csrfToken
+                },
+                credentials: "include"
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Failed to delete comment");
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            showNotification("Comment Deleted", "Comment has been removed");
+            // Refresh post data to get updated comments
+            queryClient.invalidateQueries({ queryKey: ["post-detail", postId] });
+        },
+        onError: (error: Error) => {
+            showNotification("Error", error.message || "Failed to delete comment", "error");
         }
     });
 
@@ -233,6 +325,27 @@ const PostDetail: React.FC = () => {
         }
 
         addCommentMutation.mutate(newComment.trim());
+    };
+
+    const handleDeletePost = () => {
+        setConfirmPostDeleteOpen(true);
+    };
+
+    const confirmDeletePost = () => {
+        deletePostMutation.mutate();
+    };
+
+    const handleDeleteComment = (commentId: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCommentToDelete(commentId);
+        setConfirmCommentDeleteOpen(true);
+    };
+
+    const confirmDeleteComment = () => {
+        if (commentToDelete !== null) {
+            deleteCommentMutation.mutate(commentToDelete);
+            setCommentToDelete(null);
+        }
     };
 
     if (!isAuthenticated) {
@@ -334,9 +447,24 @@ const PostDetail: React.FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <Button variant="ghost" size="sm">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
+                                {(user?.id === post.userId || user?.role === "admin") && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="sm">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem
+                                                onClick={handleDeletePost}
+                                                className="text-red-600 focus:text-red-600"
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Delete Post
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
                             </div>
 
                             {/* Post Title and Content */}
@@ -443,13 +571,37 @@ const PostDetail: React.FC = () => {
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1">
-                                                    <div className="flex items-center space-x-2 mb-1">
-                                                        <span className="font-medium text-gray-900">
-                                                            {comment.username}
-                                                        </span>
-                                                        <span className="text-sm text-gray-500">
-                                                            {formatTimeAgo(comment.createdAt)}
-                                                        </span>
+                                                    <div className="flex items-center justify-between mb-1">
+                                                        <div className="flex items-center space-x-2">
+                                                            <span className="font-medium text-gray-900">
+                                                                {comment.username}
+                                                            </span>
+                                                            <span className="text-sm text-gray-500">
+                                                                {formatTimeAgo(comment.createdAt)}
+                                                            </span>
+                                                        </div>
+                                                        {(user?.id === comment.userId || user?.role === "admin") && (
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    >
+                                                                        <MoreHorizontal className="h-3 w-3" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuItem
+                                                                        onClick={(e) => handleDeleteComment(comment.id, e)}
+                                                                        className="text-red-600 focus:text-red-600"
+                                                                    >
+                                                                        <Trash2 className="h-4 w-4 mr-2" />
+                                                                        Delete Comment
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        )}
                                                     </div>
                                                     <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                                                         {comment.body}
@@ -464,6 +616,41 @@ const PostDetail: React.FC = () => {
                     </Card>
                 </div>
             </div>
+
+            {/* Notification Dialog */}
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
+
+            {/* Confirm Delete Post Dialog */}
+            <ConfirmDialog
+                open={confirmPostDeleteOpen}
+                onOpenChange={setConfirmPostDeleteOpen}
+                title="Delete Post"
+                description="Are you sure you want to delete this post? This will also delete all comments and cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={confirmDeletePost}
+                variant="destructive"
+                isLoading={deletePostMutation.isPending}
+            />
+
+            {/* Confirm Delete Comment Dialog */}
+            <ConfirmDialog
+                open={confirmCommentDeleteOpen}
+                onOpenChange={setConfirmCommentDeleteOpen}
+                title="Delete Comment"
+                description="Are you sure you want to delete this comment? This cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={confirmDeleteComment}
+                variant="destructive"
+                isLoading={deleteCommentMutation.isPending}
+            />
         </div>
     );
 };

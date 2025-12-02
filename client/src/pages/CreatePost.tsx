@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Send } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 
 const SECTIONS = [
     { id: "general", name: "General", description: "General discussions and community topics" },
@@ -27,7 +27,6 @@ const CreatePost: React.FC = () => {
     const [, setLocation] = useLocation();
     const [match] = useRoute("/community/create/:section?");
     const { isAuthenticated } = useAuth();
-    const { toast } = useToast();
     const queryClient = useQueryClient();
 
     // Get section from URL or default to general
@@ -40,6 +39,22 @@ const CreatePost: React.FC = () => {
     });
 
     const [errors, setErrors] = useState<Partial<CreatePostFormData>>({});
+
+    // Notification dialog states
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     // Redirect if not authenticated
     React.useEffect(() => {
@@ -75,21 +90,16 @@ const CreatePost: React.FC = () => {
             return response.json();
         },
         onSuccess: (data) => {
-            toast({
-                title: "Post created successfully!",
-                description: "Your post has been published to the community.",
-            });
+            showNotification("Post created successfully!", "Your post has been published to the community.");
             // Invalidate posts cache for the section
             queryClient.invalidateQueries({ queryKey: ["community-posts", formData.section] });
-            // Navigate back to community with the section
-            setLocation("/community");
+            // Navigate back to community with the section after short delay
+            setTimeout(() => {
+                setLocation("/community");
+            }, 1500);
         },
         onError: (error: Error) => {
-            toast({
-                title: "Error creating post",
-                description: error.message,
-                variant: "destructive"
-            });
+            showNotification("Error creating post", error.message, "error");
         }
     });
 
@@ -272,6 +282,15 @@ const CreatePost: React.FC = () => {
                     </Card>
                 </div>
             </div>
+
+            {/* Notification Dialog */}
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </div>
     );
 };

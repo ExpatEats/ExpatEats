@@ -44,6 +44,8 @@ export interface Place {
     userId?: number;
     imageUrl?: string;
     averageRating?: number;
+    softRating?: string;
+    michaelesNotes?: string;
     createdAt?: string;
 }
 

@@ -52,7 +52,7 @@ services:
       - expat-network
     stdin_open: true
     tty: true
-    command: ["npm", "run", "dev"]
+    command: ["sh", "-c", "npm run dev"]
 
   # pgAdmin (Optional - Database Management UI)
   pgadmin:

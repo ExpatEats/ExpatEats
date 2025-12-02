@@ -3,10 +3,10 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-    MapPin, 
-    ArrowLeft, 
-    Map, 
+import {
+    MapPin,
+    ArrowLeft,
+    Map,
     List,
     Apple,
     Leaf,
@@ -18,12 +18,15 @@ import {
     Package2,
     Truck,
     ShoppingBag,
-    Search
+    Search,
+    Lock
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { MapView } from "@/components/MapView";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/AuthContext";
+import { LoginModal } from "@/components/LoginModal";
 
 interface Place {
     id: number;
@@ -74,6 +77,10 @@ const Results = () => {
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
     const { toast } = useToast();
     const queryClient = useQueryClient();
+    const { isAuthenticated } = useAuth();
+    const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+    const MAX_VISIBLE_RESULTS = 6;
 
     // Function to get icon for a tag
     const getTagIcon = (tagId: string) => {
@@ -136,6 +143,11 @@ const Results = () => {
 
 
     const handlePlaceClick = (place: Place) => {
+        // Check if user is authenticated before allowing navigation
+        if (!isAuthenticated) {
+            setLoginModalOpen(true);
+            return;
+        }
         setLocation(`/store/${place.id}`);
     };
 
@@ -300,13 +312,14 @@ const Results = () => {
                         {viewMode === "map" ? (
                             <div className="w-full">
                                 <MapView
-                                    places={results}
+                                    places={isAuthenticated ? results : results.slice(0, MAX_VISIBLE_RESULTS)}
                                     onPlaceClick={handlePlaceClick}
                                 />
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {results.map((place) => (
+                            <div className="relative">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {(isAuthenticated ? results : results.slice(0, MAX_VISIBLE_RESULTS)).map((place) => (
                                 <Card
                                     key={place.id}
                                     className="hover:shadow-lg transition-shadow cursor-pointer relative"
@@ -461,10 +474,81 @@ const Results = () => {
                                 </Card>
                             ))}
                             </div>
+
+                            {/* Blurred Results Section for Non-Authenticated Users */}
+                            {!isAuthenticated && results.length > MAX_VISIBLE_RESULTS && (
+                                <div className="relative mt-6">
+                                    {/* Blurred Results Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 blur-sm pointer-events-none">
+                                        {results.slice(MAX_VISIBLE_RESULTS, MAX_VISIBLE_RESULTS + 6).map((place) => (
+                                            <Card key={place.id} className="opacity-60">
+                                                <CardHeader>
+                                                    <div className="flex justify-between items-start">
+                                                        <div className="flex-1">
+                                                            <CardTitle className="text-lg font-semibold text-gray-900">
+                                                                {place.name}
+                                                            </CardTitle>
+                                                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                                                                <MapPin className="h-4 w-4 mr-1" />
+                                                                {place.city}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                                                        {place.description}
+                                                    </p>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
+
+                                    {/* Overlay with Sign-up Prompt */}
+                                    <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[2px]">
+                                        <Card className="max-w-md mx-4 shadow-2xl border-2 border-[#E07A5F]">
+                                            <CardContent className="p-8 text-center">
+                                                <div className="mb-4 flex justify-center">
+                                                    <div className="rounded-full bg-[#E07A5F]/10 p-4">
+                                                        <Lock className="h-12 w-12 text-[#E07A5F]" />
+                                                    </div>
+                                                </div>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                                                    Unlock All Results
+                                                </h3>
+                                                <p className="text-gray-600 mb-6">
+                                                    Create a free account to view all {results.length} results and access detailed information about each location.
+                                                </p>
+                                                <div className="space-y-3">
+                                                    <Button
+                                                        onClick={() => setLocation("/register")}
+                                                        className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white text-lg py-6"
+                                                        size="lg"
+                                                    >
+                                                        Create an Account
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => setLoginModalOpen(true)}
+                                                        variant="outline"
+                                                        className="w-full border-[#94AF9F] text-[#94AF9F] hover:bg-[#94AF9F]/10 text-lg py-6"
+                                                        size="lg"
+                                                    >
+                                                        Log In
+                                                    </Button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </div>
+                            )}
+                            </div>
                         )}
                     </>
                 )}
             </div>
+
+            {/* Login Modal */}
+            <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} />
         </div>
     );
 };

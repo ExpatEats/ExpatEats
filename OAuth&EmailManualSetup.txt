@@ -1,0 +1,996 @@
+=============================================================================
+OAUTH & EMAIL SERVICE MANUAL SETUP GUIDE
+ExpatEats Application
+=============================================================================
+
+This file contains ALL manual setup steps required to configure Google OAuth
+and SendGrid Email services for the ExpatEats application.
+
+Follow these steps BEFORE running the backend implementation.
+
+=============================================================================
+TABLE OF CONTENTS
+=============================================================================
+
+1. Google OAuth 2.0 Setup
+2. SendGrid Email Service Setup
+3. Environment Variables Configuration
+4. Domain DNS Configuration (Production Only)
+5. Testing Your Setup
+6. Troubleshooting Common Issues
+
+=============================================================================
+SECTION 1: GOOGLE OAUTH 2.0 SETUP
+=============================================================================
+
+TIME REQUIRED: 15-20 minutes
+COST: Free
+
+-----------------------------------------------------------------------------
+STEP 1.1: CREATE GOOGLE CLOUD PROJECT
+-----------------------------------------------------------------------------
+
+1. Go to: https://console.cloud.google.com/
+
+2. Sign in with your Google account
+
+3. Click the project dropdown at the top of the page
+
+4. Click "New Project"
+
+5. Fill in project details:
+   - Project Name: ExpatEats
+   - Organization: (leave default or select your org)
+   - Location: (leave default)
+
+6. Click "CREATE"
+
+7. Wait for project creation (takes a few seconds)
+
+8. Select your new project from the project dropdown
+
+-----------------------------------------------------------------------------
+STEP 1.2: ENABLE GOOGLE+ API
+-----------------------------------------------------------------------------
+
+1. In the left sidebar, click "APIs & Services" → "Library"
+
+2. In the search box, type: "Google+ API"
+
+3. Click on "Google+ API" in the results
+
+4. Click the "ENABLE" button
+
+5. Wait for confirmation that the API is enabled
+
+   NOTE: If you can't find Google+ API, search for "Google People API"
+   instead and enable that. Both work for OAuth authentication.
+
+-----------------------------------------------------------------------------
+STEP 1.3: CONFIGURE OAUTH CONSENT SCREEN
+-----------------------------------------------------------------------------
+
+1. In left sidebar, click "APIs & Services" → "OAuth consent screen"
+
+2. Select User Type:
+   ○ External (recommended for most cases)
+
+3. Click "CREATE"
+
+4. Fill in App Information (Page 1):
+   - App name: ExpatEats
+   - User support email: [your-email@example.com]
+   - App logo: (optional - skip for now)
+   - Application home page: http://localhost:3001
+   - Application Privacy Policy: (optional for dev, required for prod)
+   - Application Terms of Service: (optional)
+   - Authorized domains: (leave empty for dev, add expateatsguide.com for prod)
+   - Developer contact email: [your-email@example.com]
+
+5. Click "SAVE AND CONTINUE"
+
+6. Configure Scopes (Page 2):
+   - Click "ADD OR REMOVE SCOPES"
+   - Search for and select these scopes:
+     ✓ .../auth/userinfo.email
+     ✓ .../auth/userinfo.profile
+   - Click "UPDATE"
+   - Click "SAVE AND CONTINUE"
+
+7. Add Test Users (Page 3) - IMPORTANT FOR DEVELOPMENT:
+   - Click "ADD USERS"
+   - Enter email addresses of people who will test the app:
+     [your-email@example.com]
+     [other-test-user@example.com]
+   - Click "ADD"
+   - Click "SAVE AND CONTINUE"
+
+8. Review Summary (Page 4):
+   - Review all settings
+   - Click "BACK TO DASHBOARD"
+
+-----------------------------------------------------------------------------
+STEP 1.4: CREATE OAUTH 2.0 CREDENTIALS
+-----------------------------------------------------------------------------
+
+1. In left sidebar, click "APIs & Services" → "Credentials"
+
+2. Click "+ CREATE CREDENTIALS" at the top
+
+3. Select "OAuth 2.0 Client ID"
+
+4. If prompted to configure consent screen, you've already done this - click Back
+
+5. Configure OAuth Client:
+   - Application type: Web application
+   - Name: ExpatEats Web Client
+
+6. Add Authorized JavaScript origins:
+   - Click "+ ADD URI"
+   - Enter: http://localhost:3001
+
+   For production, also add:
+   - Click "+ ADD URI" again
+   - Enter: https://expateatsguide.com
+
+7. Add Authorized redirect URIs:
+   - Click "+ ADD URI"
+   - Enter: http://localhost:3001/api/auth/google/callback
+
+   For production, also add:
+   - Click "+ ADD URI" again
+   - Enter: https://expateatsguide.com/api/auth/google/callback
+
+8. Click "CREATE"
+
+-----------------------------------------------------------------------------
+STEP 1.5: SAVE YOUR CREDENTIALS
+-----------------------------------------------------------------------------
+
+A dialog will appear with your credentials:
+
+1. COPY and SAVE these values somewhere safe:
+
+   Client ID (looks like):
+   123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com
+
+   Client Secret (looks like):
+   GOCSPX-AbCdEfGhIjKlMnOpQrStUvWxYz
+
+   ⚠️ CRITICAL: The Client Secret is only shown ONCE!
+   Save it now or you'll have to generate a new one.
+
+2. Click "OK" to close the dialog
+
+3. You can always find your Client ID later in the Credentials page,
+   but the Secret is only shown once.
+
+-----------------------------------------------------------------------------
+STEP 1.6: RECORD YOUR GOOGLE OAUTH CREDENTIALS
+-----------------------------------------------------------------------------
+
+Copy these values to update your .env file later:
+
+GOOGLE_CLIENT_ID=_______________________________________________.apps.googleusercontent.com
+
+GOOGLE_CLIENT_SECRET=GOCSPX-_____________________________
+
+GOOGLE_CALLBACK_URL=http://localhost:3001/api/auth/google/callback
+
+
+✅ GOOGLE OAUTH SETUP COMPLETE!
+
+=============================================================================
+SECTION 2: SENDGRID EMAIL SERVICE SETUP
+=============================================================================
+
+TIME REQUIRED: 20-30 minutes
+COST: Free tier available (100 emails/day)
+
+-----------------------------------------------------------------------------
+STEP 2.1: CREATE SENDGRID ACCOUNT
+-----------------------------------------------------------------------------
+
+1. Go to: https://sendgrid.com/
+
+2. Click "Start for Free" or "Sign Up"
+
+3. Fill out registration form:
+   - Email address: [your-email@example.com]
+   - Password: [create-strong-password]
+   - Complete CAPTCHA
+
+4. Click "Create Account"
+
+5. Check your email inbox
+
+6. Click the verification link in the email from SendGrid
+
+7. You'll be redirected to complete your profile
+
+-----------------------------------------------------------------------------
+STEP 2.2: COMPLETE SENDGRID PROFILE
+-----------------------------------------------------------------------------
+
+1. Tell us about yourself:
+   - First Name: [Your First Name]
+   - Last Name: [Your Last Name]
+   - Company Name: ExpatEats
+   - Company Website: expateatsguide.com (or your domain)
+
+2. Choose your sending plan:
+
+   For Development/Testing:
+   ○ Free - 100 emails/day forever (select this)
+
+   For Production (choose later if needed):
+   ○ Essentials - $19.95/month, 50,000 emails/month
+   ○ Pro - $89.95/month, 100,000 emails/month
+
+3. Click "Get Started"
+
+-----------------------------------------------------------------------------
+STEP 2.3: VERIFY SENDER IDENTITY (QUICK METHOD FOR DEVELOPMENT)
+-----------------------------------------------------------------------------
+
+This is the fastest way to get started. For production, see Step 2.4.
+
+1. In SendGrid dashboard, go to: Settings → Sender Authentication
+
+2. Under "Sender Identity", click "Verify a Single Sender"
+
+3. Click "Create New Sender"
+
+4. Fill out the sender form:
+
+   - From Name: ExpatEats
+   - From Email Address: [your-email@gmail.com]
+     (For testing, use your personal email. For production, use noreply@expateatsguide.com)
+
+   - Reply To: [your-email@gmail.com]
+     (Same as above - use personal email for testing)
+
+   - Company Address: 123 Main Street
+   - City: Lisbon
+   - State/Province: Lisbon
+   - Zip Code: 1000-001
+   - Country: Portugal
+
+   - Nickname: ExpatEats Test Sender
+     (Internal name - only you see this)
+
+5. Click "Create"
+
+6. Check your email inbox (the "From Email Address" you entered)
+
+7. You'll receive an email: "SendGrid Sender Verification"
+
+8. Click "Verify Single Sender" button in the email
+
+9. You'll see confirmation: "Sender verified successfully"
+
+10. Return to SendGrid dashboard - you should see a green checkmark ✓
+
+-----------------------------------------------------------------------------
+STEP 2.4: DOMAIN AUTHENTICATION (OPTIONAL - FOR PRODUCTION)
+-----------------------------------------------------------------------------
+
+Skip this step if you're just testing. This improves deliverability for production.
+
+REQUIREMENTS:
+- Access to your domain's DNS settings
+- A custom domain (e.g., expateatsguide.com)
+
+STEPS:
+
+1. In SendGrid dashboard, go to: Settings → Sender Authentication
+
+2. Under "Authenticate Your Domain", click "Get Started"
+
+3. Select your DNS host:
+   - If you use Cloudflare, GoDaddy, Namecheap, etc., select it
+   - Otherwise select "Other Host"
+
+4. Enter your domain: expateatsguide.com
+
+5. Advanced Settings:
+   ✓ Use automated security (recommended)
+   ✓ Use a branded link
+   - Don't use custom return path
+
+6. Click "Next"
+
+7. SendGrid will generate DNS records. Example (yours will be different):
+
+   Record 1:
+   Type: CNAME
+   Host: em9876.expateatsguide.com
+   Value: u1234567.wl123.sendgrid.net
+
+   Record 2:
+   Type: CNAME
+   Host: s1._domainkey.expateatsguide.com
+   Value: s1.domainkey.u1234567.wl123.sendgrid.net
+
+   Record 3:
+   Type: CNAME
+   Host: s2._domainkey.expateatsguide.com
+   Value: s2.domainkey.u1234567.wl123.sendgrid.net
+
+8. SAVE THESE DNS RECORDS - you'll need to add them to your domain
+
+9. Add these records to your domain's DNS settings:
+   - Log in to your domain registrar (GoDaddy, Namecheap, Cloudflare, etc.)
+   - Find DNS settings
+   - Add each CNAME record exactly as shown
+   - Save changes
+
+10. Return to SendGrid and click "Verify"
+
+11. Wait for verification:
+    - Can take 5 minutes to 48 hours
+    - Usually completes within 1-2 hours
+    - SendGrid will email you when complete
+
+12. Once verified, you'll see green checkmarks ✓
+
+AFTER DOMAIN AUTHENTICATION:
+- You can send from ANY email address @expateatsguide.com
+- No need to verify individual email addresses
+- Better deliverability (emails less likely to go to spam)
+- No "via sendgrid.net" label in emails
+
+-----------------------------------------------------------------------------
+STEP 2.5: CREATE SENDGRID API KEY
+-----------------------------------------------------------------------------
+
+1. In SendGrid dashboard, go to: Settings → API Keys
+
+2. Click "Create API Key"
+
+3. Configure the API key:
+
+   - API Key Name: ExpatEats Development
+     (Use different names for dev/staging/production)
+
+   - API Key Permissions: Select "Restricted Access"
+
+   - Scroll down to "Mail Send" section
+   - Click the dropdown arrow to expand it
+   - Check the box: ✓ Mail Send (should show "Full Access")
+
+   - Leave all other permissions UNCHECKED
+     (This follows principle of least privilege)
+
+4. Click "Create & View"
+
+5. YOUR API KEY WILL BE SHOWN - COPY IT NOW:
+
+   SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+   ⚠️ CRITICAL: This is shown ONLY ONCE!
+   You cannot retrieve it later.
+   If you lose it, you must create a new API key.
+
+6. SAVE the API key somewhere safe (password manager, secure notes)
+
+7. Click "Done"
+
+-----------------------------------------------------------------------------
+STEP 2.6: VERIFY ADDITIONAL SENDER ADDRESSES (OPTIONAL)
+-----------------------------------------------------------------------------
+
+If you want to send from multiple email addresses, verify each one:
+
+FOR TESTING (using Single Sender Verification):
+
+Repeat Step 2.3 for each email address you want to use:
+- admin@expateatsguide.com (or your-admin-email@gmail.com)
+- hello@expateatsguide.com (or your-support-email@gmail.com)
+- newsletter@expateatsguide.com (or your-newsletter@gmail.com)
+
+FOR PRODUCTION (using Domain Authentication):
+
+If you completed Step 2.4, you can send from any @expateatsguide.com
+email without additional verification. Just use them in your code.
+
+-----------------------------------------------------------------------------
+STEP 2.7: RECORD YOUR SENDGRID CREDENTIALS
+-----------------------------------------------------------------------------
+
+Copy these values to update your .env file later:
+
+SENDGRID_API_KEY=SG._________________________________________________
+
+SENDGRID_VERIFIED_SENDER=_______________________________
+(The email address you verified in Step 2.3)
+
+Example values:
+SENDGRID_VERIFIED_SENDER=noreply@expateatsguide.com
+(or for testing: your-email@gmail.com)
+
+
+✅ SENDGRID SETUP COMPLETE!
+
+=============================================================================
+SECTION 3: ENVIRONMENT VARIABLES CONFIGURATION
+=============================================================================
+
+Now that you have all the credentials, update your .env file.
+
+-----------------------------------------------------------------------------
+STEP 3.1: OPEN YOUR .ENV FILE
+-----------------------------------------------------------------------------
+
+Location: /Users/aaronroussel/ExpatEats/.env
+
+Open this file in your text editor.
+
+-----------------------------------------------------------------------------
+STEP 3.2: UPDATE GOOGLE OAUTH VARIABLES
+-----------------------------------------------------------------------------
+
+Find these lines and replace with your actual values from Step 1.6:
+
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_CALLBACK_URL=http://localhost:3001/api/auth/google/callback
+
+REPLACE WITH (using your actual values):
+
+GOOGLE_CLIENT_ID=123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-AbCdEfGhIjKlMnOpQrStUvWxYz
+GOOGLE_CALLBACK_URL=http://localhost:3001/api/auth/google/callback
+
+-----------------------------------------------------------------------------
+STEP 3.3: UPDATE SENDGRID VARIABLES
+-----------------------------------------------------------------------------
+
+Find these lines and replace with your actual values from Step 2.7:
+
+SENDGRID_API_KEY=SG.your-sendgrid-api-key-here
+SENDGRID_VERIFIED_SENDER=noreply@expateatsguide.com
+
+REPLACE WITH (using your actual values):
+
+SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SENDGRID_VERIFIED_SENDER=your-verified-email@example.com
+
+-----------------------------------------------------------------------------
+STEP 3.4: UPDATE EMAIL ADDRESSES (OPTIONAL)
+-----------------------------------------------------------------------------
+
+If you verified additional sender addresses, update these:
+
+ADMIN_EMAIL=admin@expateatsguide.com
+SUPPORT_EMAIL=hello@expateatsguide.com
+NEWSLETTER_EMAIL=newsletter@expateatsguide.com
+
+For development/testing, you can use the same verified email for all:
+
+ADMIN_EMAIL=your-verified-email@gmail.com
+SUPPORT_EMAIL=your-verified-email@gmail.com
+NEWSLETTER_EMAIL=your-verified-email@gmail.com
+
+-----------------------------------------------------------------------------
+STEP 3.5: VERIFY EMAIL SETTINGS
+-----------------------------------------------------------------------------
+
+Check these settings are correct:
+
+EMAIL_ENABLED=true
+EMAIL_DEBUG=true
+EMAIL_RATE_LIMIT=100
+FRONTEND_URL=http://localhost:3001
+
+For development:
+- Keep EMAIL_DEBUG=true (emails will be logged, not sent)
+- This lets you test without actually sending emails
+- Change to false when you want to actually send
+
+-----------------------------------------------------------------------------
+STEP 3.6: SAVE YOUR .ENV FILE
+-----------------------------------------------------------------------------
+
+1. Save the .env file
+
+2. DO NOT COMMIT THIS FILE TO GIT!
+   - It should already be in .gitignore
+   - Verify: check that .env is listed in .gitignore
+
+3. Restart your application if it's running
+   - Environment variables are loaded on startup
+   - Changes won't take effect until restart
+
+✅ ENVIRONMENT VARIABLES CONFIGURED!
+
+=============================================================================
+SECTION 4: DOMAIN DNS CONFIGURATION (PRODUCTION ONLY)
+=============================================================================
+
+WHEN TO DO THIS:
+- Only needed for production deployment
+- Skip if you're just developing/testing locally
+
+-----------------------------------------------------------------------------
+STEP 4.1: SENDGRID DOMAIN AUTHENTICATION DNS RECORDS
+-----------------------------------------------------------------------------
+
+If you completed Step 2.4, you need to add DNS records.
+
+YOUR DNS RECORDS (from SendGrid):
+(Copy from SendGrid dashboard - these are examples)
+
+Record 1:
+Type: CNAME
+Host: em9876.expateatsguide.com
+Value: u1234567.wl123.sendgrid.net
+TTL: 3600 (or automatic)
+
+Record 2:
+Type: CNAME
+Host: s1._domainkey.expateatsguide.com
+Value: s1.domainkey.u1234567.wl123.sendgrid.net
+TTL: 3600 (or automatic)
+
+Record 3:
+Type: CNAME
+Host: s2._domainkey.expateatsguide.com
+Value: s2.domainkey.u1234567.wl123.sendgrid.net
+TTL: 3600 (or automatic)
+
+-----------------------------------------------------------------------------
+STEP 4.2: ADD DNS RECORDS TO YOUR DOMAIN
+-----------------------------------------------------------------------------
+
+The exact steps depend on your DNS provider:
+
+CLOUDFLARE:
+1. Log in to Cloudflare
+2. Select your domain
+3. Go to DNS → Records
+4. Click "Add record"
+5. Enter each CNAME record
+6. Set Proxy status to "DNS only" (gray cloud)
+7. Save
+
+GODADDY:
+1. Log in to GoDaddy
+2. Go to My Products → Domains
+3. Click DNS for your domain
+4. Scroll to DNS Records
+5. Click "Add" for each record
+6. Select "CNAME" as type
+7. Enter Host and Points to
+8. Save
+
+NAMECHEAP:
+1. Log in to Namecheap
+2. Go to Domain List
+3. Click "Manage" for your domain
+4. Go to Advanced DNS tab
+5. Click "Add New Record"
+6. Select "CNAME Record"
+7. Enter Host and Value
+8. Save
+
+OTHER PROVIDERS:
+- Look for "DNS Settings", "DNS Management", or "Zone Editor"
+- Add CNAME records with the Host and Value from SendGrid
+
+-----------------------------------------------------------------------------
+STEP 4.3: VERIFY DNS PROPAGATION
+-----------------------------------------------------------------------------
+
+1. After adding DNS records, wait 5-10 minutes
+
+2. Return to SendGrid dashboard
+
+3. Go to Settings → Sender Authentication
+
+4. Under your domain, click "Verify"
+
+5. If successful: Green checkmarks appear ✓
+
+6. If not verified yet:
+   - Wait longer (can take up to 48 hours)
+   - Double-check DNS records are correct
+   - Use DNS checker: https://dnschecker.org/
+
+✅ DNS CONFIGURATION COMPLETE!
+
+=============================================================================
+SECTION 5: TESTING YOUR SETUP
+=============================================================================
+
+-----------------------------------------------------------------------------
+STEP 5.1: TEST GOOGLE OAUTH (AFTER BACKEND IS IMPLEMENTED)
+-----------------------------------------------------------------------------
+
+These tests can only be done after the backend OAuth code is implemented.
+
+MANUAL TEST:
+
+1. Start your application: npm run dev
+
+2. Navigate to login page
+
+3. Click "Sign in with Google" button
+
+4. You should be redirected to Google sign-in page
+
+5. Sign in with a test user email (from Step 1.3, Test Users)
+
+6. Grant permissions to the app
+
+7. You should be redirected back to your app
+
+8. You should be logged in
+
+IF IT FAILS:
+- Check browser console for errors
+- Check server logs for errors
+- Verify .env variables are correct
+- Ensure test user is added in Google Cloud Console
+- See Troubleshooting section below
+
+-----------------------------------------------------------------------------
+STEP 5.2: TEST SENDGRID EMAIL (AFTER BACKEND IS IMPLEMENTED)
+-----------------------------------------------------------------------------
+
+These tests can only be done after the email service code is implemented.
+
+MANUAL TEST WITH EMAIL_DEBUG=true:
+
+1. Ensure EMAIL_DEBUG=true in .env
+
+2. Start your application: npm run dev
+
+3. Trigger an email (e.g., register new account)
+
+4. Check server console logs
+
+5. You should see: "[EMAIL DEBUG] Would send: ..." messages
+
+6. No actual email is sent (just logged)
+
+MANUAL TEST WITH ACTUAL EMAIL SENDING:
+
+1. Set EMAIL_DEBUG=false in .env
+
+2. Restart your application
+
+3. Trigger an email (e.g., password reset)
+
+4. Check server console logs for: "[EMAIL] Sent successfully"
+
+5. Check recipient email inbox
+
+6. Email should arrive within seconds
+
+7. Check SendGrid dashboard:
+   - Go to Activity
+   - You should see the email listed
+   - Status should show "Delivered"
+
+IF EMAIL NOT RECEIVED:
+- Check spam folder
+- Verify sender email is verified in SendGrid
+- Check SendGrid Activity for bounces/errors
+- Verify SENDGRID_API_KEY is correct
+- See Troubleshooting section below
+
+-----------------------------------------------------------------------------
+STEP 5.3: DIRECT SENDGRID API TEST (OPTIONAL)
+-----------------------------------------------------------------------------
+
+Test SendGrid directly without your application:
+
+1. Open terminal
+
+2. Run this curl command (replace YOUR_API_KEY and YOUR_VERIFIED_EMAIL):
+
+curl --request POST \
+  --url https://api.sendgrid.com/v3/mail/send \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "personalizations": [
+      {
+        "to": [{"email": "your-test-email@example.com"}]
+      }
+    ],
+    "from": {"email": "YOUR_VERIFIED_EMAIL"},
+    "subject": "Test Email from ExpatEats",
+    "content": [
+      {
+        "type": "text/plain",
+        "value": "This is a test email to verify SendGrid is working!"
+      }
+    ]
+  }'
+
+3. Check the response:
+   - Success: Empty response with 202 status
+   - Error: JSON with error details
+
+4. Check your test email inbox
+
+✅ SETUP TESTING COMPLETE!
+
+=============================================================================
+SECTION 6: TROUBLESHOOTING COMMON ISSUES
+=============================================================================
+
+-----------------------------------------------------------------------------
+GOOGLE OAUTH ISSUES
+-----------------------------------------------------------------------------
+
+ERROR: "redirect_uri_mismatch"
+
+CAUSE: Callback URL doesn't match Google Cloud Console configuration
+
+SOLUTION:
+1. Check .env GOOGLE_CALLBACK_URL matches exactly:
+   http://localhost:3001/api/auth/google/callback
+2. Check Google Cloud Console Authorized redirect URIs
+3. Ensure no trailing slashes
+4. Ensure http vs https matches
+
+---
+
+ERROR: "Access blocked: This app's request is invalid"
+
+CAUSE: OAuth consent screen not configured properly
+
+SOLUTION:
+1. Go to Google Cloud Console
+2. Check OAuth consent screen is complete
+3. Verify scopes are added (email, profile)
+4. Ensure test users are added (for External apps)
+
+---
+
+ERROR: "This app isn't verified"
+
+CAUSE: App hasn't been verified by Google (normal for development)
+
+SOLUTION:
+1. For testing: Add user to Test Users list in consent screen
+2. For users not in test list: Click "Advanced" → "Go to [App Name] (unsafe)"
+3. For production: Submit app for verification (only if needed)
+
+---
+
+ERROR: "Permission denied to generate login hint for target domain"
+
+CAUSE: Domain restrictions or consent screen configuration
+
+SOLUTION:
+1. Remove any authorized domain restrictions in consent screen
+2. Ensure app is set to "External" type
+3. Check that user email domain isn't restricted
+
+-----------------------------------------------------------------------------
+SENDGRID EMAIL ISSUES
+-----------------------------------------------------------------------------
+
+ERROR: "The from address does not match a verified Sender Identity"
+
+CAUSE: Trying to send from unverified email address
+
+SOLUTION:
+1. Go to SendGrid Settings → Sender Authentication
+2. Verify the sender email you're using
+3. Or use domain authentication to verify whole domain
+4. Update SENDGRID_VERIFIED_SENDER in .env
+
+---
+
+ERROR: "Permission denied, wrong credentials"
+
+CAUSE: Invalid or expired API key
+
+SOLUTION:
+1. Verify SENDGRID_API_KEY in .env is correct
+2. Check API key has "Mail Send" permission
+3. Generate new API key if needed
+4. Ensure no extra spaces in .env file
+
+---
+
+PROBLEM: Emails going to spam folder
+
+CAUSE: Poor sender reputation or missing authentication
+
+SOLUTION:
+1. Set up domain authentication (Step 2.4)
+2. Use consistent sender addresses
+3. Avoid spam trigger words in subject/content
+4. Include unsubscribe link in marketing emails
+5. Ask recipients to add you to contacts
+
+---
+
+PROBLEM: Emails not being delivered (bouncing)
+
+CAUSE: Invalid recipient email or full mailbox
+
+SOLUTION:
+1. Check SendGrid Activity dashboard for bounce details
+2. Verify recipient email address is valid
+3. Check for "hard bounce" (bad email) vs "soft bounce" (full mailbox)
+4. Remove hard bounces from your list
+
+---
+
+PROBLEM: Hitting rate limits
+
+CAUSE: Sending too many emails for your plan
+
+SOLUTION:
+1. Check current plan limits in SendGrid
+2. Free tier: 100 emails/day
+3. Implement email queueing in application
+4. Upgrade to paid plan if needed
+
+---
+
+ERROR: "Failed to send email" in application logs
+
+CAUSE: Various - check detailed error message
+
+SOLUTION:
+1. Look for specific error in logs
+2. Verify EMAIL_ENABLED=true
+3. Check network connectivity
+4. Verify SendGrid service status: status.sendgrid.com
+5. Check API key permissions
+
+-----------------------------------------------------------------------------
+ENVIRONMENT VARIABLE ISSUES
+-----------------------------------------------------------------------------
+
+PROBLEM: Changes to .env not taking effect
+
+SOLUTION:
+1. Restart your application
+2. Environment variables load on startup only
+3. Kill server and restart: npm run dev
+
+---
+
+PROBLEM: "undefined" errors for environment variables
+
+SOLUTION:
+1. Check .env file exists in project root
+2. Verify variable names match exactly (case-sensitive)
+3. Ensure no extra spaces around = sign
+4. Check dotenv is loaded in application
+5. Restart application after changes
+
+---
+
+PROBLEM: API keys showing as undefined in code
+
+SOLUTION:
+1. Check .env file format:
+   CORRECT: SENDGRID_API_KEY=SG.xxx
+   WRONG: SENDGRID_API_KEY = SG.xxx (spaces)
+   WRONG: SENDGRID_API_KEY="SG.xxx" (quotes - don't use unless needed)
+2. Restart application
+3. Console.log process.env.SENDGRID_API_KEY to verify
+
+=============================================================================
+PRODUCTION DEPLOYMENT CHECKLIST
+=============================================================================
+
+Before deploying to production:
+
+GOOGLE OAUTH:
+□ Created production OAuth credentials in Google Cloud Console
+□ Added production domain to Authorized JavaScript origins
+□ Added production callback URL to Authorized redirect URIs
+□ Updated .env with production GOOGLE_CALLBACK_URL
+□ Verified OAuth consent screen has privacy policy URL
+□ Tested OAuth flow in staging environment
+
+SENDGRID:
+□ Completed domain authentication (DNS records added)
+□ Verified all sender email addresses
+□ Created production API key (separate from dev)
+□ Updated .env with production SENDGRID_API_KEY
+□ Set EMAIL_DEBUG=false in production
+□ Set up email templates with production URLs
+□ Configured unsubscribe links
+□ Tested email delivery in staging
+
+SECURITY:
+□ Using HTTPS in production (required for OAuth)
+□ Environment variables stored securely (not in code)
+□ Different API keys for dev/staging/production
+□ .env file NOT committed to git
+□ Session secret is strong random string
+□ Rate limiting configured
+
+TESTING:
+□ All OAuth flows tested in staging
+□ All email types tested in staging
+□ Error handling tested
+□ Email templates tested on multiple clients
+□ Unsubscribe links tested
+□ DNS propagation verified
+
+=============================================================================
+QUICK REFERENCE
+=============================================================================
+
+GOOGLE CLOUD CONSOLE:
+https://console.cloud.google.com/
+
+SENDGRID DASHBOARD:
+https://app.sendgrid.com/
+
+DNS CHECKER (verify DNS records):
+https://dnschecker.org/
+
+SENDGRID STATUS:
+https://status.sendgrid.com/
+
+GOOGLE OAUTH DOCUMENTATION:
+https://developers.google.com/identity/protocols/oauth2
+
+SENDGRID API DOCUMENTATION:
+https://docs.sendgrid.com/api-reference
+
+=============================================================================
+CREDENTIALS SUMMARY SHEET
+=============================================================================
+
+Keep this information in a secure location (password manager):
+
+GOOGLE OAUTH CREDENTIALS:
+--------------------------
+Client ID: ___________________________________________________
+Client Secret: _______________________________________________
+Callback URL (Dev): http://localhost:3001/api/auth/google/callback
+Callback URL (Prod): https://expateatsguide.com/api/auth/google/callback
+
+SENDGRID CREDENTIALS:
+----------------------
+API Key (Dev): SG._______________________________________________
+API Key (Prod): SG.______________________________________________
+Verified Sender: ________________________________________________
+Domain: expateatsguide.com
+
+SENDGRID DNS RECORDS:
+----------------------
+(From SendGrid domain authentication - copy from dashboard)
+
+Record 1:
+Type: CNAME
+Host: _____________________________________________________________
+Value: ____________________________________________________________
+
+Record 2:
+Type: CNAME
+Host: _____________________________________________________________
+Value: ____________________________________________________________
+
+Record 3:
+Type: CNAME
+Host: _____________________________________________________________
+Value: ____________________________________________________________
+
+=============================================================================
+END OF MANUAL SETUP GUIDE
+=============================================================================
+
+After completing all steps in this guide, you are ready to:
+1. Proceed with backend implementation (database migrations, code)
+2. Test OAuth login flow
+3. Test email sending functionality
+
+Refer to OAuth&EmailBackendChecklist.txt for backend implementation tasks.
+
+Last Updated: 2025-11-15

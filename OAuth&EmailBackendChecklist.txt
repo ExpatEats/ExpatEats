@@ -1,0 +1,820 @@
+=============================================================================
+OAUTH & EMAIL SERVICE BACKEND IMPLEMENTATION CHECKLIST
+ExpatEats Application
+=============================================================================
+
+Last Updated: 2025-11-15
+Status: In Progress - Section 4 Complete (Google OAuth Backend)
+
+This checklist covers all backend implementation tasks for:
+1. Google OAuth 2.0 Authentication
+2. Email Service (SendGrid)
+
+=============================================================================
+SECTION 1: ENVIRONMENT & CONFIGURATION ✓ COMPLETE
+=============================================================================
+
+ENVIRONMENT VARIABLES
+✓ Add GOOGLE_CLIENT_ID to .env
+✓ Add GOOGLE_CLIENT_SECRET to .env
+✓ Add GOOGLE_CALLBACK_URL to .env (dev: http://localhost:3001/api/auth/google/callback)
+✓ Add SENDGRID_API_KEY to .env
+✓ Add SENDGRID_VERIFIED_SENDER to .env (e.g., noreply@expateatsguide.com)
+✓ Add ADMIN_EMAIL to .env
+✓ Add SUPPORT_EMAIL to .env
+✓ Add NEWSLETTER_EMAIL to .env
+✓ Add FRONTEND_URL to .env
+✓ Add EMAIL_ENABLED to .env (default: true)
+✓ Add EMAIL_DEBUG to .env (default: true for dev, false for prod)
+✓ Add EMAIL_RATE_LIMIT to .env (default: 100)
+✓ Add UNSUBSCRIBE_URL to .env
+
+EXTERNAL SERVICE SETUP (Manual - See OAuth&EmailManualSetup.txt)
+✓ Create Google Cloud project at console.cloud.google.com
+✓ Enable Google+ API / Google OAuth API
+✓ Create OAuth 2.0 Client ID credentials
+✓ Configure Authorized JavaScript origins (localhost + production domain)
+✓ Configure Authorized redirect URIs
+✓ Copy Google Client ID and Secret to .env
+✓ Create SendGrid account at sendgrid.com
+✓ Choose appropriate SendGrid plan
+✓ Verify sender email address(es) in SendGrid
+✓ Create SendGrid API key with Mail Send permissions
+✓ Copy SendGrid API key to .env
+✓ (Optional) Set up domain authentication for SendGrid (add DNS records)
+
+=============================================================================
+SECTION 2: DATABASE MIGRATIONS ✓ COMPLETE
+=============================================================================
+
+OAUTH DATABASE CHANGES (Migration 0002)
+✓ Create migration file: migrations/0002_add_google_oauth_support.sql
+✓ Add google_id column (VARCHAR(255) UNIQUE)
+✓ Add auth_provider column (VARCHAR(50) DEFAULT 'local')
+✓ Add profile_picture column (TEXT)
+✓ Add google_email column (VARCHAR(255))
+✓ Alter username column to be nullable
+✓ Alter password column to be nullable
+✓ Add constraint: auth_method_check (ensures at least one auth method)
+✓ Create index on google_id for fast lookups
+✓ Create index on auth_provider
+✓ Add column comments for documentation
+✓ Test migration on dev database
+✓ Document rollback procedure
+
+EMAIL SERVICE DATABASE CHANGES (Migration 0003)
+✓ Create migration file: migrations/0003_add_email_logs.sql
+✓ Create email_logs table with columns:
+  ✓ id (SERIAL PRIMARY KEY)
+  ✓ to_email (VARCHAR(255) NOT NULL)
+  ✓ from_email (VARCHAR(255))
+  ✓ subject (VARCHAR(500) NOT NULL)
+  ✓ email_type (VARCHAR(100))
+  ✓ status (VARCHAR(50) NOT NULL)
+  ✓ message_id (VARCHAR(255))
+  ✓ error_message (TEXT)
+  ✓ user_id (INTEGER REFERENCES users)
+  ✓ created_at (TIMESTAMP DEFAULT NOW)
+  ✓ updated_at (TIMESTAMP DEFAULT NOW)
+✓ Create newsletter_subscribers table with columns:
+  ✓ id (SERIAL PRIMARY KEY)
+  ✓ email (VARCHAR(255) UNIQUE NOT NULL)
+  ✓ name (VARCHAR(255))
+  ✓ status (VARCHAR(50) DEFAULT 'subscribed')
+  ✓ subscription_source (VARCHAR(100))
+  ✓ user_id (INTEGER REFERENCES users)
+  ✓ subscribed_at (TIMESTAMP DEFAULT NOW)
+  ✓ unsubscribed_at (TIMESTAMP)
+  ✓ unsubscribe_token (VARCHAR(255) UNIQUE)
+  ✓ created_at (TIMESTAMP DEFAULT NOW)
+  ✓ updated_at (TIMESTAMP DEFAULT NOW)
+✓ Create indexes:
+  ✓ idx_email_logs_to_email
+  ✓ idx_email_logs_status
+  ✓ idx_email_logs_type
+  ✓ idx_email_logs_created
+  ✓ idx_email_logs_user_id
+  ✓ idx_newsletter_email
+  ✓ idx_newsletter_status
+  ✓ idx_newsletter_token
+  ✓ idx_newsletter_user_id
+✓ Add table comments
+✓ Test migration on dev database
+✓ Document rollback procedure
+
+SCHEMA UPDATES
+✓ Update shared/schema.ts with OAuth fields in users table
+✓ Update shared/schema.ts with emailLogs table definition
+✓ Update shared/schema.ts with newsletterSubscribers table definition
+✓ Export new table schemas (insertEmailLogSchema, insertNewsletterSubscriberSchema)
+✓ Export TypeScript types (EmailLog, NewsletterSubscriber, InsertEmailLog, InsertNewsletterSubscriber)
+✓ Verify TypeScript types are generated correctly
+
+=============================================================================
+SECTION 3: DEPENDENCIES ✓ COMPLETE
+=============================================================================
+
+NPM PACKAGES
+✓ Install passport-google-oauth20 (v2.0.0)
+✓ Install @types/passport-google-oauth20 (v2.0.17 - dev dependency)
+✓ Verify @sendgrid/mail is installed (v8.1.5+) - ✓ v8.1.5
+✓ Verify passport is installed (v0.7.0+) - ✓ v0.7.0
+✓ Update package.json
+✓ Run npm install
+✓ Verify no dependency conflicts
+
+=============================================================================
+SECTION 4: GOOGLE OAUTH BACKEND IMPLEMENTATION ✓ COMPLETE
+=============================================================================
+
+PASSPORT CONFIGURATION
+✓ Create file: server/config/passport.ts
+✓ Import passport and GoogleStrategy
+✓ Import AuthService
+✓ Configure GoogleStrategy with:
+  ✓ clientID from env
+  ✓ clientSecret from env
+  ✓ callbackURL from env
+  ✓ scope: ['profile', 'email']
+✓ Implement strategy callback function:
+  ✓ Extract user info from Google profile (id, email, name, picture)
+  ✓ Check if email is provided (error if not)
+  ✓ Try to find user by googleId
+  ✓ If found, log them in
+  ✓ If not, try to find by email for account linking
+  ✓ If email match, link Google account (call linkGoogleAccount)
+  ✓ If no match, create new Google user
+  ✓ Return user object
+✓ Implement serializeUser (store user.id in session)
+✓ Implement deserializeUser (retrieve user by id)
+✓ Export configured passport instance
+✓ Add error handling throughout
+
+AUTH SERVICE UPDATES
+✓ Open server/services/authService.ts
+✓ Add method: getUserByGoogleId(googleId: string)
+  ✓ Query users table by google_id
+  ✓ Return user without password
+  ✓ Return null if not found
+✓ Add method: createGoogleUser(userData)
+  ✓ Accept: googleId, email, name, profilePicture, googleEmail
+  ✓ Insert into users table with authProvider='google'
+  ✓ Set emailVerified=true (Google verifies emails)
+  ✓ Set role='user', username=null, password=null
+  ✓ Return user without password
+✓ Add method: linkGoogleAccount(userId, googleData)
+  ✓ Accept: userId, googleId, googleEmail, profilePicture
+  ✓ Update user record with Google data
+  ✓ Set authProvider to 'hybrid'
+  ✓ Set emailVerified=true
+  ✓ Update updatedAt timestamp
+  ✓ Return updated user
+✓ Add method: unlinkGoogleAccount(userId)
+  ✓ Check user has username/password first
+  ✓ Throw error if no password (can't unlink only auth method)
+  ✓ Set googleId=null, googleEmail=null
+  ✓ Set authProvider='local'
+  ✓ Update updatedAt timestamp
+  ✓ Return updated user
+✓ Add error handling for all methods
+✓ Add logging for OAuth operations
+
+ROUTES IMPLEMENTATION
+✓ Open server/routes.ts
+✓ Import passport from ./config/passport
+✓ Initialize Passport middleware (in server/index.ts):
+  ✓ app.use(passport.initialize())
+  ✓ app.use(passport.session())
+✓ Add route: GET /api/auth/google
+  ✓ Use passport.authenticate('google', { scope: ['profile', 'email'] })
+  ✓ Apply rate limiting
+  ✓ Initiates OAuth flow
+✓ Add route: GET /api/auth/google/callback
+  ✓ Use passport.authenticate('google', { failureRedirect })
+  ✓ On success, set up session:
+    - req.session.userId = user.id
+    - req.session.username = user.username || user.email
+    - req.session.isAdmin = user.role === 'admin'
+    - req.session.lastActivity = new Date()
+  ✓ Handle returnTo redirect
+  ✓ Redirect to home or intended page
+  ✓ Apply rate limiting
+✓ Add route: GET /api/auth/google/status (protected)
+  ✓ Require authentication
+  ✓ Get user by session userId
+  ✓ Return: isLinked, authProvider, googleEmail, hasPassword
+✓ Add route: POST /api/auth/google/unlink (protected)
+  ✓ Require authentication
+  ✓ Require CSRF token
+  ✓ Apply rate limiting
+  ✓ Call AuthService.unlinkGoogleAccount
+  ✓ Return success/error message
+✓ Add error handling for all OAuth routes
+✓ Add logging for OAuth events
+
+SESSION HANDLING
+✓ Session types support OAuth user data
+✓ deserializeUser populates req.user correctly (uses AuthService.getUserById)
+✓ Session persistence configured
+✓ CSRF protection works with OAuth routes
+
+=============================================================================
+SECTION 5: EMAIL SERVICE BACKEND IMPLEMENTATION
+=============================================================================
+
+EMAIL SERVICE CLASS
+□ Create file: server/services/emailService.ts
+□ Import @sendgrid/mail
+□ Import db and schema
+□ Initialize SendGrid with API key
+□ Define EmailOptions interface
+□ Define EmailResult interface
+□ Create EmailService class with static methods
+□ Add property: defaultFrom (from env)
+□ Add property: isEnabled (from env)
+□ Add property: isDebug (from env)
+□ Implement method: sendEmail(options)
+  □ Check if email service is enabled
+  □ Validate SendGrid API key is configured
+  □ In debug mode, log email instead of sending
+  □ Prepare SendGrid message object
+  □ Configure tracking settings (click, open)
+  □ Send email via SendGrid
+  □ Log success with messageId
+  □ Call logEmail to database
+  □ Return success result
+  □ Catch and handle errors
+  □ Log failures to database
+  □ Return error result
+□ Implement method: sendPasswordResetEmail(email, token, userName)
+  □ Generate reset URL with token
+  □ Create HTML template (responsive, branded)
+  □ Create plain text version
+  □ Call sendEmail with proper categories
+  □ Return result
+□ Implement method: sendEmailVerification(email, token, userName)
+  □ Generate verification URL with token
+  □ Create HTML template (similar to password reset)
+  □ Create plain text version
+  □ Call sendEmail with proper categories
+  □ Return result
+□ Implement method: sendWelcomeEmail(email, userName)
+  □ Create welcoming HTML template
+  □ Include key features and getting started info
+  □ Create plain text version
+  □ Call sendEmail with 'welcome' category
+  □ Return result
+□ Implement method: sendPasswordChangedConfirmation(email, userName)
+  □ Create confirmation HTML template
+  □ Include security notice
+  □ Create plain text version
+  □ Call sendEmail
+  □ Return result
+□ Implement method: sendNewsletter(email, content)
+  □ Accept NewsletterContent interface
+  □ Include unsubscribe link
+  □ Call sendEmail with 'newsletter' category
+  □ Return result
+□ Implement method: sendNewsletterWelcome(email, name, unsubToken)
+  □ Create welcome to newsletter template
+  □ Include unsubscribe link with token
+  □ Return result
+□ Implement private method: logEmail(log)
+  □ Insert into email_logs table
+  □ Handle errors gracefully (don't fail email send)
+  □ Log to console
+□ Add comprehensive error handling
+□ Add rate limiting checks
+
+EMAIL TEMPLATES
+□ Design base HTML template structure
+  □ Width: 600px max
+  □ Mobile-responsive design
+  □ Brand colors (#E07A5F, #94AF9F)
+  □ Clear header with logo/app name
+  □ Clean content area
+  □ Footer with links and unsubscribe
+  □ Accessibility features (alt text, headings)
+□ Create Password Reset template
+  □ Clear heading
+  □ Explanation text
+  □ Prominent CTA button
+  □ Link for manual copy-paste
+  □ Expiration notice (1 hour)
+  □ Security reminder
+  □ Footer
+□ Create Email Verification template
+  □ Welcome message
+  □ Verification CTA button
+  □ Link for manual copy-paste
+  □ Footer
+□ Create Welcome Email template
+  □ Friendly greeting
+  □ Overview of key features
+  □ Getting started links
+  □ Support contact info
+  □ Footer
+□ Create Password Changed template
+  □ Confirmation message
+  □ Security notice (if not you, contact support)
+  □ Footer
+□ Create Newsletter Welcome template
+  □ Thank you message
+  □ What to expect
+  □ Unsubscribe link
+  □ Footer
+□ Test all templates on multiple email clients
+  □ Gmail
+  □ Outlook
+  □ Apple Mail
+  □ Mobile devices
+□ Validate HTML for email compatibility
+□ Check plain text fallbacks
+
+=============================================================================
+SECTION 6: PASSWORD RESET IMPLEMENTATION
+=============================================================================
+
+AUTH SERVICE - PASSWORD RESET
+□ Open server/services/authService.ts
+□ Import crypto module
+□ Implement method: generatePasswordResetToken(email)
+  □ Find user by email
+  □ Return generic success message (don't reveal if email exists)
+  □ Generate secure random token (32 bytes hex)
+  □ Hash token with SHA-256
+  □ Set expiration time (1 hour from now)
+  □ Store hashed token and expiration in database
+  □ Call EmailService.sendPasswordResetEmail
+  □ Return success message
+  □ Handle errors gracefully
+□ Implement method: resetPassword(token, newPassword)
+  □ Hash the provided token with SHA-256
+  □ Query database for user with matching token
+  □ Check token hasn't expired
+  □ Return error if invalid/expired
+  □ Hash new password with bcrypt
+  □ Update user password
+  □ Clear reset token and expiration
+  □ Reset failed login attempts
+  □ Clear account lock
+  □ Update timestamp
+  □ Send password changed confirmation email
+  □ Return success message
+  □ Handle errors
+
+PASSWORD RESET ROUTES
+□ Open server/routes.ts
+□ Add route: POST /api/auth/forgot-password
+  □ Apply rate limiting
+  □ Apply CSRF protection
+  □ Validate email is provided
+  □ Call AuthService.generatePasswordResetToken
+  □ Return generic success message
+  □ Handle errors
+  □ Add logging
+□ Add route: POST /api/auth/reset-password
+  □ Apply rate limiting
+  □ Apply CSRF protection
+  □ Validate token and password are provided
+  □ Validate password length (min 8 characters)
+  □ Call AuthService.resetPassword
+  □ Return success/error message
+  □ Handle errors
+  □ Add logging
+
+=============================================================================
+SECTION 7: EMAIL VERIFICATION IMPLEMENTATION
+=============================================================================
+
+AUTH SERVICE - EMAIL VERIFICATION
+□ Open server/services/authService.ts
+□ Implement method: sendVerificationEmail(userId)
+  □ Get user by ID
+  □ Check user exists
+  □ Check email not already verified
+  □ Generate verification token (32 bytes hex)
+  □ Hash token with SHA-256
+  □ Store hashed token in database
+  □ Call EmailService.sendEmailVerification
+  □ Return success
+  □ Handle errors
+□ Implement method: verifyEmail(token)
+  □ Hash provided token with SHA-256
+  □ Query database for user with matching token
+  □ Return error if not found
+  □ Set emailVerified=true
+  □ Clear verification token
+  □ Update timestamp
+  □ Return success message
+  □ Handle errors
+
+REGISTRATION UPDATE
+□ Open server/routes.ts
+□ Find POST /api/auth/register route
+□ After creating new user:
+  □ Call AuthService.sendVerificationEmail(newUser.id)
+  □ Call EmailService.sendWelcomeEmail(newUser.email, newUser.name)
+  □ Update response message to mention email verification
+  □ Handle errors gracefully (don't fail registration if email fails)
+□ Add logging for email sending
+
+EMAIL VERIFICATION ROUTES
+□ Add route: GET /api/auth/verify-email/:token
+  □ Extract token from params
+  □ Call AuthService.verifyEmail(token)
+  □ Return success/error message
+  □ Handle errors
+  □ Add logging
+□ Add route: POST /api/auth/resend-verification
+  □ Require authentication
+  □ Apply rate limiting
+  □ Call AuthService.sendVerificationEmail(userId)
+  □ Return success message
+  □ Handle errors (already verified, etc.)
+  □ Add logging
+
+=============================================================================
+SECTION 8: NEWSLETTER SYSTEM IMPLEMENTATION
+=============================================================================
+
+NEWSLETTER ROUTES
+□ Add route: POST /api/newsletter/subscribe
+  □ Apply CSRF protection
+  □ Validate email and name
+  □ Generate unique unsubscribe token (32 bytes hex)
+  □ Insert into newsletter_subscribers table
+  □ Use ON CONFLICT DO UPDATE for re-subscriptions
+  □ Send newsletter welcome email with unsubscribe token
+  □ Return success message
+  □ Handle errors (duplicate email, etc.)
+  □ Add logging
+□ Add route: GET /api/newsletter/unsubscribe/:token
+  □ Extract token from params
+  □ Find subscriber by unsubscribe token
+  □ Return 404 if not found
+  □ Update status to 'unsubscribed'
+  □ Set unsubscribed_at timestamp
+  □ Return success message
+  □ Handle errors
+  □ Add logging
+□ Add route: GET /api/newsletter/subscribers (admin only)
+  □ Require authentication
+  □ Require admin role
+  □ Query all active subscribers
+  □ Return list
+  □ Add pagination
+  □ Handle errors
+
+NEWSLETTER SERVICE (OPTIONAL)
+□ Create file: server/services/newsletterService.ts
+□ Implement method: getActiveSubscribers()
+□ Implement method: sendNewsletterToAll(content)
+  □ Get all active subscribers
+  □ Batch send emails (respect rate limits)
+  □ Log successes and failures
+  □ Return statistics
+□ Implement method: generateUnsubscribeLink(token)
+□ Add error handling
+
+=============================================================================
+SECTION 9: EXISTING EMAIL ENDPOINTS REFACTOR
+=============================================================================
+
+FEEDBACK ENDPOINT
+□ Find feedback submission route in server/routes.ts
+□ Replace inline SendGrid code with EmailService
+□ Use EmailService.sendEmail method
+□ Add proper error handling
+□ Add email logging
+
+PURCHASE ENDPOINTS
+□ Find purchase confirmation routes
+□ Replace inline SendGrid code with EmailService
+□ Create dedicated methods in EmailService if needed:
+  □ sendPurchaseConfirmation()
+  □ sendMealPlanPurchaseConfirmation()
+  □ sendArrivalPackageConfirmation()
+□ Add proper error handling
+□ Add email logging
+
+=============================================================================
+SECTION 10: TESTING
+=============================================================================
+
+OAUTH TESTING
+□ Test new user sign-up with Google
+  □ Verify user created in database
+  □ Verify googleId is stored
+  □ Verify authProvider is 'google'
+  □ Verify session is created
+  □ Verify redirect works
+□ Test existing user login with Google (email match)
+  □ Verify account is linked
+  □ Verify authProvider changes to 'hybrid'
+  □ Verify login successful
+□ Test existing user login with Google (no email match)
+  □ Verify new account is created
+  □ Verify separate accounts exist
+□ Test Google account linking from settings
+  □ Verify googleId is added
+  □ Verify can login with both methods
+□ Test Google account unlinking
+  □ Verify error if no password set
+  □ Verify googleId is removed
+  □ Verify can only login with password after
+□ Test OAuth error handling
+  □ Missing email from Google
+  □ Network errors
+  □ Invalid credentials
+□ Test session persistence
+□ Test CSRF protection
+
+EMAIL SERVICE TESTING
+□ Test email service initialization
+□ Test sendEmail method with debug mode
+□ Test password reset email
+  □ Verify email sent
+  □ Verify token in database
+  □ Verify email content
+  □ Verify link works
+  □ Verify expiration
+□ Test email verification
+  □ Verify email sent on registration
+  □ Verify token in database
+  □ Verify verification link works
+  □ Verify emailVerified flag updates
+□ Test welcome email
+  □ Verify sent after registration
+  □ Verify content
+□ Test newsletter subscription
+  □ Verify subscriber created
+  □ Verify welcome email sent
+  □ Verify unsubscribe link works
+□ Test newsletter unsubscription
+  □ Verify status updates
+  □ Verify timestamp set
+□ Test email logging
+  □ Verify emails logged to database
+  □ Verify success status
+  □ Verify failure status with error
+□ Test email templates on multiple clients
+  □ Gmail (web)
+  □ Gmail (mobile)
+  □ Outlook
+  □ Apple Mail
+  □ Verify responsive design
+  □ Verify images load
+  □ Verify links work
+□ Test error handling
+  □ SendGrid API key missing
+  □ Network errors
+  □ Invalid email addresses
+  □ Rate limiting
+□ Test debug mode (no actual emails sent)
+
+SECURITY TESTING
+□ Test CSRF protection on all new routes
+□ Test rate limiting on auth routes
+□ Test rate limiting on email routes
+□ Test password reset token security
+  □ Tokens are hashed in database
+  □ Tokens expire correctly
+  □ Old tokens can't be reused
+□ Test email verification token security
+□ Test that OAuth credentials are not exposed
+□ Test that email service errors don't leak sensitive info
+□ Test unsubscribe tokens can't be guessed
+
+INTEGRATION TESTING
+□ Test complete OAuth flow end-to-end
+□ Test complete password reset flow
+□ Test complete email verification flow
+□ Test complete newsletter subscription flow
+□ Test user registration with all emails
+□ Test account linking flows
+□ Test error scenarios
+
+=============================================================================
+SECTION 11: MONITORING & LOGGING
+=============================================================================
+
+LOGGING
+□ Add logging for OAuth events
+  □ Sign-ups via Google
+  □ Account linking
+  □ Account unlinking
+  □ OAuth errors
+□ Add logging for email events
+  □ Emails sent
+  □ Email failures
+  □ Rate limit hits
+  □ Invalid email addresses
+□ Add logging for password reset
+  □ Reset requests
+  □ Reset completions
+  □ Expired tokens
+□ Add logging for email verification
+  □ Verification sent
+  □ Verification completed
+□ Ensure logs don't contain sensitive data
+  □ No passwords
+  □ No tokens
+  □ No API keys
+
+MONITORING
+□ Set up SendGrid webhook for email events (optional)
+  □ Delivered
+  □ Opened
+  □ Clicked
+  □ Bounced
+  □ Spam reports
+□ Monitor OAuth success/failure rates
+□ Monitor email delivery rates
+□ Monitor password reset usage
+□ Monitor email verification rates
+□ Set up alerts for high failure rates
+
+=============================================================================
+SECTION 12: DOCUMENTATION
+=============================================================================
+
+CODE DOCUMENTATION
+□ Add JSDoc comments to all new methods
+□ Document OAuth flow in comments
+□ Document email service usage
+□ Add inline comments for complex logic
+□ Update README with OAuth setup instructions
+□ Update README with email service setup
+
+API DOCUMENTATION
+□ Document OAuth endpoints
+  □ GET /api/auth/google
+  □ GET /api/auth/google/callback
+  □ GET /api/auth/google/status
+  □ POST /api/auth/google/unlink
+□ Document password reset endpoints
+  □ POST /api/auth/forgot-password
+  □ POST /api/auth/reset-password
+□ Document email verification endpoints
+  □ GET /api/auth/verify-email/:token
+  □ POST /api/auth/resend-verification
+□ Document newsletter endpoints
+  □ POST /api/newsletter/subscribe
+  □ GET /api/newsletter/unsubscribe/:token
+
+DEPLOYMENT DOCUMENTATION
+□ Document environment variable requirements
+□ Document Google Cloud Console setup steps
+□ Document SendGrid account setup steps
+□ Document DNS configuration for SendGrid
+□ Document migration procedures
+□ Document rollback procedures
+□ Create deployment checklist
+
+=============================================================================
+SECTION 13: DEPLOYMENT PREPARATION
+=============================================================================
+
+PRE-DEPLOYMENT
+□ Review all code changes
+□ Run all migrations on staging database
+□ Test OAuth flow in staging environment
+□ Test all email flows in staging
+□ Set up production Google OAuth credentials
+□ Set up production SendGrid account
+□ Configure domain authentication for SendGrid
+□ Add all production environment variables
+□ Update callback URLs to production domain
+□ Verify HTTPS is configured
+□ Test error logging works
+□ Prepare rollback plan
+□ Document deployment steps
+□ Schedule deployment window
+□ Notify team of deployment
+
+DEPLOYMENT
+□ Backup production database
+□ Deploy database migrations
+  □ Run 0002_add_google_oauth_support.sql
+  □ Run 0003_add_email_logs.sql
+  □ Verify migrations successful
+□ Deploy backend code
+□ Restart server
+□ Verify environment variables are loaded
+□ Test OAuth flow in production
+  □ Create test account
+  □ Login with Google
+  □ Verify account linking
+  □ Verify unlinking
+□ Test email service in production
+  □ Send test password reset
+  □ Send test email verification
+  □ Verify emails delivered
+  □ Verify links work
+□ Monitor error logs for first hour
+□ Monitor SendGrid dashboard
+□ Verify existing functionality still works
+  □ Regular login
+  □ Registration
+  □ Existing features
+
+POST-DEPLOYMENT
+□ Monitor OAuth usage
+□ Monitor email delivery rates
+□ Check for error spikes
+□ Verify no performance degradation
+□ Collect user feedback
+□ Document any issues encountered
+□ Create post-deployment report
+
+=============================================================================
+SECTION 14: ROLLBACK PROCEDURES
+=============================================================================
+
+IF OAUTH FAILS
+□ Comment out passport initialization in routes.ts
+□ Comment out OAuth routes
+□ Redeploy backend
+□ Users can still use password login
+□ Document issues for retry
+
+IF EMAIL SERVICE FAILS
+□ Set EMAIL_ENABLED=false in environment
+□ Restart server
+□ Emails will be logged but not sent
+□ Users can still use app (without verification/password reset)
+□ Fix issues and re-enable
+
+FULL ROLLBACK
+□ Restore previous backend code version
+□ Optionally revert database migrations
+  □ Keep data in new columns
+  □ Remove constraints if needed
+□ Update environment variables
+□ Restart server
+□ Verify basic functionality
+□ Notify users of temporary limitations
+
+=============================================================================
+PROGRESS TRACKING
+=============================================================================
+
+COMPLETION STATUS:
+Environment & Configuration:    [ ] 0/26 tasks
+Database Migrations:            [ ] 0/43 tasks
+Dependencies:                   [ ] 0/6 tasks
+Google OAuth Backend:           [ ] 0/45 tasks
+Email Service Backend:          [ ] 0/67 tasks
+Password Reset:                 [ ] 0/21 tasks
+Email Verification:             [ ] 0/18 tasks
+Newsletter System:              [ ] 0/17 tasks
+Existing Endpoints Refactor:    [ ] 0/7 tasks
+Testing:                        [ ] 0/66 tasks
+Monitoring & Logging:           [ ] 0/18 tasks
+Documentation:                  [ ] 0/18 tasks
+Deployment Preparation:         [ ] 0/35 tasks
+Rollback Procedures:            [ ] 0/11 tasks
+
+TOTAL TASKS: 398
+
+ESTIMATED TIME:
+- Google OAuth Backend:  16-22 hours
+- Email Service Backend: 21-28 hours
+- Testing & QA:          12-16 hours
+- Documentation:          4-6 hours
+- Deployment:             3-5 hours
+TOTAL:                   56-77 hours
+
+=============================================================================
+NOTES & REMINDERS
+=============================================================================
+
+SECURITY REMINDERS:
+- Never commit API keys or secrets to git
+- Always hash tokens before storing in database
+- Use HTTPS in production
+- Validate all inputs
+- Use CSRF protection on state-changing operations
+- Rate limit authentication endpoints
+- Log security events
+
+BEST PRACTICES:
+- Test thoroughly in staging before production
+- Have rollback plan ready
+- Monitor after deployment
+- Keep documentation updated
+- Follow GDPR/CAN-SPAM compliance
+- Provide clear unsubscribe options
+- Respect user email preferences
+
+DEPENDENCIES:
+- Google OAuth requires verified domain in production
+- SendGrid requires verified sender addresses
+- Email templates should be tested on multiple clients
+- Consider time zones for scheduled emails
+- Plan for email delivery delays
+
+=============================================================================
+END OF CHECKLIST
+=============================================================================

@@ -72,6 +72,9 @@ async function clearAllTables() {
         await db.delete(schema.nutrition);
         console.log("  ✓ Cleared nutrition");
 
+        await db.delete(schema.events);
+        console.log("  ✓ Cleared events");
+
         await db.delete(schema.places);
         console.log("  ✓ Cleared places");
 
@@ -179,6 +182,72 @@ async function seedCities() {
     }
 }
 
+async function seedEvents() {
+    try {
+        console.log("📅 Seeding events...");
+
+        const eventsToSeed = [
+            {
+                title: "Organic Market Tour in Principe Real",
+                description: "Join us for a guided tour of the Mercado Biológico do Principe Real. Learn how to select the best organic produce and meet local farmers.",
+                date: new Date("2025-11-15T10:00:00"),
+                time: "10:00 AM",
+                location: "Principe Real Garden, Lisbon",
+                city: "Lisbon",
+                country: "Portugal",
+                organizerName: "Maria Santos",
+                organizerRole: "Local Food Guide",
+                category: "Market Tour",
+                imageUrl: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
+                submittedBy: "ExpatEats Team",
+                submitterEmail: "team@expateats.com",
+                status: "approved"
+            },
+            {
+                title: "Zero Waste Shopping Workshop",
+                description: "Learn practical tips for shopping without plastic and reducing food waste. We'll visit Maria Granel and other zero waste shops in central Lisbon.",
+                date: new Date("2025-11-22T14:00:00"),
+                time: "2:00 PM",
+                location: "Maria Granel, Rua da Assunção 7, Lisbon",
+                city: "Lisbon",
+                country: "Portugal",
+                organizerName: "João Silva",
+                organizerRole: "Zero Waste Advocate",
+                category: "Workshop",
+                imageUrl: "https://images.unsplash.com/photo-1579113800032-c38bd7635818?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
+                submittedBy: "ExpatEats Team",
+                submitterEmail: "team@expateats.com",
+                status: "approved"
+            },
+            {
+                title: "Expat Dinner: Portuguese Cuisine with Dietary Adaptations",
+                description: "Join fellow expats for a community dinner featuring traditional Portuguese dishes adapted for various dietary needs (gluten-free, vegan, etc.).",
+                date: new Date("2025-12-05T19:00:00"),
+                time: "7:00 PM",
+                location: "Community Kitchen, Av. Almirante Reis 45, Lisbon",
+                city: "Lisbon",
+                country: "Portugal",
+                organizerName: "ExpatEats Community",
+                organizerRole: "Community Organization",
+                category: "Social",
+                imageUrl: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
+                submittedBy: "ExpatEats Team",
+                submitterEmail: "team@expateats.com",
+                status: "approved"
+            }
+        ];
+
+        for (const event of eventsToSeed) {
+            await db.insert(schema.events).values(event);
+        }
+
+        console.log(`✅ Seeded ${eventsToSeed.length} events`);
+    } catch (error) {
+        console.error("❌ Failed to seed events:", error);
+        throw error;
+    }
+}
+
 async function verifyDatabaseTables() {
     try {
         // Verify savedStores table exists
@@ -214,6 +283,9 @@ export async function runSeedData() {
 
         // Seed cities first
         await seedCities();
+
+        // Seed events
+        await seedEvents();
 
         // Import food sources
         console.log("📦 Importing food sources...");

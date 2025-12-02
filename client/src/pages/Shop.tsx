@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { NotificationDialog } from "@/components/NotificationDialog";
 import {
     MapPin,
     ShoppingCart,
@@ -18,6 +19,20 @@ const Shop = () => {
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const locations = [
         { id: "lisbon", name: "Lisbon" },
@@ -64,11 +79,11 @@ const Shop = () => {
 
     const handleSearch = () => {
         if (selectedLocations.length === 0) {
-            alert("Please select at least one location");
+            showNotification("Location Required", "Please select at least one location", "warning");
             return;
         }
         if (!selectedSubcategory) {
-            alert("Please select a guide category");
+            showNotification("Category Required", "Please select a guide category", "warning");
             return;
         }
 
@@ -313,6 +328,14 @@ const Shop = () => {
                     </div>
                 )}
             </div>
+
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </div>
     );
 };

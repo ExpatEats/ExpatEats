@@ -9,18 +9,29 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FeedbackDialog } from "./FeedbackDialog";
-import { ShareDialog } from "./ShareDialog";
 import { LoginModal } from "./LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 
 const Header = () => {
     const [location] = useLocation();
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const { user, isAuthenticated, logout, isLoading } = useAuth();
-    const { toast } = useToast();
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationConfig, setNotificationConfig] = useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const isActive = (path: string) => {
         return location === path;
@@ -33,17 +44,10 @@ const Header = () => {
     const handleLogout = async () => {
         try {
             await logout();
-            toast({
-                title: "Logged out successfully",
-                description: "You have been logged out of your account.",
-            });
+            showNotification("Logged out successfully", "You have been logged out of your account.", "success");
         } catch (error) {
             console.error('Logout error:', error);
-            toast({
-                title: "Logout error",
-                description: "There was an issue logging out. Please try again.",
-                variant: "destructive",
-            });
+            showNotification("Logout error", "There was an issue logging out. Please try again.", "error");
         }
     };
 
@@ -67,9 +71,9 @@ const Header = () => {
                 {/* Center - Navigation */}
                 <nav className="hidden md:flex space-x-5 flex-shrink-0">
                     <div
-                        className={`py-2 transition ${isActive("/find-my-food") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition ${isActive("/") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
                     >
-                        <Link href="/find-my-food">FIND MY FOOD</Link>
+                        <Link href="/">FIND MY FOOD</Link>
                     </div>
                     <div
                         className={`py-2 transition ${isActive("/services") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
@@ -100,18 +104,6 @@ const Header = () => {
 
                 {/* Right side - Actions */}
                 <div className="flex items-center space-x-4 flex-1 justify-end">
-                    <div className="hidden lg:block">
-                        <ShareDialog
-                            buttonVariant="outline"
-                            buttonSize="sm"
-                            buttonText="Share"
-                        />
-                    </div>
-
-                    <div className="hidden lg:block">
-                        <FeedbackDialog />
-                    </div>
-
                     {/* Desktop Login/User Menu */}
                     <div className="hidden md:block">
                         {isAuthenticated ? (
@@ -182,10 +174,10 @@ const Header = () => {
                             </div>
                             <nav className="flex flex-col space-y-4 mt-8">
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/find-my-food") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-md transition ${isActive("/") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
-                                    <Link href="/find-my-food">
+                                    <Link href="/">
                                         FIND MY FOOD
                                     </Link>
                                 </div>
@@ -221,16 +213,7 @@ const Header = () => {
                                         ADD LOCATION
                                     </Link>
                                 </div>
-                                <div className="py-2 px-4 rounded-md transition text-gray-800 hover:bg-primary/5 mt-6">
-                                    <ShareDialog
-                                        buttonVariant="ghost"
-                                        buttonText="Share"
-                                    />
-                                </div>
-                                <div className="py-2 px-4 rounded-md transition text-gray-800 hover:bg-primary/5">
-                                    <FeedbackDialog />
-                                </div>
-                                
+
                                 {/* Mobile Login/User Menu */}
                                 <div className="mt-6 space-y-3">
                                     {isAuthenticated ? (
@@ -299,9 +282,17 @@ const Header = () => {
             </div>
             
             {/* Login Modal */}
-            <LoginModal 
-                open={loginModalOpen} 
-                onOpenChange={setLoginModalOpen} 
+            <LoginModal
+                open={loginModalOpen}
+                onOpenChange={setLoginModalOpen}
+            />
+
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
             />
         </header>
     );

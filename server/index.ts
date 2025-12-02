@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import passport from "./config/passport";
 import { registerRoutes } from "./routes";
 import { serveStatic, log } from "./vite";
 import { runSeedData } from "./seedData.js";
@@ -35,6 +36,10 @@ app.use(
         name: "expatEatsSession",
     })
 );
+
+// Initialize Passport and restore authentication state from session
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use((req, res, next) => {
     const start = Date.now();

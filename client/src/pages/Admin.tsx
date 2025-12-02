@@ -24,7 +24,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
+import { InputDialog } from "@/components/InputDialog";
+import { ApprovalDialog } from "@/components/ApprovalDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Card,
@@ -40,6 +42,10 @@ import {
     Clock,
     CheckCircle,
     XCircle,
+    Database,
+    FileCheck,
+    LayoutDashboard,
+    Calendar,
 } from "lucide-react";
 
 const foodSourceSchema = z.object({
@@ -53,6 +59,8 @@ const foodSourceSchema = z.object({
     type: z.string({ required_error: "Please select a type" }),
     tags: z.array(z.string()).optional(),
     imageUrl: z.string().optional(),
+    softRating: z.string().optional(),
+    michaelesNotes: z.string().optional(),
 });
 
 type FoodSourceFormValues = z.infer<typeof foodSourceSchema>;
@@ -76,13 +84,63 @@ const dietaryPreferences = [
     { id: "zero-waste", label: "Zero Waste" },
 ];
 
+const ADMIN_SECTIONS = [
+    {
+        id: "overview",
+        name: "Overview",
+        description: "Dashboard and statistics",
+        icon: LayoutDashboard
+    },
+    {
+        id: "data-admin",
+        name: "Data Admin",
+        description: "Add food sources and cities",
+        icon: Database
+    },
+    {
+        id: "pending-approvals",
+        name: "Pending Locations",
+        description: "Review submitted locations",
+        icon: FileCheck
+    },
+    {
+        id: "pending-events",
+        name: "Pending Events",
+        description: "Review submitted events",
+        icon: Calendar
+    }
+] as const;
+
 export default function Admin() {
     // All hooks must be declared first
     const [, setLocation] = useLocation();
-    const { toast } = useToast();
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
     const [selectedCountry, setSelectedCountry] = React.useState<string>("");
+    const [activeSection, setActiveSection] = React.useState<string>("data-admin");
     const { user, isAuthenticated, logout, isLoading } = useAuth();
+    const [notificationOpen, setNotificationOpen] = React.useState(false);
+    const [notificationConfig, setNotificationConfig] = React.useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
+
+    // Input dialog state for rejection reason
+    const [inputDialogOpen, setInputDialogOpen] = React.useState(false);
+    const [placeToReject, setPlaceToReject] = React.useState<number | null>(null);
+    const [eventToReject, setEventToReject] = React.useState<number | null>(null);
+
+    // Approval dialog state
+    const [approvalDialogOpen, setApprovalDialogOpen] = React.useState(false);
+    const [placeToApprove, setPlaceToApprove] = React.useState<number | null>(null);
 
     const form = useForm<FoodSourceFormValues>({
         resolver: zodResolver(foodSourceSchema),
@@ -95,6 +153,8 @@ export default function Admin() {
             type: "",
             tags: [],
             imageUrl: "",
+            softRating: "none",
+            michaelesNotes: "",
         },
     });
 
@@ -110,6 +170,11 @@ export default function Admin() {
 
     const { data: pendingPlaces = [], refetch: refetchPending } = useQuery({
         queryKey: ["/api/admin/pending-places"],
+        enabled: isAuthenticated && user?.role === "admin",
+    });
+
+    const { data: pendingEvents = [], refetch: refetchPendingEvents } = useQuery({
+        queryKey: ["/api/admin/pending-events"],
         enabled: isAuthenticated && user?.role === "admin",
     });
 
@@ -142,6 +207,8 @@ export default function Admin() {
                 category: values.type,
                 tags: values.tags || [],
                 imageUrl: values.imageUrl || null,
+                softRating: values.softRating === "none" ? "" : values.softRating || null,
+                michaelesNotes: values.michaelesNotes || null,
             };
 
             const response = await fetch("/api/places", {
@@ -159,20 +226,13 @@ export default function Admin() {
             return response.json();
         },
         onSuccess: () => {
-            toast({
-                title: "Food source added",
-                description: "Your submission has been added successfully",
-            });
+            showNotification("Food source added", "Your submission has been added successfully", "success");
             form.reset();
             setSelectedTags([]);
             queryClient.invalidateQueries({ queryKey: ["/api/places"] });
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: "Failed to add food source. Please try again.",
-                variant: "destructive",
-            });
+            showNotification("Error", "Failed to add food source. Please try again.", "error");
         },
     });
 
@@ -180,29 +240,26 @@ export default function Admin() {
         mutationFn: async ({
             placeId,
             adminNotes,
+            softRating,
+            michaelesNotes,
         }: {
             placeId: number;
             adminNotes?: string;
+            softRating?: string;
+            michaelesNotes?: string;
         }) => {
             return await apiRequest(
                 "POST",
                 `/api/admin/approve-place/${placeId}`,
-                { adminNotes },
+                { adminNotes, softRating, michaelesNotes },
             );
         },
         onSuccess: () => {
-            toast({
-                title: "Success",
-                description: "Location approved successfully",
-            });
+            showNotification("Success", "Location approved successfully", "success");
             refetchPending();
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: `Failed to approve location: ${error.message}`,
-                variant: "destructive",
-            });
+            showNotification("Error", `Failed to approve location: ${error.message}`, "error");
         },
     });
 
@@ -221,18 +278,57 @@ export default function Admin() {
             );
         },
         onSuccess: () => {
-            toast({
-                title: "Success",
-                description: "Location rejected successfully",
-            });
+            showNotification("Success", "Location rejected successfully", "success");
             refetchPending();
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: `Failed to reject location: ${error.message}`,
-                variant: "destructive",
-            });
+            showNotification("Error", `Failed to reject location: ${error.message}`, "error");
+        },
+    });
+
+    const approveEventMutation = useMutation({
+        mutationFn: async ({
+            eventId,
+            adminNotes,
+        }: {
+            eventId: number;
+            adminNotes?: string;
+        }) => {
+            return await apiRequest(
+                "POST",
+                `/api/admin/approve-event/${eventId}`,
+                { adminNotes },
+            );
+        },
+        onSuccess: () => {
+            showNotification("Success", "Event approved successfully", "success");
+            refetchPendingEvents();
+        },
+        onError: (error) => {
+            showNotification("Error", `Failed to approve event: ${error.message}`, "error");
+        },
+    });
+
+    const rejectEventMutation = useMutation({
+        mutationFn: async ({
+            eventId,
+            adminNotes,
+        }: {
+            eventId: number;
+            adminNotes: string;
+        }) => {
+            return await apiRequest(
+                "POST",
+                `/api/admin/reject-event/${eventId}`,
+                { adminNotes },
+            );
+        },
+        onSuccess: () => {
+            showNotification("Success", "Event rejected successfully", "success");
+            refetchPendingEvents();
+        },
+        onError: (error) => {
+            showNotification("Error", `Failed to reject event: ${error.message}`, "error");
         },
     });
 
@@ -241,19 +337,12 @@ export default function Admin() {
             return await apiRequest("POST", "/api/admin/cities", values);
         },
         onSuccess: () => {
-            toast({
-                title: "Success",
-                description: "City added successfully",
-            });
+            showNotification("Success", "City added successfully", "success");
             cityForm.reset();
             queryClient.invalidateQueries({ queryKey: ["/api/cities"] });
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: `Failed to add city: ${error.message}`,
-                variant: "destructive",
-            });
+            showNotification("Error", `Failed to add city: ${error.message}`, "error");
         },
     });
 
@@ -265,16 +354,12 @@ export default function Admin() {
                 return;
             }
             if (user?.role !== "admin") {
-                setLocation("/find-my-food");
-                toast({
-                    title: "Access Denied",
-                    description: "Admin privileges required to access this page.",
-                    variant: "destructive",
-                });
+                setLocation("/");
+                showNotification("Access Denied", "Admin privileges required to access this page.", "error");
                 return;
             }
         }
-    }, [isAuthenticated, user, isLoading, setLocation, toast]);
+    }, [isAuthenticated, user, isLoading, setLocation]);
 
     const handleLogout = async () => {
         try {
@@ -300,6 +385,37 @@ export default function Admin() {
         addCityMutation.mutate(values);
     };
 
+    const handleApprovePlace = (softRating: string, michaelesNotes: string) => {
+        if (placeToApprove !== null) {
+            approvePlaceMutation.mutate({
+                placeId: placeToApprove,
+                softRating,
+                michaelesNotes,
+            });
+            setPlaceToApprove(null);
+        }
+    };
+
+    const handleRejectPlace = (reason: string) => {
+        if (placeToReject !== null) {
+            rejectPlaceMutation.mutate({
+                placeId: placeToReject,
+                adminNotes: reason,
+            });
+            setPlaceToReject(null);
+        }
+    };
+
+    const handleRejectEvent = (reason: string) => {
+        if (eventToReject !== null) {
+            rejectEventMutation.mutate({
+                eventId: eventToReject,
+                adminNotes: reason,
+            });
+            setEventToReject(null);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -316,178 +432,82 @@ export default function Admin() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-            <div className="text-center mb-8">
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                    Admin Panel
-                </h1>
-                <p className="text-gray-600 mb-4">
-                    Manage food sources and view registered users.
-                </p>
-                <div className="flex justify-center">
-                    <Button
-                        onClick={handleLogout}
-                        variant="outline"
-                        className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
-                    >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Logout
-                    </Button>
-                </div>
-            </div>
-
-            {/* Pending Location Reviews */}
-            <Card className="w-full mb-8">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-[#E07A5F]" />
-                        Pending Location Reviews
-                        {pendingPlaces.length > 0 && (
-                            <Badge variant="destructive" className="ml-2">
-                                {pendingPlaces.length}
-                            </Badge>
-                        )}
-                    </CardTitle>
-                    <CardDescription>
-                        Review and approve user-submitted locations before they
-                        appear publicly
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {pendingPlaces.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                            <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                            <p>No pending locations to review</p>
+        <div className="min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8 flex items-center justify-between">
+                        <div>
+                            <h1 className="font-montserrat text-3xl font-bold mb-2">
+                                Admin Panel
+                            </h1>
+                            <p className="text-gray-600">
+                                Manage food sources, cities, and review submissions.
+                            </p>
                         </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {pendingPlaces.map((place: any) => (
-                                <div
-                                    key={place.id}
-                                    className="border border-gray-200 rounded-lg p-4"
-                                >
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div>
-                                            <h3 className="font-semibold text-lg">
-                                                {place.name}
-                                            </h3>
-                                            <p className="text-sm text-gray-600">
-                                                {place.category}
-                                            </p>
-                                        </div>
-                                        <Badge
-                                            variant="outline"
-                                            className="border-orange-200 text-orange-700"
-                                        >
-                                            Pending Review
-                                        </Badge>
-                                    </div>
+                        <Button
+                            onClick={handleLogout}
+                            variant="outline"
+                            className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                        >
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Logout
+                        </Button>
+                    </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <p className="text-sm">
-                                                <strong>Description:</strong>{" "}
-                                                {place.description}
-                                            </p>
-                                            <p className="text-sm mt-2">
-                                                <strong>Address:</strong>{" "}
-                                                {place.address}
-                                            </p>
-                                            <p className="text-sm">
-                                                <strong>Location:</strong>{" "}
-                                                {place.city}, {place.country}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            {place.tags &&
-                                                place.tags.length > 0 && (
-                                                    <div>
-                                                        <p className="text-sm font-medium mb-1">
-                                                            Tags:
-                                                        </p>
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {place.tags.map(
-                                                                (
-                                                                    tag: string,
-                                                                    index: number,
-                                                                ) => (
-                                                                    <Badge
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        variant="secondary"
-                                                                        className="text-xs"
-                                                                    >
-                                                                        {tag}
-                                                                    </Badge>
-                                                                ),
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            {place.website && (
-                                                <p className="text-sm mt-2">
-                                                    <strong>Website:</strong>{" "}
-                                                    {place.website}
-                                                </p>
-                                            )}
-                                            <p className="text-sm mt-2">
-                                                <strong>Submitted:</strong>{" "}
-                                                {new Date(
-                                                    place.createdAt,
-                                                ).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-2 pt-3 border-t">
-                                        <Button
-                                            onClick={() =>
-                                                approvePlaceMutation.mutate({
-                                                    placeId: place.id,
-                                                })
-                                            }
-                                            disabled={
-                                                approvePlaceMutation.isPending ||
-                                                rejectPlaceMutation.isPending
-                                            }
-                                            className="bg-green-600 hover:bg-green-700 text-white"
-                                            size="sm"
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Sidebar */}
+                        <div className="lg:col-span-1">
+                            <Card className="sticky top-4">
+                                <CardHeader>
+                                    <CardTitle className="text-lg font-semibold">Admin Sections</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    {ADMIN_SECTIONS.map((section) => (
+                                        <button
+                                            key={section.id}
+                                            onClick={() => setActiveSection(section.id)}
+                                            className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                                activeSection === section.id
+                                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                                    : "hover:bg-gray-100 text-gray-700"
+                                            }`}
                                         >
-                                            <CheckCircle className="h-4 w-4 mr-1" />
-                                            Approve
-                                        </Button>
-                                        <Button
-                                            onClick={() => {
-                                                const reason = prompt(
-                                                    "Please provide a reason for rejection:",
-                                                );
-                                                if (reason) {
-                                                    rejectPlaceMutation.mutate({
-                                                        placeId: place.id,
-                                                        adminNotes: reason,
-                                                    });
-                                                }
-                                            }}
-                                            disabled={
-                                                approvePlaceMutation.isPending ||
-                                                rejectPlaceMutation.isPending
-                                            }
-                                            variant="destructive"
-                                            size="sm"
-                                        >
-                                            <XCircle className="h-4 w-4 mr-1" />
-                                            Reject
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+                                            <div className="flex items-center gap-2 font-medium">
+                                                <section.icon className="h-4 w-4" />
+                                                {section.name}
+                                            </div>
+                                            <div className="text-sm text-gray-500 mt-1">
+                                                {section.description}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </CardContent>
+                            </Card>
                         </div>
-                    )}
-                </CardContent>
-            </Card>
 
-            <Card className="w-full max-w-3xl mx-auto">
+                        {/* Main Content */}
+                        <div className="lg:col-span-3">
+                            {activeSection === "overview" && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <LayoutDashboard className="h-5 w-5" />
+                                            Dashboard Overview
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-center py-8 text-gray-500">
+                                            <p>Dashboard statistics and overview coming soon...</p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {activeSection === "data-admin" && (
+                                <div className="space-y-6">
+                                    {/* Add Food Source Form */}
+            <Card className="w-full">
                 <CardHeader>
                     <CardTitle>Add New Food Source</CardTitle>
                     <CardDescription>
@@ -681,6 +701,51 @@ export default function Admin() {
                                 )}
                             />
 
+                            <FormField
+                                control={form.control}
+                                name="softRating"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Soft Rating (optional)</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select rating" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="none">None</SelectItem>
+                                                <SelectItem value="Gold Standard">Gold Standard</SelectItem>
+                                                <SelectItem value="Great Choice">Great Choice</SelectItem>
+                                                <SelectItem value="This Will Do in a Pinch">This Will Do in a Pinch</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="michaelesNotes"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Michaele's Notes (optional)</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Personal notes and observations about this location"
+                                                className="min-h-[100px]"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
                             <div className="space-y-3">
                                 <FormLabel>
                                     Dietary Preferences Available
@@ -727,7 +792,7 @@ export default function Admin() {
                 </CardContent>
             </Card>
 
-            <Card className="w-full max-w-3xl mx-auto mt-8">
+            <Card className="w-full mt-6">
                 <CardHeader>
                     <CardTitle>Add New City/Location</CardTitle>
                     <CardDescription>
@@ -806,6 +871,324 @@ export default function Admin() {
                     </Form>
                 </CardContent>
             </Card>
+                                </div>
+                            )}
+
+                            {activeSection === "pending-approvals" && (
+                                <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-[#E07A5F]" />
+                        Pending Location Reviews
+                        {pendingPlaces.length > 0 && (
+                            <Badge variant="destructive" className="ml-2">
+                                {pendingPlaces.length}
+                            </Badge>
+                        )}
+                    </CardTitle>
+                    <CardDescription>
+                        Review and approve user-submitted locations before they
+                        appear publicly
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {pendingPlaces.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                            <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                            <p>No pending locations to review</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {pendingPlaces.map((place: any) => (
+                                <div
+                                    key={place.id}
+                                    className="border border-gray-200 rounded-lg p-4"
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 className="font-semibold text-lg">
+                                                {place.name}
+                                            </h3>
+                                            <p className="text-sm text-gray-600">
+                                                {place.category}
+                                            </p>
+                                        </div>
+                                        <Badge
+                                            variant="outline"
+                                            className="border-orange-200 text-orange-700"
+                                        >
+                                            Pending Review
+                                        </Badge>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <p className="text-sm">
+                                                <strong>Description:</strong>{" "}
+                                                {place.description}
+                                            </p>
+                                            <p className="text-sm mt-2">
+                                                <strong>Address:</strong>{" "}
+                                                {place.address}
+                                            </p>
+                                            <p className="text-sm">
+                                                <strong>Location:</strong>{" "}
+                                                {place.city}, {place.country}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            {place.tags &&
+                                                place.tags.length > 0 && (
+                                                    <div>
+                                                        <p className="text-sm font-medium mb-1">
+                                                            Tags:
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {place.tags.map(
+                                                                (
+                                                                    tag: string,
+                                                                    index: number,
+                                                                ) => (
+                                                                    <Badge
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        variant="secondary"
+                                                                        className="text-xs"
+                                                                    >
+                                                                        {tag}
+                                                                    </Badge>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            {place.website && (
+                                                <p className="text-sm mt-2">
+                                                    <strong>Website:</strong>{" "}
+                                                    {place.website}
+                                                </p>
+                                            )}
+                                            <p className="text-sm mt-2">
+                                                <strong>Submitted:</strong>{" "}
+                                                {new Date(
+                                                    place.createdAt,
+                                                ).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-2 pt-3 border-t">
+                                        <Button
+                                            onClick={() => {
+                                                setPlaceToApprove(place.id);
+                                                setApprovalDialogOpen(true);
+                                            }}
+                                            disabled={
+                                                approvePlaceMutation.isPending ||
+                                                rejectPlaceMutation.isPending
+                                            }
+                                            className="bg-green-600 hover:bg-green-700 text-white"
+                                            size="sm"
+                                        >
+                                            <CheckCircle className="h-4 w-4 mr-1" />
+                                            Approve
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setPlaceToReject(place.id);
+                                                setInputDialogOpen(true);
+                                            }}
+                                            disabled={
+                                                approvePlaceMutation.isPending ||
+                                                rejectPlaceMutation.isPending
+                                            }
+                                            variant="destructive"
+                                            size="sm"
+                                        >
+                                            <XCircle className="h-4 w-4 mr-1" />
+                                            Reject
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+                            )}
+
+                            {/* Pending Events Section */}
+                            {activeSection === "pending-events" && (
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle className="text-2xl font-bold">
+                                Pending Event Reviews
+                                {pendingEvents.length > 0 && (
+                                    <Badge className="ml-2" variant="secondary">
+                                        {pendingEvents.length}
+                                    </Badge>
+                                )}
+                            </CardTitle>
+                            <CardDescription>
+                                Review and approve or reject event submissions
+                            </CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {pendingEvents.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                            <Calendar className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                            <p>No pending events to review</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {pendingEvents.map((event: any) => (
+                                <Card key={event.id} className="border-l-4 border-l-orange-500">
+                                    <CardContent className="pt-6">
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold text-lg">{event.title}</h3>
+                                                    {event.category && (
+                                                        <Badge className="mt-1 bg-[#6D9075]">{event.category}</Badge>
+                                                    )}
+                                                </div>
+                                                <Badge className="bg-orange-500">
+                                                    <Clock className="h-3 w-3 mr-1" />
+                                                    Pending Review
+                                                </Badge>
+                                            </div>
+
+                                            <p className="text-gray-700">{event.description}</p>
+
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Date & Time</p>
+                                                    <p className="text-gray-900">
+                                                        {new Date(event.date).toLocaleDateString()} at {event.time}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Location</p>
+                                                    <p className="text-gray-900">{event.location}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">City</p>
+                                                    <p className="text-gray-900">{event.city}</p>
+                                                </div>
+                                                {event.organizerName && (
+                                                    <div>
+                                                        <p className="text-gray-500 font-medium">Organizer</p>
+                                                        <p className="text-gray-900">
+                                                            {event.organizerName}
+                                                            {event.organizerRole && ` · ${event.organizerRole}`}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Submitted By</p>
+                                                    <p className="text-gray-900">{event.submittedBy}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 font-medium">Contact Email</p>
+                                                    <p className="text-gray-900">{event.submitterEmail}</p>
+                                                </div>
+                                                {event.website && (
+                                                    <div>
+                                                        <p className="text-gray-500 font-medium">Website</p>
+                                                        <a
+                                                            href={event.website}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-600 hover:underline"
+                                                        >
+                                                            {event.website}
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex gap-2 pt-4">
+                                                <Button
+                                                    onClick={() =>
+                                                        approveEventMutation.mutate({
+                                                            eventId: event.id,
+                                                        })
+                                                    }
+                                                    disabled={
+                                                        approveEventMutation.isPending ||
+                                                        rejectEventMutation.isPending
+                                                    }
+                                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                                    size="sm"
+                                                >
+                                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                                    Approve
+                                                </Button>
+                                                <Button
+                                                    onClick={() => {
+                                                        setEventToReject(event.id);
+                                                        setInputDialogOpen(true);
+                                                    }}
+                                                    disabled={
+                                                        approveEventMutation.isPending ||
+                                                        rejectEventMutation.isPending
+                                                    }
+                                                    variant="destructive"
+                                                    size="sm"
+                                                >
+                                                    <XCircle className="h-4 w-4 mr-1" />
+                                                    Reject
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
+
+            <InputDialog
+                open={inputDialogOpen}
+                onOpenChange={setInputDialogOpen}
+                title={eventToReject !== null ? "Reject Event" : "Reject Location"}
+                description={eventToReject !== null ? "Please provide a reason for rejecting this event submission." : "Please provide a reason for rejecting this location submission."}
+                placeholder="Enter rejection reason..."
+                confirmText="Reject"
+                cancelText="Cancel"
+                onConfirm={eventToReject !== null ? handleRejectEvent : handleRejectPlace}
+                multiline={true}
+                required={true}
+                isLoading={eventToReject !== null ? rejectEventMutation.isPending : rejectPlaceMutation.isPending}
+            />
+
+            <ApprovalDialog
+                open={approvalDialogOpen}
+                onOpenChange={setApprovalDialogOpen}
+                title="Approve Location"
+                description="Add optional rating and notes before approving this location."
+                onConfirm={handleApprovePlace}
+                isLoading={approvePlaceMutation.isPending}
+            />
         </div>
     );
 }

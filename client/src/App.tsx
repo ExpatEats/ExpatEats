@@ -1,7 +1,6 @@
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Layout from "@/components/Layout";
@@ -24,7 +23,11 @@ import Terms from "./pages/Terms";
 import FindMyFood from "./pages/FindMyFood";
 import Store from "./pages/Store";
 import Favorites from "./pages/Favorites";
+import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/not-found";
+import PersonalizedMealPlans from "./pages/PersonalizedMealPlans";
+import BeforeYouGo from "./pages/BeforeYouGo";
+import ArrivalPackages from "./pages/ArrivalPackages";
 import { useEffect } from "react";
 
 // Authentication guard component
@@ -63,52 +66,59 @@ function Router() {
         <Layout>
             <Switch>
                 {/* Public routes */}
-                <Route path="/" component={Register} />
+                <Route path="/" component={FindMyFood} />
+                <Route path="/register" component={Register} />
                 <Route path="/terms" component={Terms} />
+                <Route path="/unauthorized" component={Unauthorized} />
                 <Route path="/onboarding" component={Onboarding} />{" "}
                 {/* Legacy route for compatibility */}
                 <Route path="/preferences">
-                    <RequireAuth component={Preferences} redirectTo="/" />
+                    <RequireAuth component={Preferences} redirectTo="/unauthorized" />
                 </Route>
                 {/* Protected routes */}
                 <Route path="/search">
-                    <RequireAuth component={Shop} redirectTo="/" />
+                    <RequireAuth component={Shop} redirectTo="/unauthorized" />
                 </Route>
-                <Route path="/find-my-food">
-                    <RequireAuth component={FindMyFood} redirectTo="/" />
-                </Route>
-                <Route path="/results">
-                    <RequireAuth component={Results} redirectTo="/" />
-                </Route>
+                <Route path="/find-my-food" component={FindMyFood} />
+                <Route path="/results" component={Results} />
                 <Route path="/contact">
-                    <RequireAuth component={Contact} redirectTo="/" />
+                    <RequireAuth component={Contact} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/resources">
-                    <RequireAuth component={Resources} redirectTo="/" />
+                    <RequireAuth component={Resources} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/services">
-                    <RequireAuth component={NewServices} redirectTo="/" />
+                    <RequireAuth component={NewServices} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/meal-plans">
+                    <RequireAuth component={PersonalizedMealPlans} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/before-you-go">
+                    <RequireAuth component={BeforeYouGo} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/services/arrival-packages">
+                    <RequireAuth component={ArrivalPackages} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/events">
-                    <RequireAuth component={Events} redirectTo="/" />
+                    <RequireAuth component={Events} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/add-location">
-                    <RequireAuth component={AddLocation} redirectTo="/" />
+                    <RequireAuth component={AddLocation} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/store/:id">
-                    <RequireAuth component={Store} redirectTo="/" />
+                    <RequireAuth component={Store} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/favorites">
-                    <RequireAuth component={Favorites} redirectTo="/" />
+                    <RequireAuth component={Favorites} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/community">
-                    <RequireAuth component={Community} redirectTo="/" />
+                    <RequireAuth component={Community} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/community/create/:section?">
-                    <RequireAuth component={CreatePost} redirectTo="/" />
+                    <RequireAuth component={CreatePost} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/community/post/:id">
-                    <RequireAuth component={PostDetail} redirectTo="/" />
+                    <RequireAuth component={PostDetail} redirectTo="/unauthorized" />
                 </Route>
                 {/* Admin routes */}
                 <Route path="/admin" component={Admin} />
@@ -124,7 +134,6 @@ function App() {
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
                 <TooltipProvider>
-                    <Toaster />
                     <Router />
                 </TooltipProvider>
             </AuthProvider>

@@ -23,21 +23,35 @@ export const cities = pgTable("cities", {
 
 export const users = pgTable("users", {
     id: serial("id").primaryKey(),
-    username: text("username").notNull().unique(),
-    password: text("password").notNull(),
+    username: text("username").unique(), // Nullable for OAuth-only users
+    password: text("password"), // Nullable for OAuth-only users
     email: text("email").notNull().unique(),
     name: text("name"),
     city: text("city"),
     country: text("country"),
     bio: text("bio"),
     role: text("role").default("user"),
+
+    // OAuth fields
+    googleId: text("google_id").unique(), // Google OAuth unique identifier
+    authProvider: text("auth_provider").default("local"), // 'local', 'google', 'hybrid'
+    profilePicture: text("profile_picture"), // Profile picture URL from Google or uploaded
+    googleEmail: text("google_email"), // Email from Google OAuth (may differ from primary)
+
+    // Email verification
     emailVerified: boolean("email_verified").default(false),
     emailVerificationToken: text("email_verification_token"),
+
+    // Password reset
     passwordResetToken: text("password_reset_token"),
     passwordResetExpires: timestamp("password_reset_expires"),
+
+    // Security
     failedLoginAttempts: integer("failed_login_attempts").default(0),
     accountLockedUntil: timestamp("account_locked_until"),
     lastLoginAt: timestamp("last_login_at"),
+
+    // Timestamps
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -84,6 +98,8 @@ export const places = pgTable("places", {
     status: text("status").default("pending"), // 'pending', 'approved', 'rejected'
     submittedBy: text("submitted_by"), // Name/email of submitter for non-authenticated users
     adminNotes: text("admin_notes"),
+    softRating: text("soft_rating"), // 'Gold Standard', 'Great Choice', 'This Will Do in a Pinch', or empty string
+    michaelesNotes: text("michaeles_notes"), // Michaele's personal notes about the location
     reviewedAt: timestamp("reviewed_at"),
     createdAt: timestamp("created_at").defaultNow(),
 });
@@ -166,6 +182,62 @@ export const postLikes = pgTable("post_likes", {
     uniqueUserPost: unique().on(table.userId, table.postId),
 }));
 
+export const events = pgTable("events", {
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    date: timestamp("date").notNull(),
+    time: text("time").notNull(),
+    location: text("location").notNull(),
+    city: text("city").notNull(),
+    country: text("country").default("Portugal"),
+    organizerName: text("organizer_name"),
+    organizerRole: text("organizer_role"),
+    organizerEmail: text("organizer_email"),
+    category: text("category"), // 'Market Tour', 'Workshop', 'Social', 'Food Tasting', 'Cooking Class', 'Networking', 'Other'
+    imageUrl: text("image_url"),
+    website: text("website"),
+    maxAttendees: integer("max_attendees"),
+    currentAttendees: integer("current_attendees").default(0),
+    submittedBy: text("submitted_by").notNull(),
+    submitterEmail: text("submitter_email").notNull(),
+    userId: integer("user_id").references(() => users.id),
+    status: text("status").default("pending"), // 'pending', 'approved', 'rejected'
+    adminNotes: text("admin_notes"),
+    reviewedAt: timestamp("reviewed_at"),
+    reviewedBy: integer("reviewed_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const emailLogs = pgTable("email_logs", {
+    id: serial("id").primaryKey(),
+    toEmail: text("to_email").notNull(),
+    fromEmail: text("from_email"),
+    subject: text("subject").notNull(),
+    emailType: text("email_type"), // 'password-reset', 'verification', 'welcome', 'newsletter', 'purchase'
+    status: text("status").notNull(), // 'sent', 'failed', 'bounced', 'delivered', 'opened', 'clicked'
+    messageId: text("message_id"), // SendGrid message ID for tracking
+    errorMessage: text("error_message"),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+    id: serial("id").primaryKey(),
+    email: text("email").notNull().unique(),
+    name: text("name"),
+    status: text("status").default("subscribed"), // 'subscribed', 'unsubscribed', 'bounced'
+    subscriptionSource: text("subscription_source"), // 'website', 'registration', 'import', 'admin'
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    subscribedAt: timestamp("subscribed_at").defaultNow(),
+    unsubscribedAt: timestamp("unsubscribed_at"),
+    unsubscribeToken: text("unsubscribe_token").unique(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -223,6 +295,26 @@ export const insertCitySchema = createInsertSchema(cities).omit({
     createdAt: true,
 });
 
+export const insertEventSchema = createInsertSchema(events).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    reviewedAt: true,
+    reviewedBy: true,
+});
+
+export const insertEmailLogSchema = createInsertSchema(emailLogs).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSubscribers).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
 
 // Types
 export type InsertCity = z.infer<typeof insertCitySchema>;
@@ -251,4 +343,13 @@ export type Comment = typeof comments.$inferSelect;
 
 export type InsertPostLike = z.infer<typeof insertPostLikeSchema>;
 export type PostLike = typeof postLikes.$inferSelect;
+
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+export type Event = typeof events.$inferSelect;
+
+export type InsertEmailLog = z.infer<typeof insertEmailLogSchema>;
+export type EmailLog = typeof emailLogs.$inferSelect;
+
+export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 

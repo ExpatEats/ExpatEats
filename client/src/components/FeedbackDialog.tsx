@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationDialog } from "@/components/NotificationDialog";
 import { MessageSquare } from "lucide-react";
 
 const feedbackSchema = z.object({
@@ -35,9 +35,28 @@ const feedbackSchema = z.object({
 
 type FeedbackFormValues = z.infer<typeof feedbackSchema>;
 
-export function FeedbackDialog() {
-    const { toast } = useToast();
+interface FeedbackDialogProps {
+    buttonClassName?: string;
+}
+
+export function FeedbackDialog({ buttonClassName = "" }: FeedbackDialogProps) {
     const [open, setOpen] = React.useState(false);
+
+    // Notification dialog states
+    const [notificationOpen, setNotificationOpen] = React.useState(false);
+    const [notificationConfig, setNotificationConfig] = React.useState<{
+        title: string;
+        description?: string;
+        variant: "success" | "error" | "warning" | "info";
+    }>({
+        title: "",
+        variant: "success"
+    });
+
+    const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
+        setNotificationConfig({ title, description, variant });
+        setNotificationOpen(true);
+    };
 
     const form = useForm<FeedbackFormValues>({
         resolver: zodResolver(feedbackSchema),
@@ -65,21 +84,12 @@ export function FeedbackDialog() {
             return response.json();
         },
         onSuccess: () => {
-            toast({
-                title: "Feedback received",
-                description:
-                    "Thank you for your feedback! It helps us improve ExpatEats.",
-            });
+            showNotification("Feedback received", "Thank you for your feedback! It helps us improve ExpatEats.");
             form.reset();
             setOpen(false);
         },
         onError: () => {
-            toast({
-                variant: "destructive",
-                title: "Submission failed",
-                description:
-                    "There was a problem submitting your feedback. Please try again.",
-            });
+            showNotification("Submission failed", "There was a problem submitting your feedback. Please try again.", "error");
         },
     });
 
@@ -90,7 +100,7 @@ export function FeedbackDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2 bg-white">
+                <Button variant="outline" className={`gap-2 bg-white ${buttonClassName}`}>
                     <MessageSquare className="h-4 w-4" />
                     Feedback
                 </Button>
@@ -181,6 +191,15 @@ export function FeedbackDialog() {
                     </form>
                 </Form>
             </DialogContent>
+
+            {/* Notification Dialog */}
+            <NotificationDialog
+                open={notificationOpen}
+                onOpenChange={setNotificationOpen}
+                title={notificationConfig.title}
+                description={notificationConfig.description}
+                variant={notificationConfig.variant}
+            />
         </Dialog>
     );
 }
