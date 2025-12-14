@@ -156,25 +156,26 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
             const bounds = new mapboxgl.LngLatBounds();
             let validCoordinates = false;
 
-            for (const place of places.slice(0, 10)) {
-                // Limit to 10 pins as requested
+            for (const place of places) {
                 let coordinates: [number, number] | null = null;
                 let hasValidAddress = false;
 
                 // Check if place already has coordinates
                 if (place.latitude && place.longitude) {
-                    coordinates = [
-                        parseFloat(place.longitude),
-                        parseFloat(place.latitude),
-                    ];
-                    hasValidAddress = true;
-                } else if (place.address && place.address.trim() !== "") {
-                    // Try to geocode the address
-                    coordinates = await geocodeAddress(
-                        place.address,
-                        place.city,
-                    );
-                    hasValidAddress = !!coordinates;
+                    // Convert to string and validate
+                    const latStr = String(place.latitude).trim();
+                    const lngStr = String(place.longitude).trim();
+
+                    if (latStr !== "" && lngStr !== "") {
+                        const lat = parseFloat(latStr);
+                        const lng = parseFloat(lngStr);
+
+                        // Validate parsed coordinates are valid numbers
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            coordinates = [lng, lat];
+                            hasValidAddress = true;
+                        }
+                    }
                 }
 
                 // If no valid coordinates, use city center
@@ -270,14 +271,30 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
                 });
             } else if (markers.current.length === 1) {
                 // For single marker, center on it
-                const [lng, lat] =
-                    places[0].latitude && places[0].longitude
-                        ? [
-                              parseFloat(places[0].longitude),
-                              parseFloat(places[0].latitude),
-                          ]
-                        : getCityCenter(places[0].city);
-                map.current!.setCenter([lng, lat]);
+                let centerCoords: [number, number];
+
+                // Use same validation as marker placement
+                if (places[0].latitude && places[0].longitude) {
+                    const latStr = String(places[0].latitude).trim();
+                    const lngStr = String(places[0].longitude).trim();
+
+                    if (latStr !== "" && lngStr !== "") {
+                        const lat = parseFloat(latStr);
+                        const lng = parseFloat(lngStr);
+
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            centerCoords = [lng, lat];
+                        } else {
+                            centerCoords = getCityCenter(places[0].city);
+                        }
+                    } else {
+                        centerCoords = getCityCenter(places[0].city);
+                    }
+                } else {
+                    centerCoords = getCityCenter(places[0].city);
+                }
+
+                map.current!.setCenter(centerCoords);
                 map.current!.setZoom(14);
             }
         };
@@ -316,13 +333,6 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E07A5F] mx-auto mb-2"></div>
                         <p className="text-gray-600">Loading map...</p>
                     </div>
-                </div>
-            )}
-            {places.length > 10 && (
-                <div className="absolute bottom-4 left-4 bg-white p-2 rounded-lg shadow-lg">
-                    <p className="text-sm text-gray-600">
-                        Showing first 10 of {places.length} results
-                    </p>
                 </div>
             )}
         </div>

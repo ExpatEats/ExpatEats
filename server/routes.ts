@@ -16,6 +16,7 @@ import { AuthService } from "./services/authService";
 import { AuthenticatedRequest } from "./types/session";
 import { CsrfService } from "./services/csrfService";
 import { RateLimitService } from "./services/rateLimitService";
+import { GeocodingService } from "./services/geocodingService";
 import { registerCommunityRoutes } from "./routes/community";
 
 const submissionSchema = z.object({
@@ -400,9 +401,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.post("/api/admin/approve-place/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
         try {
             const placeId = parseInt(req.params.id);
-            const { adminNotes, softRating, michaelesNotes } = req.body;
-            await storage.approvePlace(placeId, adminNotes, softRating, michaelesNotes);
-            res.json({ success: true, message: "Place approved successfully" });
+            const { adminNotes, softRating, michaelesNotes, skipGeocode, coordinates } = req.body;
+
+            // Get place details for geocoding
+            const place = await storage.getPlace(placeId);
+            if (!place) {
+                return res.status(404).json({ message: "Place not found" });
+            }
+
+            let finalCoordinates = null;
+
+            // Geocode unless skipped or manual coordinates provided
+            if (!skipGeocode && !coordinates) {
+                console.log(`Geocoding place: ${place.name} at ${place.address}, ${place.city}`);
+
+                const geocodeResult = await GeocodingService.geocodeAddress(
+                    place.address,
+                    place.city,
+                    place.region || undefined,
+                    place.country
+                );
+
+                if (geocodeResult.success) {
+                    finalCoordinates = geocodeResult.coordinates;
+                    console.log(`Geocoding successful: ${finalCoordinates?.latitude}, ${finalCoordinates?.longitude}`);
+                } else {
+                    // Return geocoding error to frontend for handling
+                    console.warn(`Geocoding failed for place ${placeId}: ${geocodeResult.error}`);
+                    return res.status(422).json({
+                        geocodingError: true,
+                        message: geocodeResult.error || "Failed to geocode address",
+                        place: place
+                    });
+                }
+            } else if (coordinates) {
+                // Use admin-provided coordinates (from manual correction)
+                finalCoordinates = coordinates;
+                console.log(`Using admin-provided coordinates: ${finalCoordinates.latitude}, ${finalCoordinates.longitude}`);
+            } else {
+                console.log(`Geocoding skipped for place ${placeId}`);
+            }
+
+            // Approve with coordinates
+            await storage.approvePlaceWithCoordinates(
+                placeId,
+                adminNotes,
+                softRating,
+                michaelesNotes,
+                finalCoordinates || undefined
+            );
+
+            res.json({
+                success: true,
+                message: "Place approved successfully",
+                coordinates: finalCoordinates
+            });
         } catch (error) {
             console.error("Error approving place:", error);
             res.status(500).json({ message: "Failed to approve place" });
@@ -438,6 +491,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
             console.error("Error updating place notes and rating:", error);
             res.status(500).json({ message: "Failed to update place notes and rating" });
+        }
+    });
+
+    // Admin: Update place data (for edit & retry geocoding scenario)
+    app.patch("/api/admin/update-place/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const placeId = parseInt(req.params.id);
+            const { address, city, region, country } = req.body;
+
+            const updateData: any = {};
+            if (address) updateData.address = address;
+            if (city) updateData.city = city;
+            if (region !== undefined) updateData.region = region;
+            if (country) updateData.country = country;
+
+            if (Object.keys(updateData).length === 0) {
+                return res.status(400).json({ message: "No fields to update" });
+            }
+
+            await storage.updatePlaceData(placeId, updateData);
+            res.json({ success: true, message: "Place updated successfully" });
+        } catch (error) {
+            console.error("Error updating place:", error);
+            res.status(500).json({ message: "Failed to update place" });
+        }
+    });
+
+    // Admin: Batch geocode approved places without coordinates
+    app.post("/api/admin/batch-geocode", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            console.log("Starting batch geocoding process...");
+
+            // Get all approved places without coordinates
+            const placesWithoutCoords = await storage.getPlacesWithoutCoordinates();
+
+            if (placesWithoutCoords.length === 0) {
+                return res.json({
+                    success: true,
+                    message: "No places need geocoding",
+                    results: [],
+                    summary: { total: 0, successful: 0, failed: 0 }
+                });
+            }
+
+            console.log(`Found ${placesWithoutCoords.length} places without coordinates`);
+
+            // Batch geocode with progress tracking
+            const results = await GeocodingService.geocodeBatch(placesWithoutCoords);
+
+            // Update database with successful results
+            let updateCount = 0;
+            for (const result of results) {
+                if (result.success && result.coordinates) {
+                    try {
+                        await storage.updatePlaceCoordinates(
+                            result.placeId,
+                            result.coordinates.latitude,
+                            result.coordinates.longitude
+                        );
+                        updateCount++;
+                    } catch (error) {
+                        console.error(`Failed to update coordinates for place ${result.placeId}:`, error);
+                    }
+                }
+            }
+
+            // Calculate summary
+            const successful = results.filter(r => r.success).length;
+            const failed = results.filter(r => !r.success).length;
+
+            console.log(`Batch geocoding complete: ${successful} successful, ${failed} failed, ${updateCount} updated in DB`);
+
+            res.json({
+                success: true,
+                message: `Geocoded ${successful} places successfully, ${failed} failed`,
+                results: results,
+                summary: {
+                    total: results.length,
+                    successful,
+                    failed
+                }
+            });
+
+        } catch (error) {
+            console.error("Batch geocoding error:", error);
+            res.status(500).json({ message: "Batch geocoding failed" });
         }
     });
 

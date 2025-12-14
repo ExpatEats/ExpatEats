@@ -27,6 +27,9 @@ import {
 import { NotificationDialog } from "@/components/NotificationDialog";
 import { InputDialog } from "@/components/InputDialog";
 import { ApprovalDialog } from "@/components/ApprovalDialog";
+import { GeocodingErrorModal } from "@/components/GeocodingErrorModal";
+import { EditLocationModal } from "@/components/EditLocationModal";
+import { CoordinateMapPreview } from "@/components/CoordinateMapPreview";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Card,
@@ -37,6 +40,14 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import {
     LogOut,
     Clock,
@@ -46,6 +57,9 @@ import {
     FileCheck,
     LayoutDashboard,
     Calendar,
+    Map,
+    MapPin,
+    Loader2,
 } from "lucide-react";
 
 const foodSourceSchema = z.object({
@@ -108,6 +122,12 @@ const ADMIN_SECTIONS = [
         name: "Pending Events",
         description: "Review submitted events",
         icon: Calendar
+    },
+    {
+        id: "batch-geocode",
+        name: "Batch Geocode",
+        description: "Add coordinates to existing locations",
+        icon: Map
     }
 ] as const;
 
@@ -141,6 +161,18 @@ export default function Admin() {
     // Approval dialog state
     const [approvalDialogOpen, setApprovalDialogOpen] = React.useState(false);
     const [placeToApprove, setPlaceToApprove] = React.useState<number | null>(null);
+
+    // Geocoding state
+    const [geocodingError, setGeocodingError] = React.useState<{ error: string; place: any } | null>(null);
+    const [geocodingErrorModalOpen, setGeocodingErrorModalOpen] = React.useState(false);
+    const [editLocationModalOpen, setEditLocationModalOpen] = React.useState(false);
+    const [mapPreviewOpen, setMapPreviewOpen] = React.useState(false);
+    const [geocodedCoordinates, setGeocodedCoordinates] = React.useState<{ latitude: string; longitude: string } | null>(null);
+    const [pendingApprovalData, setPendingApprovalData] = React.useState<{ softRating?: string; michaelesNotes?: string } | null>(null);
+    const [currentPlaceForPreview, setCurrentPlaceForPreview] = React.useState<any>(null);
+
+    // Batch geocoding state
+    const [batchGeocodeResults, setBatchGeocodeResults] = React.useState<any>(null);
 
     const form = useForm<FoodSourceFormValues>({
         resolver: zodResolver(foodSourceSchema),
@@ -242,23 +274,55 @@ export default function Admin() {
             adminNotes,
             softRating,
             michaelesNotes,
+            skipGeocode,
+            coordinates,
         }: {
             placeId: number;
             adminNotes?: string;
             softRating?: string;
             michaelesNotes?: string;
+            skipGeocode?: boolean;
+            coordinates?: { latitude: string; longitude: string };
         }) => {
-            return await apiRequest(
+            const response = await apiRequest(
                 "POST",
                 `/api/admin/approve-place/${placeId}`,
-                { adminNotes, softRating, michaelesNotes },
+                { adminNotes, softRating, michaelesNotes, skipGeocode, coordinates },
             );
+            return await response.json();
         },
-        onSuccess: () => {
-            showNotification("Success", "Location approved successfully", "success");
-            refetchPending();
+        onSuccess: (data) => {
+            if (data.coordinates) {
+                // Show map preview for confirmation
+                setGeocodedCoordinates(data.coordinates);
+                setMapPreviewOpen(true);
+            } else {
+                // Direct approval (skipped geocoding)
+                showNotification("Success", "Location approved successfully", "success");
+                refetchPending();
+                setApprovalDialogOpen(false);
+            }
         },
-        onError: (error) => {
+        onError: async (error: any) => {
+            // Check for 422 geocoding error
+            if (error.message && error.message.includes("422")) {
+                try {
+                    const errorText = error.message.split(": ").slice(1).join(": ");
+                    const errorData = JSON.parse(errorText);
+                    if (errorData.geocodingError) {
+                        setGeocodingError({
+                            error: errorData.message,
+                            place: errorData.place
+                        });
+                        setGeocodingErrorModalOpen(true);
+                        setApprovalDialogOpen(false);
+                        return;
+                    }
+                } catch (parseError) {
+                    console.error("Failed to parse geocoding error:", parseError);
+                }
+            }
+            // Generic error
             showNotification("Error", `Failed to approve location: ${error.message}`, "error");
         },
     });
@@ -346,6 +410,85 @@ export default function Admin() {
         },
     });
 
+    // Batch geocoding mutation
+    const batchGeocodeMutation = useMutation({
+        mutationFn: async () => {
+            const response = await apiRequest("POST", "/api/admin/batch-geocode", {});
+            return await response.json();
+        },
+        onSuccess: (data) => {
+            setBatchGeocodeResults(data);
+            showNotification("Success", data.message, "success");
+        },
+        onError: (error) => {
+            showNotification("Error", `Batch geocoding failed: ${error.message}`, "error");
+        },
+    });
+
+    // Geocoding handlers
+    const handleApproveWithoutCoords = () => {
+        if (!geocodingError || !pendingApprovalData) return;
+
+        approvePlaceMutation.mutate({
+            placeId: geocodingError.place.id,
+            ...pendingApprovalData,
+            skipGeocode: true
+        });
+
+        setGeocodingErrorModalOpen(false);
+        setGeocodingError(null);
+        setPendingApprovalData(null);
+    };
+
+    const handleEditAndRetry = () => {
+        setGeocodingErrorModalOpen(false);
+        setEditLocationModalOpen(true);
+    };
+
+    const handleSaveAndRetryGeocode = async (updatedData: any) => {
+        if (!geocodingError || !pendingApprovalData) return;
+
+        try {
+            await apiRequest(
+                "PATCH",
+                `/api/admin/update-place/${geocodingError.place.id}`,
+                updatedData
+            );
+
+            // Retry approval (will trigger geocoding again)
+            approvePlaceMutation.mutate({
+                placeId: geocodingError.place.id,
+                ...pendingApprovalData
+            });
+
+            setEditLocationModalOpen(false);
+            setGeocodingError(null);
+        } catch (error: any) {
+            showNotification("Error", `Failed to update location: ${error.message}`, "error");
+        }
+    };
+
+    const handleRemoveFromPending = () => {
+        setGeocodingErrorModalOpen(false);
+        setGeocodingError(null);
+        setPendingApprovalData(null);
+        showNotification("Info", "Location not approved", "info");
+    };
+
+    const handleMapPreviewConfirm = () => {
+        setMapPreviewOpen(false);
+        setGeocodedCoordinates(null);
+        setPendingApprovalData(null);
+        showNotification("Success", "Location approved successfully", "success");
+        refetchPending();
+        setApprovalDialogOpen(false);
+    };
+
+    const handleMapPreviewCancel = () => {
+        setMapPreviewOpen(false);
+        setEditLocationModalOpen(true);
+    };
+
     // Effects and handlers
     useEffect(() => {
         if (!isLoading) {
@@ -387,6 +530,13 @@ export default function Admin() {
 
     const handleApprovePlace = (softRating: string, michaelesNotes: string) => {
         if (placeToApprove !== null) {
+            // Save approval data for potential retry
+            setPendingApprovalData({ softRating, michaelesNotes });
+
+            // Save current place for map preview
+            const currentPlace = pendingPlaces.find(p => p.id === placeToApprove);
+            setCurrentPlaceForPreview(currentPlace);
+
             approvePlaceMutation.mutate({
                 placeId: placeToApprove,
                 softRating,
@@ -1154,6 +1304,112 @@ export default function Admin() {
                 </CardContent>
             </Card>
                             )}
+
+                            {/* Batch Geocoding Section */}
+                            {activeSection === "batch-geocode" && (
+                                <Card className="w-full">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Map className="h-5 w-5 text-[#E07A5F]" />
+                                            Batch Geocode Locations
+                                        </CardTitle>
+                                        <CardDescription>
+                                            Add coordinates to approved locations that don't have them
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            <Alert className="bg-blue-50 border-blue-200">
+                                                <AlertDescription className="text-blue-900">
+                                                    This will geocode all approved locations without coordinates.
+                                                    The process may take several minutes due to rate limiting
+                                                    (200ms delay between requests).
+                                                </AlertDescription>
+                                            </Alert>
+
+                                            <Button
+                                                onClick={() => batchGeocodeMutation.mutate()}
+                                                disabled={batchGeocodeMutation.isPending}
+                                                className="w-full"
+                                                size="lg"
+                                            >
+                                                {batchGeocodeMutation.isPending ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Geocoding...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <MapPin className="h-4 w-4 mr-2" />
+                                                        Start Batch Geocoding
+                                                    </>
+                                                )}
+                                            </Button>
+
+                                            {batchGeocodeResults && (
+                                                <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-3">
+                                                    <h4 className="font-semibold text-lg">Results:</h4>
+                                                    <div className="grid grid-cols-3 gap-4 text-center">
+                                                        <div className="bg-white p-3 rounded border">
+                                                            <p className="text-2xl font-bold text-gray-900">
+                                                                {batchGeocodeResults.summary.total}
+                                                            </p>
+                                                            <p className="text-sm text-gray-600">Total</p>
+                                                        </div>
+                                                        <div className="bg-green-50 p-3 rounded border border-green-200">
+                                                            <p className="text-2xl font-bold text-green-700">
+                                                                {batchGeocodeResults.summary.successful}
+                                                            </p>
+                                                            <p className="text-sm text-green-600">Successful</p>
+                                                        </div>
+                                                        <div className="bg-red-50 p-3 rounded border border-red-200">
+                                                            <p className="text-2xl font-bold text-red-700">
+                                                                {batchGeocodeResults.summary.failed}
+                                                            </p>
+                                                            <p className="text-sm text-red-600">Failed</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {batchGeocodeResults.results && batchGeocodeResults.results.length > 0 && (
+                                                        <div className="mt-4">
+                                                            <details className="cursor-pointer">
+                                                                <summary className="font-medium text-sm text-gray-700 hover:text-gray-900">
+                                                                    View Detailed Results ({batchGeocodeResults.results.length} locations)
+                                                                </summary>
+                                                                <div className="mt-3 space-y-2 max-h-96 overflow-y-auto">
+                                                                    {batchGeocodeResults.results.map((result: any, index: number) => (
+                                                                        <div
+                                                                            key={index}
+                                                                            className={`p-3 rounded text-sm ${
+                                                                                result.success
+                                                                                    ? 'bg-green-50 border border-green-200'
+                                                                                    : 'bg-red-50 border border-red-200'
+                                                                            }`}
+                                                                        >
+                                                                            <p className="font-medium">
+                                                                                {result.placeName}
+                                                                            </p>
+                                                                            {result.success ? (
+                                                                                <p className="text-green-700 text-xs mt-1">
+                                                                                    ✓ Coordinates: {result.coordinates.latitude}, {result.coordinates.longitude}
+                                                                                </p>
+                                                                            ) : (
+                                                                                <p className="text-red-700 text-xs mt-1">
+                                                                                    ✗ {result.error}
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </details>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -1189,6 +1445,49 @@ export default function Admin() {
                 onConfirm={handleApprovePlace}
                 isLoading={approvePlaceMutation.isPending}
             />
+
+            {/* Geocoding Error Modal */}
+            <GeocodingErrorModal
+                open={geocodingErrorModalOpen}
+                onOpenChange={setGeocodingErrorModalOpen}
+                error={geocodingError?.error || ""}
+                place={geocodingError?.place || null}
+                onApproveWithoutCoords={handleApproveWithoutCoords}
+                onEditAndRetry={handleEditAndRetry}
+                onRemoveFromPending={handleRemoveFromPending}
+                isLoading={approvePlaceMutation.isPending}
+            />
+
+            {/* Edit Location Modal */}
+            <EditLocationModal
+                open={editLocationModalOpen}
+                onOpenChange={setEditLocationModalOpen}
+                place={geocodingError?.place || null}
+                onSaveAndRetry={handleSaveAndRetryGeocode}
+                isLoading={approvePlaceMutation.isPending}
+            />
+
+            {/* Map Preview Dialog */}
+            <Dialog open={mapPreviewOpen} onOpenChange={setMapPreviewOpen}>
+                <DialogContent className="sm:max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>Verify Location Coordinates</DialogTitle>
+                        <DialogDescription>
+                            Confirm the geocoded location is accurate before approving
+                        </DialogDescription>
+                    </DialogHeader>
+                    {geocodedCoordinates && currentPlaceForPreview && (
+                        <CoordinateMapPreview
+                            latitude={geocodedCoordinates.latitude}
+                            longitude={geocodedCoordinates.longitude}
+                            placeName={currentPlaceForPreview.name || ""}
+                            address={currentPlaceForPreview.address || ""}
+                            onConfirm={handleMapPreviewConfirm}
+                            onCancel={handleMapPreviewCancel}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
