@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, ChefHat, Clock, Calendar, Euro, Mail, Phone } from "lucide-react";
+import { Check, ChefHat, Clock, Calendar, Euro, Mail, Phone, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -256,9 +256,30 @@ const PersonalizedMealPlans: React.FC = () => {
                     <h2 className="font-montserrat text-3xl font-bold mb-4 text-center text-neutral-dark">
                         Choose Your Plan
                     </h2>
-                    <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                    <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
                         Select the plan that works best for you. All plans include a personalized consultation and customized meal planning.
                     </p>
+
+                    {/* Coming Soon Banner */}
+                    <div className="max-w-4xl mx-auto mb-8">
+                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                            <CardContent className="pt-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
+                                        <Info className="h-6 w-6 text-[#E07A5F]" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-montserrat font-semibold text-lg mb-2 text-neutral-dark">
+                                            Coming Soon
+                                        </h3>
+                                        <p className="text-gray-700 leading-relaxed">
+                                            We're preparing to launch our personalized meal plan service. Check back soon to start your wellness journey with customized nutrition guidance tailored to life in Portugal!
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
 
                     <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         {pricingPlans.map((plan) => (
@@ -306,20 +327,14 @@ const PersonalizedMealPlans: React.FC = () => {
                                         ))}
                                     </ul>
                                     <Button
-                                        onClick={() =>
-                                            handlePurchase(plan.id, plan.price)
-                                        }
-                                        disabled={purchaseMutation.isPending}
-                                        className={`w-full py-6 text-lg font-semibold rounded-full transition transform hover:scale-105 ${
+                                        disabled={true}
+                                        className={`w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed ${
                                             plan.popular
-                                                ? "bg-[#94AF9F] hover:bg-opacity-90 text-white"
-                                                : "bg-[#E07A5F] hover:bg-opacity-90 text-white"
+                                                ? "bg-[#94AF9F] text-white"
+                                                : "bg-[#E07A5F] text-white"
                                         }`}
                                     >
-                                        {purchaseMutation.isPending &&
-                                        selectedPlan === plan.id
-                                            ? "Processing..."
-                                            : "Get Started"}
+                                        Coming Soon
                                     </Button>
                                 </CardContent>
                             </Card>
