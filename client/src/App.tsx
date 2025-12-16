@@ -28,6 +28,8 @@ import NotFound from "./pages/not-found";
 import PersonalizedMealPlans from "./pages/PersonalizedMealPlans";
 import BeforeYouGo from "./pages/BeforeYouGo";
 import ArrivalPackages from "./pages/ArrivalPackages";
+import StockPantry from "./pages/StockPantry";
+import GroceryTour from "./pages/GroceryTour";
 import { useEffect } from "react";
 
 // Authentication guard component
@@ -87,18 +89,12 @@ function Router() {
                 <Route path="/resources">
                     <RequireAuth component={Resources} redirectTo="/unauthorized" />
                 </Route>
-                <Route path="/services">
-                    <RequireAuth component={NewServices} redirectTo="/unauthorized" />
-                </Route>
-                <Route path="/meal-plans">
-                    <RequireAuth component={PersonalizedMealPlans} redirectTo="/unauthorized" />
-                </Route>
-                <Route path="/before-you-go">
-                    <RequireAuth component={BeforeYouGo} redirectTo="/unauthorized" />
-                </Route>
-                <Route path="/services/arrival-packages">
-                    <RequireAuth component={ArrivalPackages} redirectTo="/unauthorized" />
-                </Route>
+                <Route path="/services" component={NewServices} />
+                <Route path="/meal-plans" component={PersonalizedMealPlans} />
+                <Route path="/before-you-go" component={BeforeYouGo} />
+                <Route path="/services/arrival-packages" component={ArrivalPackages} />
+                <Route path="/services/stock-pantry" component={StockPantry} />
+                <Route path="/services/grocery-tour" component={GroceryTour} />
                 <Route path="/events">
                     <RequireAuth component={Events} redirectTo="/unauthorized" />
                 </Route>

@@ -14,6 +14,7 @@ import {
     Home,
     Map,
     Book,
+    Info,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -255,6 +256,27 @@ const BeforeYouGo: React.FC = () => {
             {/* Pricing/Purchase Section */}
             <section className="py-16 bg-gradient-to-br from-[#94AF9F]/10 to-[#DDB892]/10">
                 <div className="container mx-auto px-4">
+                    {/* Coming Soon Banner */}
+                    <div className="max-w-2xl mx-auto mb-8">
+                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                            <CardContent className="pt-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
+                                        <Info className="h-6 w-6 text-[#E07A5F]" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-montserrat font-semibold text-lg mb-2 text-neutral-dark">
+                                            Coming Soon
+                                        </h3>
+                                        <p className="text-gray-700 leading-relaxed">
+                                            Our comprehensive "What to Know Before You Go" guide is currently being finalized. Check back soon to get all the insights you need for a smooth transition to Portugal!
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
                     <div className="max-w-2xl mx-auto">
                         <Card className="shadow-2xl border-2 border-[#94AF9F]">
                             <CardHeader className="text-center pb-4 bg-[#94AF9F] text-white rounded-t-lg">
@@ -317,18 +339,10 @@ const BeforeYouGo: React.FC = () => {
                                 </ul>
 
                                 <Button
-                                    onClick={handlePurchase}
-                                    disabled={purchaseMutation.isPending}
-                                    className="w-full py-6 text-lg font-semibold rounded-full transition transform hover:scale-105 bg-[#E07A5F] hover:bg-opacity-90 text-white shadow-lg"
+                                    disabled={true}
+                                    className="w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed bg-[#E07A5F] text-white shadow-lg"
                                 >
-                                    {purchaseMutation.isPending ? (
-                                        "Processing..."
-                                    ) : (
-                                        <>
-                                            <Download className="mr-2 h-5 w-5" />
-                                            Download the Guide - €25
-                                        </>
-                                    )}
+                                    Coming Soon
                                 </Button>
 
                                 <p className="text-center text-sm text-gray-500 mt-4">

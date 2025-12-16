@@ -14,6 +14,7 @@ import {
     Mail,
     Users,
     Sparkles,
+    Info,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -257,11 +258,32 @@ const ArrivalPackages: React.FC = () => {
                     <h2 className="font-montserrat text-3xl font-bold mb-4 text-center text-neutral-dark">
                         Choose Your Package
                     </h2>
-                    <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                    <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
                         Complete arrival support to help you settle into your new
                         life in Portugal - effortlessly. Each package includes
                         tailored essentials for a healthy, low-tox start.
                     </p>
+
+                    {/* Coming Soon Banner */}
+                    <div className="max-w-4xl mx-auto mb-8">
+                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                            <CardContent className="pt-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
+                                        <Info className="h-6 w-6 text-[#E07A5F]" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-montserrat font-semibold text-lg mb-2 text-neutral-dark">
+                                            Coming Soon
+                                        </h3>
+                                        <p className="text-gray-700 leading-relaxed">
+                                            Our arrival package service is currently being prepared. Check back soon to make your transition to Portugal as smooth and stress-free as possible!
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
 
                     <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
                         {packages.map((pkg) => (
@@ -319,20 +341,14 @@ const ArrivalPackages: React.FC = () => {
                                     </div>
 
                                     <Button
-                                        onClick={() => {
-                                            setSelectedPackage(pkg.id);
-                                            window.scrollTo({
-                                                top: document.body.scrollHeight,
-                                                behavior: "smooth",
-                                            });
-                                        }}
-                                        className={`w-full py-6 text-lg font-semibold rounded-full transition transform hover:scale-105 ${
+                                        disabled={true}
+                                        className={`w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed ${
                                             pkg.popular
-                                                ? "bg-[#94AF9F] hover:bg-opacity-90 text-white"
-                                                : "bg-[#E07A5F] hover:bg-opacity-90 text-white"
+                                                ? "bg-[#94AF9F] text-white"
+                                                : "bg-[#E07A5F] text-white"
                                         }`}
                                     >
-                                        Select Package
+                                        Coming Soon
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -505,17 +521,10 @@ const ArrivalPackages: React.FC = () => {
 
                                     <Button
                                         type="submit"
-                                        disabled={contactMutation.isPending}
-                                        className="w-full py-6 text-lg font-semibold rounded-full transition transform hover:scale-105 bg-[#E07A5F] hover:bg-opacity-90 text-white shadow-lg"
+                                        disabled={true}
+                                        className="w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed bg-[#E07A5F] text-white shadow-lg"
                                     >
-                                        {contactMutation.isPending ? (
-                                            "Sending..."
-                                        ) : (
-                                            <>
-                                                <Mail className="mr-2 h-5 w-5" />
-                                                Request Package
-                                            </>
-                                        )}
+                                        Coming Soon
                                     </Button>
 
                                     <p className="text-center text-sm text-gray-500">

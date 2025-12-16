@@ -58,10 +58,6 @@ export default function NewServices() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
             <div className="text-center mb-12">
-                <div className="inline-flex items-center bg-[#94AF9F] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
-                    <MapPin className="h-4 w-4 mr-1.5" />
-                    <span>PORTUGAL</span>
-                </div>
                 <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
                     Our Services
                 </h1>

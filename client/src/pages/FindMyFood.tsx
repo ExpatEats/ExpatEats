@@ -364,13 +364,13 @@ export default function FindMyFood() {
                             </p>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {getDietaryPreferences().map((preference) => (
                                     <div
                                         key={preference.id}
-                                        className="border border-gray-200 rounded-lg p-3 hover:border-[#E07A5F]/50 transition-colors overflow-hidden min-w-0"
+                                        className="border border-gray-200 rounded-lg p-3 hover:border-[#E07A5F]/50 transition-colors"
                                     >
-                                        <div className="flex items-start space-x-3">
+                                        <div className="flex items-start space-x-2">
                                             <Checkbox
                                                 id={`pref-${preference.id}`}
                                                 checked={selectedPreferences.includes(
@@ -381,16 +381,16 @@ export default function FindMyFood() {
                                                         preference.id,
                                                     )
                                                 }
-                                                className="h-4 w-4 mt-0.5 flex-shrink-0"
+                                                className="h-4 w-4 mt-1 flex-shrink-0"
                                             />
                                             <Label
                                                 htmlFor={`pref-${preference.id}`}
-                                                className="text-sm font-medium cursor-pointer flex items-start gap-2 flex-1 min-w-0 overflow-hidden"
+                                                className="text-sm font-medium cursor-pointer flex items-start gap-2 flex-1"
                                             >
                                                 <span className="flex-shrink-0 mt-0.5">
                                                     {preference.icon}
                                                 </span>
-                                                <span className="leading-tight break-words text-wrap min-w-0 flex-1">
+                                                <span className="leading-tight break-words">
                                                     {preference.name}
                                                 </span>
                                             </Label>
@@ -420,11 +420,11 @@ export default function FindMyFood() {
                         <Button
                             variant="outline"
                             asChild
-                            className="w-full border-[#94AF9F] text-[#94AF9F] hover:bg-[#94AF9F]/10 py-3 text-lg font-medium"
+                            className="w-full border-[#94AF9F] text-[#94AF9F] hover:bg-[#94AF9F]/10 py-3 text-base sm:text-lg font-medium"
                         >
-                            <Link href="/contact">
-                                <MessageCircle className="mr-2 h-5 w-5" />I want
-                                someone to figure this all out for me
+                            <Link href="/contact" className="flex items-center justify-center">
+                                <MessageCircle className="mr-2 h-5 w-5 flex-shrink-0" />
+                                <span className="text-center">I want someone to figure this all out for me</span>
                             </Link>
                         </Button>
                     </div>

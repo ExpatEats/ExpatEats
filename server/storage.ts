@@ -261,6 +261,74 @@ class DatabaseStorage implements Storage {
             .where(eq(places.id, placeId));
     }
 
+    // Geocoding-enhanced approval method
+    async approvePlaceWithCoordinates(
+        placeId: number,
+        adminNotes?: string,
+        softRating?: string,
+        michaelesNotes?: string,
+        coordinates?: { latitude: string; longitude: string }
+    ): Promise<void> {
+        const updateData: any = {
+            status: "approved",
+            adminNotes,
+            softRating,
+            michaelesNotes,
+            reviewedAt: new Date(),
+        };
+
+        if (coordinates) {
+            updateData.latitude = coordinates.latitude;
+            updateData.longitude = coordinates.longitude;
+        }
+
+        await db
+            .update(places)
+            .set(updateData)
+            .where(eq(places.id, placeId));
+    }
+
+    // Get places without coordinates for batch geocoding
+    async getPlacesWithoutCoordinates(): Promise<Place[]> {
+        return await db
+            .select()
+            .from(places)
+            .where(
+                and(
+                    eq(places.status, "approved"),
+                    or(
+                        eq(places.latitude, ""),
+                        eq(places.longitude, ""),
+                        sql`${places.latitude} IS NULL`,
+                        sql`${places.longitude} IS NULL`
+                    )
+                )
+            );
+    }
+
+    // Update only the coordinate fields
+    async updatePlaceCoordinates(
+        placeId: number,
+        latitude: string,
+        longitude: string
+    ): Promise<void> {
+        await db
+            .update(places)
+            .set({ latitude, longitude })
+            .where(eq(places.id, placeId));
+    }
+
+    // Update place data for edit & retry scenario
+    async updatePlaceData(
+        placeId: number,
+        updateData: Partial<Place>
+    ): Promise<void> {
+        await db
+            .update(places)
+            .set(updateData)
+            .where(eq(places.id, placeId));
+    }
+
     // Saved stores methods
     async saveStore(userId: number, placeId: number): Promise<SavedStore> {
         // Check if already saved

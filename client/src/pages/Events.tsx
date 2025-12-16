@@ -279,10 +279,6 @@ const Events = () => {
                             type="event"
                             buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
                         />
-                        <div className="inline-flex items-center bg-[#6D9075] text-white px-3 py-1 rounded-full text-sm font-semibold">
-                            <MapPin className="h-4 w-4 mr-1" />
-                            <span>PORTUGAL</span>
-                        </div>
                     </div>
                 </div>
 

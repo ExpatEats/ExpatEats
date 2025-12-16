@@ -12,7 +12,9 @@
     "db:push": "drizzle-kit push --config=drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
     "db:setup": "npm run db:push && npm run seed",
-    "seed": "tsx server/seedData.ts"
+    "seed": "tsx server/seedData.ts",
+    "export:places": "tsx scripts/export-places-data.ts",
+    "generate:admin-hashes": "tsx scripts/generate-admin-hashes.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
