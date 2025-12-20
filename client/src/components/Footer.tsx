@@ -81,9 +81,9 @@ const Footer = () => {
                             <li>
                                 <Link
                                     className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition"
-                                    href="/contact"
+                                    href="/services"
                                 >
-                                    Meal Planning
+                                    Services
                                 </Link>
                             </li>
                         </ul>
@@ -91,33 +91,18 @@ const Footer = () => {
 
                     <div>
                         <h4 className="font-montserrat font-semibold mb-4 text-[#F7F4EF]">
-                            Cities
+                            Countries
                         </h4>
                         <ul className="space-y-2">
                             <li>
                                 <button className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition">
-                                    Lisbon
+                                    Portugal
                                 </button>
                             </li>
                             <li>
-                                <button className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition">
-                                    Barcelona
-                                </button>
-                            </li>
-                            <li>
-                                <button className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition">
-                                    Berlin
-                                </button>
-                            </li>
-                            <li>
-                                <button className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition">
-                                    Amsterdam
-                                </button>
-                            </li>
-                            <li>
-                                <button className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition">
-                                    London
-                                </button>
+                                <span className="text-[#F7F4EF] opacity-60 italic">
+                                    More Coming Soon!
+                                </span>
                             </li>
                         </ul>
                     </div>
@@ -128,11 +113,6 @@ const Footer = () => {
                         </h4>
                         <ul className="space-y-2">
                             <li>
-                                <button className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition">
-                                    Help Center
-                                </button>
-                            </li>
-                            <li>
                                 <Link
                                     className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition"
                                     href="/contact"
@@ -140,28 +120,23 @@ const Footer = () => {
                                     Contact Us
                                 </Link>
                             </li>
-                            <li>
-                                <button className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition">
-                                    Privacy Policy
-                                </button>
-                            </li>
-                            <li>
-                                <Link
-                                    className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition"
-                                    href="/terms"
-                                >
-                                    Terms and Conditions
-                                </Link>
-                            </li>
                         </ul>
                     </div>
                 </div>
 
                 <div className="border-t border-[#F7F4EF] border-opacity-20 mt-8 pt-6">
-                    <div className="flex justify-center items-center">
+                    <div className="flex flex-col items-center space-y-2">
+                        <div className="flex items-center space-x-4 text-xs text-[#F7F4EF] opacity-70">
+                            <button className="hover:opacity-100 transition">
+                                Privacy Policy
+                            </button>
+                            <span>•</span>
+                            <Link href="/terms" className="hover:opacity-100 transition">
+                                Terms and Conditions
+                            </Link>
+                        </div>
                         <p className="text-xs text-[#F7F4EF] opacity-70">
-                            Copyright Cerejaperaltada Unipessoal 2025 all rights
-                            reserved
+                            Copyright Checkmate 2025 all rights reserved
                         </p>
                     </div>
                 </div>

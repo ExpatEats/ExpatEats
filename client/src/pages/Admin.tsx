@@ -537,10 +537,14 @@ export default function Admin() {
             const currentPlace = pendingPlaces.find(p => p.id === placeToApprove);
             setCurrentPlaceForPreview(currentPlace);
 
+            // Skip geocoding for online locations
+            const skipGeocode = currentPlace?.city?.toLowerCase() === "online";
+
             approvePlaceMutation.mutate({
                 placeId: placeToApprove,
                 softRating,
                 michaelesNotes,
+                skipGeocode,
             });
             setPlaceToApprove(null);
         }

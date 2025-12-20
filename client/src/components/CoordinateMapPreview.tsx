@@ -17,7 +17,7 @@ interface CoordinateMapPreviewProps {
 const MAPBOX_TOKEN =
     import.meta.env.VITE_MAPBOX_ACCESS_TOKEN ||
     (window as any).VITE_MAPBOX_ACCESS_TOKEN ||
-    "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw";
+    "pk.eyJ1IjoibWljaGFlbGVrIiwiYSI6ImNtYzBja3R5MzAwdDQya29kODdrNnNyYXQifQ._51Nw5m36McY40ID6SdWhQ";
 
 export function CoordinateMapPreview({
     latitude,
