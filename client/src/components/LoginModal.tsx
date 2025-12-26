@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FcGoogle } from "react-icons/fc";
 import {
     Dialog,
     DialogContent,
@@ -54,6 +55,21 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
         setNotificationConfig({ title, description, variant });
         setNotificationOpen(true);
     };
+
+    // Handle OAuth errors from URL parameters
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const error = params.get('error');
+
+        if (error === 'oauth_failed') {
+            const message = params.get('message') || 'Google sign-in failed';
+            setLocalError(message);
+            showNotification("Sign-in failed", message, "error");
+
+            // Clean URL
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    }, []);
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -118,6 +134,30 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                             <p className="text-sm text-red-600">{localError}</p>
                         </div>
                     )}
+
+                    {/* Google Sign-In Button */}
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full flex items-center justify-center gap-2"
+                        onClick={() => window.location.href = '/api/auth/google'}
+                        disabled={isLoading}
+                    >
+                        <FcGoogle className="h-5 w-5" />
+                        Sign in with Google
+                    </Button>
+
+                    {/* Divider */}
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-white px-2 text-muted-foreground">
+                                Or continue with
+                            </span>
+                        </div>
+                    </div>
 
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
