@@ -14,7 +14,7 @@ const Footer = () => {
                             <span className="text-[#DDB892]">Eats</span>
                         </h3>
                         <p className="text-[#F7F4EF] opacity-80 mb-4">
-                            Your Guide to Sustainable Living Abroad
+                            Your guide to healthy living abroad
                         </p>
                         <div className="flex space-x-4 mb-4">
                             <a
@@ -115,7 +115,7 @@ const Footer = () => {
                             <li>
                                 <Link
                                     className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition"
-                                    href="/contact"
+                                    href="/contact-us"
                                 >
                                     Contact Us
                                 </Link>

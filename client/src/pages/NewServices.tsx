@@ -17,7 +17,7 @@ export default function NewServices() {
             id: "meal-planning",
             name: "Personalized Meal Plans",
             description:
-                "Personalized meal plans tailored to your dietary preferences and local ingredients available in Portugal.",
+                "Customized Meal Plans based on your dietary needs, lifestyle, and locally available ingredients in Portugal.",
             icon: <ChefHat className="h-8 w-8" />,
             path: "/meal-plans",
         },
@@ -25,7 +25,7 @@ export default function NewServices() {
             id: "stock-pantry",
             name: "Stock Your Pantry",
             description:
-                "Essential pantry items guide to help you stock up with sustainable, local, and healthy ingredients.",
+                "A guided pantry essentials list to help you stock your kitchen with healthy, sustainable, and locally sourced food.",
             icon: <Package className="h-8 w-8" />,
             path: "/services/stock-pantry",
         },
@@ -33,23 +33,23 @@ export default function NewServices() {
             id: "grocery-tour",
             name: "Grocery Store and Personal Shopping Tour",
             description:
-                "Guided tours of local markets and grocery stores with personalized shopping assistance.",
+                "Guided tours of local markets and grocery stores to help you shop confidently in Portugal.",
             icon: <ShoppingCart className="h-8 w-8" />,
             path: "/services/grocery-tour",
         },
         {
             id: "arrival-packages",
-            name: "Arrival Packages and Assistance",
+            name: "Arrival Packages",
             description:
-                "Complete arrival support packages to help you settle into your new life in Portugal.",
+                "High touch arrival services designed to help you settle into daily life in Portugal with ease.",
             icon: <MapPin className="h-8 w-8" />,
             path: "/services/arrival-packages",
         },
         {
             id: "before-you-go",
-            name: "What to Know Before You Go",
+            name: "Moving to Portugal: A Healthy Living Guide",
             description:
-                "Essential preparation guide with everything you need to know before moving to Portugal.",
+                "A practical preparation guide that includes food, lifestyle, and everyday essentials to know before you move to Portugal.",
             icon: <Info className="h-8 w-8" />,
             path: "/before-you-go",
         },
@@ -62,8 +62,8 @@ export default function NewServices() {
                     Our Services
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Comprehensive support for your sustainable living journey in
-                    Portugal
+                    Personalized support for healthy, sustainable living as an expat in
+                    Portugal.
                 </p>
             </div>
 

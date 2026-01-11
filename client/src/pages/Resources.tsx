@@ -11,31 +11,31 @@ export default function Resources() {
         {
             id: 1,
             title: "Beauty Guide",
-            description: "Organic and non-toxic beauty products",
+            description: "Non-toxic, organic beauty and personal care products available in Portugal.",
             buttonText: "Explore",
         },
         {
             id: 2,
             title: "Cleaning Guide",
-            description: "Non-toxic cleaning products and solutions",
+            description: "Non-toxic cleaning products and safer home solutions for everyday use.",
             buttonText: "Explore",
         },
         {
             id: 3,
             title: "Housewares and Homegoods Guide",
-            description: "Non-toxic furniture and filtered water systems",
+            description: "Non-toxic home essentials including cookware, furniture, and water filtration.",
             buttonText: "Explore",
         },
         {
             id: 4,
             title: "Clothing Guide",
-            description: "Sustainable and organic clothing options",
+            description: "Sustainable and organic clothing brands focused on quality and longevity.",
             buttonText: "Explore",
         },
         {
             id: 5,
             title: "Wellness Guide",
-            description: "Wellness services and products",
+            description: "Wellness services, practitioners, and supportive products in Portugal.",
             buttonText: "Explore",
         },
     ];
@@ -113,8 +113,7 @@ export default function Resources() {
                     Resources
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Essential guides, apps, and video tutorials for sustainable
-                    living in Portugal
+                    Curated guides, apps, and videos to support healthy, sustainable living in Portugal.
                 </p>
             </div>
 
@@ -145,6 +144,11 @@ export default function Resources() {
                 </TabsList>
 
                 <TabsContent value="lifestyle" className="space-y-6">
+                    <div className="text-center mb-6">
+                        <p className="text-xl text-gray-600">
+                            Downloadable guides focused on wellness and sustainable living in Portugal.
+                        </p>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {lifestyleGuides.map((guide) => (
                             <Card
@@ -164,13 +168,18 @@ export default function Resources() {
                             </Card>
                         ))}
                     </div>
+                    <div className="text-center mt-6">
+                        <p className="text-sm text-gray-500">
+                            Carefully curated guides to help you choose safer products and services. Some guides are currently in development so check back soon.
+                        </p>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="apps" className="space-y-6">
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-semibold mb-4">
-                            Helpful Food Scanner Apps
-                        </h2>
+                    <div className="text-center mb-6">
+                        <p className="text-xl text-gray-600">
+                            Helpful apps for grocery shopping, wellness, and daily life in Portugal.
+                        </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {apps.map((app) => (
@@ -209,10 +218,10 @@ export default function Resources() {
                 </TabsContent>
 
                 <TabsContent value="videos" className="space-y-6">
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-semibold mb-4">
-                            Video Guides: Reading Portuguese Labels
-                        </h2>
+                    <div className="text-center mb-6">
+                        <p className="text-xl text-gray-600">
+                            Short tutorials and walkthroughs covering food, shopping, and wellness basics in Portugal.
+                        </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {videos.map((video) => (
@@ -255,6 +264,12 @@ export default function Resources() {
                         Get Personal Help
                     </Button>
                 </div>
+            </div>
+
+            <div className="mt-8 text-center">
+                <p className="text-gray-600">
+                    A growing library of trusted resources for expats focused on food, wellness, and sustainable living across Portugal.
+                </p>
             </div>
         </div>
     );

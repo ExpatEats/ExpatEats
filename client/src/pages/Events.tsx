@@ -264,22 +264,49 @@ const Events = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-5xl mx-auto">
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
-                    <div>
-                        <h1 className="font-montserrat text-3xl font-bold">
-                            Community Events
-                        </h1>
-                        <p className="text-gray-600 mt-2">
-                            Connect with other expats and learn about food in
-                            Lisbon
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <SubmissionForm
-                            type="event"
-                            buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
-                        />
-                    </div>
+                <div className="mb-8 text-center">
+                    <h1 className="font-montserrat text-3xl font-bold">
+                        Community Events
+                    </h1>
+                    <p className="text-gray-600 mt-2">
+                        Discover food, wellness, and lifestyle events for expats (and locals) in Lisbon and beyond in Portugal.
+                    </p>
+                </div>
+
+                {/* Intro Section */}
+                <div className="mb-8 bg-[#F7F4EF] rounded-lg p-6">
+                    <p className="text-gray-700 text-base leading-relaxed">
+                        From nutrition talks and cooking classes to wellness workshops, hikes, and community meet-ups—this is where wellness-minded expats come together to learn, connect, and feel at home.
+                    </p>
+                </div>
+
+                {/* Types of Events Section */}
+                <div className="mb-8 bg-white rounded-lg border p-6">
+                    <h2 className="text-xl font-semibold mb-4">
+                        Types of Events You Can Explore
+                    </h2>
+                    <ul className="space-y-2 text-gray-700">
+                        <li className="flex items-start">
+                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span>Nutrition, cooking, and food education workshops</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span>Wellness and self-care events</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span>Guided hikes, movement, and outdoor meetups</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span>Sustainable, non-toxic living, and lifestyle talks</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span>Community gatherings hosted by local practitioners and businesses</span>
+                        </li>
+                    </ul>
                 </div>
 
                 {/* Loading State */}
@@ -298,20 +325,42 @@ const Events = () => {
                     </div>
                 )}
 
+                {/* Submit Event Section - Always show */}
+                <div className="mb-6 bg-gradient-to-r from-[#94AF9F]/10 to-[#E07A5F]/10 rounded-lg p-6 border border-[#94AF9F]/20">
+                    <h2 className="text-xl font-semibold mb-2">
+                        Submit An Event
+                    </h2>
+                    <p className="text-gray-600 mb-1">
+                        Hosting a food or wellness-focused event in Portugal?
+                    </p>
+                    <p className="text-gray-700 mb-4">
+                        Share it with the Expat Eats community. Submitting an event is a great way to connect with health-conscious expats and promote meaningful, aligned experiences.
+                    </p>
+                    <SubmissionForm
+                        type="event"
+                        buttonText="Submit An Event"
+                        buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                    />
+                </div>
+
+                {/* Upcoming Events Header */}
+                <div className="mb-6">
+                    <h2 className="text-2xl font-semibold">
+                        Upcoming Events
+                    </h2>
+                </div>
+
                 {/* Empty State */}
                 {!isLoading && !error && events.length === 0 && (
-                    <div className="text-center py-16">
+                    <div className="text-center py-16 bg-gray-50 rounded-lg">
                         <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                            No Events Yet
-                        </h3>
-                        <p className="text-gray-600 mb-6">
-                            Be the first to add an event to the community!
+                        <p className="text-gray-700 text-lg mb-6">
+                            Be the first to add an event and help shape the Expat Eats community.
                         </p>
                         <SubmissionForm
                             type="event"
                             buttonText="Submit First Event"
-                            buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                            buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white px-6 py-3"
                         />
                     </div>
                 )}
@@ -325,28 +374,12 @@ const Events = () => {
                     </div>
                 )}
 
-                {!isLoading && !error && events.length > 0 && (
-                    <div className="mt-10 text-center">
-                        <p className="text-lg font-medium text-gray-600 mb-4">
-                            Want to contribute to our community?
-                        </p>
-                        <div className="flex flex-col sm:flex-row justify-center gap-4">
-                            <SubmissionForm
-                                type="event"
-                                buttonText="Submit An Event"
-                                buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white font-medium text-base px-8 py-6"
-                            />
-                            <Link href="/contact">
-                                <Button
-                                    size="lg"
-                                    className="bg-[#6D9075] hover:bg-[#6D9075]/90"
-                                >
-                                    Contact Us
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
-                )}
+                {/* Footer note about featured listings */}
+                <div className="mt-12 text-center">
+                    <p className="text-xs text-gray-500">
+                        Event organizers may apply for featured listing and promoted events.
+                    </p>
+                </div>
             </div>
         </div>
     );
