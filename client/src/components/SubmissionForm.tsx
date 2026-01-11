@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
@@ -55,8 +56,13 @@ const eventSchema = z.object({
     ...baseSchema,
     date: z.string().min(1, "Date is required"),
     time: z.string().min(1, "Time is required"),
+    venueName: z.string().optional(),
     city: z.string().min(2, "City is required"),
     category: z.string().optional(),
+    eventCost: z.string().optional(),
+    eventLanguage: z.string().optional(),
+    languageOther: z.string().optional(),
+    featuredInterest: z.boolean().optional(),
     organizerName: z.string().optional(),
     organizerRole: z.string().optional(),
     organizerEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
@@ -94,11 +100,16 @@ export function SubmissionForm({
                 title: "",
                 description: "",
                 location: "",
+                venueName: "",
                 website: "",
                 date: "",
                 time: "",
                 city: "",
                 category: "",
+                eventCost: "",
+                eventLanguage: "",
+                languageOther: "",
+                featuredInterest: false,
                 organizerName: "",
                 organizerRole: "",
                 organizerEmail: "",
@@ -124,6 +135,7 @@ export function SubmissionForm({
                     date: eventData.date,
                     time: eventData.time,
                     location: eventData.location,
+                    venueName: eventData.venueName || null,
                     city: eventData.city,
                     country: "Portugal",
                     organizerName: eventData.organizerName || null,
@@ -131,6 +143,10 @@ export function SubmissionForm({
                     organizerEmail: eventData.organizerEmail || null,
                     category: eventData.category || null,
                     website: eventData.website || null,
+                    eventCost: eventData.eventCost || null,
+                    eventLanguage: eventData.eventLanguage || null,
+                    languageOther: eventData.languageOther || null,
+                    featuredInterest: eventData.featuredInterest || false,
                     submittedBy: eventData.name,
                     submitterEmail: eventData.email,
                 });
@@ -169,7 +185,7 @@ export function SubmissionForm({
         type === "event" ? "Submit New Event" : "Submit New Location";
     const dialogDescription =
         type === "event"
-            ? "Share an event that would benefit the expat community in Portugal."
+            ? "Share a food, wellness, or lifestyle event that supports the expat community in Portugal."
             : "Suggest a food source or sustainable business for our directory.";
 
     return (
@@ -233,6 +249,11 @@ export function SubmissionForm({
                                                 {...field}
                                             />
                                         </FormControl>
+                                        {type === "event" && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                We will only use this to contact you if we have questions about the event.
+                                            </p>
+                                        )}
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -269,12 +290,19 @@ export function SubmissionForm({
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Description</FormLabel>
+                                    <FormLabel>
+                                        {type === "event" ? "Event Description" : "Description"}
+                                    </FormLabel>
+                                    {type === "event" && (
+                                        <p className="text-sm text-gray-600 mb-2">
+                                            Briefly describe the event, including what it is, who it is for, and why it would be helpful for expats.
+                                        </p>
+                                    )}
                                     <FormControl>
                                         <Textarea
                                             placeholder={
                                                 type === "event"
-                                                    ? "Describe the event, date, time, and why it would benefit expats..."
+                                                    ? "You can include the date, time, and key details here."
                                                     : "Describe what makes this location special, products offered, sustainability practices..."
                                             }
                                             className="min-h-[100px]"
@@ -286,22 +314,59 @@ export function SubmissionForm({
                             )}
                         />
 
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {/* Event Location Section */}
+                        {type === "event" && (
+                            <>
+                                <h3 className="text-sm font-medium text-gray-700 mt-2">
+                                    Event Location
+                                </h3>
+
+                                <FormField
+                                    control={form.control}
+                                    name="venueName"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Venue Name or Street Address (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="e.g., TimeOut Market, Rua Augusta 123"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="location"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Location Details</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Additional location details or instructions"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </>
+                        )}
+
+                        {type !== "event" && (
                             <FormField
                                 control={form.control}
                                 name="location"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>
-                                            {type === "event" ? "Event Location" : "Location"}
-                                        </FormLabel>
+                                        <FormLabel>Location</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder={
-                                                    type === "event"
-                                                        ? "Venue or address"
-                                                        : "City, address, or area"
-                                                }
+                                                placeholder="City, address, or area"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -309,26 +374,26 @@ export function SubmissionForm({
                                     </FormItem>
                                 )}
                             />
+                        )}
 
-                            <FormField
-                                control={form.control}
-                                name="website"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Website (Optional)
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="https://website.com"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                        <FormField
+                            control={form.control}
+                            name="website"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Website (Optional)
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="https://website.com"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         {/* Event-specific fields */}
                         {type === "event" && (
@@ -369,19 +434,76 @@ export function SubmissionForm({
                                     />
                                 </div>
 
+                                <FormField
+                                    control={form.control}
+                                    name="city"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>City</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Lisbon, Cascais, Online, Etc."
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="category"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Event Category (Optional)</FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a category" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Food & Nutrition">Food & Nutrition</SelectItem>
+                                                    <SelectItem value="Cooking & Culinary">Cooking & Culinary</SelectItem>
+                                                    <SelectItem value="Wellness & Self-Care">Wellness & Self-Care</SelectItem>
+                                                    <SelectItem value="Movement & Fitness">Movement & Fitness</SelectItem>
+                                                    <SelectItem value="Outdoor & Nature">Outdoor & Nature</SelectItem>
+                                                    <SelectItem value="Sustainable or Low-Tox Living">Sustainable or Low-Tox Living</SelectItem>
+                                                    <SelectItem value="Community & Social">Community & Social</SelectItem>
+                                                    <SelectItem value="Workshops & Talks">Workshops & Talks</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <FormField
                                         control={form.control}
-                                        name="city"
+                                        name="eventCost"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>City</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Lisbon, Cascais, etc."
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <FormLabel>Event Cost (Optional)</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select cost type" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Free">Free</SelectItem>
+                                                        <SelectItem value="Paid">Paid</SelectItem>
+                                                        <SelectItem value="Donation-based">Donation-based</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -389,27 +511,24 @@ export function SubmissionForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="category"
+                                        name="eventLanguage"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Category (Optional)</FormLabel>
+                                                <FormLabel>Event Language (Optional)</FormLabel>
                                                 <Select
                                                     onValueChange={field.onChange}
                                                     defaultValue={field.value}
                                                 >
                                                     <FormControl>
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Select a category" />
+                                                            <SelectValue placeholder="Select language" />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
-                                                        <SelectItem value="Market Tour">Market Tour</SelectItem>
-                                                        <SelectItem value="Workshop">Workshop</SelectItem>
-                                                        <SelectItem value="Social">Social</SelectItem>
-                                                        <SelectItem value="Food Tasting">Food Tasting</SelectItem>
-                                                        <SelectItem value="Cooking Class">Cooking Class</SelectItem>
-                                                        <SelectItem value="Networking">Networking</SelectItem>
-                                                        <SelectItem value="Other">Other</SelectItem>
+                                                        <SelectItem value="English">English</SelectItem>
+                                                        <SelectItem value="Portuguese">Portuguese</SelectItem>
+                                                        <SelectItem value="Bilingual">Bilingual</SelectItem>
+                                                        <SelectItem value="Other">Other: please specify</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                                 <FormMessage />
@@ -417,6 +536,45 @@ export function SubmissionForm({
                                         )}
                                     />
                                 </div>
+
+                                {form.watch("eventLanguage") === "Other" && (
+                                    <FormField
+                                        control={form.control}
+                                        name="languageOther"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Please specify language</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="e.g., Spanish, French"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+
+                                <FormField
+                                    control={form.control}
+                                    name="featuredInterest"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                            <div className="space-y-1 leading-none">
+                                                <FormLabel>
+                                                    I am interested in featuring or promoting this event
+                                                </FormLabel>
+                                            </div>
+                                        </FormItem>
+                                    )}
+                                />
 
                                 <div className="border-t pt-4 mt-2">
                                     <h4 className="text-sm font-medium mb-3 text-gray-700">
@@ -478,6 +636,12 @@ export function SubmissionForm({
                                     />
                                 </div>
                             </>
+                        )}
+
+                        {type === "event" && (
+                            <p className="text-xs text-gray-500 text-center pt-2">
+                                Events are reviewed before being published to ensure alignment with Expat Eats community.
+                            </p>
                         )}
 
                         <DialogFooter className="pt-4">

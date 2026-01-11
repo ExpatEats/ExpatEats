@@ -189,14 +189,19 @@ export const events = pgTable("events", {
     date: timestamp("date").notNull(),
     time: text("time").notNull(),
     location: text("location").notNull(),
+    venueName: text("venue_name"),
     city: text("city").notNull(),
     country: text("country").default("Portugal"),
     organizerName: text("organizer_name"),
     organizerRole: text("organizer_role"),
     organizerEmail: text("organizer_email"),
-    category: text("category"), // 'Market Tour', 'Workshop', 'Social', 'Food Tasting', 'Cooking Class', 'Networking', 'Other'
+    category: text("category"), // 'Food & Nutrition', 'Cooking & Culinary', 'Wellness & Self-Care', 'Movement & Fitness', 'Outdoor & Nature', 'Sustainable or Low-Tox Living', 'Community & Social', 'Workshops & Talks'
     imageUrl: text("image_url"),
     website: text("website"),
+    eventCost: text("event_cost"), // 'Free', 'Paid', 'Donation-based'
+    eventLanguage: text("event_language"), // 'English', 'Portuguese', 'Bilingual', 'Other'
+    languageOther: text("language_other"),
+    featuredInterest: boolean("featured_interest").default(false),
     maxAttendees: integer("max_attendees"),
     currentAttendees: integer("current_attendees").default(0),
     submittedBy: text("submitted_by").notNull(),

@@ -63,9 +63,10 @@ interface PostsResponse {
 }
 
 const SECTIONS = [
-    { id: "general", name: "General", description: "General discussions and community topics" },
-    { id: "where-to-find", name: "Where to find", description: "Help finding specific products and ingredients" },
-    { id: "product-swaps", name: "Product Swaps", description: "Share alternatives and substitutions" }
+    { id: "general", name: "General", description: "Introductions, questions, and general community discussions." },
+    { id: "where-to-find", name: "Where to Find", description: "Help finding specific products, ingredients, stores, and services in your area." },
+    { id: "product-swaps", name: "Product Swaps", description: "Share product alternatives, substitutions, and clean swaps you've discovered in Portugal." },
+    { id: "local-favorites", name: "Local Favorites", description: "Favorite stores, markets, cafes, and practitioners in your area." }
 ] as const;
 
 const Community: React.FC = () => {
@@ -251,7 +252,18 @@ const Community: React.FC = () => {
                     <div className="mb-8 text-center">
                         <h1 className="font-montserrat text-3xl font-bold mb-2">Community</h1>
                         <p className="text-gray-600 max-w-3xl mx-auto">
-                            Connect with fellow expats, share experiences, and discover new food sources together.
+                            Connect with fellow expats, share local knowledge, and discover healthy food and wellness resources together.
+                        </p>
+                    </div>
+
+                    {/* About this Community */}
+                    <div className="mb-8 bg-[#F7F4EF] rounded-lg p-6 max-w-4xl mx-auto">
+                        <h2 className="text-xl font-semibold mb-3 text-center">About this Community</h2>
+                        <p className="text-gray-700 text-center mb-3">
+                            This is a welcoming space for expats in Portugal to ask questions, share recommendations, and help each other navigate food, wellness, and everyday life.
+                        </p>
+                        <p className="text-gray-600 text-center text-sm">
+                            Discussions are moderated to keep things supportive, helpful, and aligned with Expat Eats values.
                         </p>
                     </div>
 
@@ -288,6 +300,9 @@ const Community: React.FC = () => {
                         <div className="lg:col-span-3">
                             {/* Section Header */}
                             <div className="mb-6">
+                                <p className="text-gray-600 text-center mb-4">
+                                    Ask a question, share a recommendation, or help another expat find what they are looking for.
+                                </p>
                                 <div className="flex items-center justify-between">
                                     <Badge variant="secondary">
                                         {postsData?.pagination.total || 0} posts
@@ -440,6 +455,13 @@ const Community: React.FC = () => {
                                 </div>
                             )}
                         </div>
+                    </div>
+
+                    {/* Moderation Note */}
+                    <div className="mt-8 text-center">
+                        <p className="text-xs text-gray-500">
+                            Community discussions are moderated by local wellness ambassadors to ensure accuracy, kindness, and relevance.
+                        </p>
                     </div>
                 </div>
             </div>

@@ -11,6 +11,7 @@ import Search from "./pages/Search";
 import Shop from "./pages/Shop";
 import Results from "./pages/Results";
 import Contact from "./pages/Contact";
+import GeneralContact from "./pages/GeneralContact";
 import Resources from "./pages/Resources";
 import NewServices from "./pages/NewServices";
 import Events from "./pages/Events";
@@ -83,6 +84,7 @@ function Router() {
                 </Route>
                 <Route path="/find-my-food" component={FindMyFood} />
                 <Route path="/results" component={Results} />
+                <Route path="/contact-us" component={GeneralContact} />
                 <Route path="/contact">
                     <RequireAuth component={Contact} redirectTo="/unauthorized" />
                 </Route>

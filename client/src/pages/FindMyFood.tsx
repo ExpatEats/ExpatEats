@@ -46,13 +46,13 @@ export default function FindMyFood() {
             id: "grocery",
             name: "Grocery and Market Guide",
             description:
-                "Stores, markets, and private sellers with organic, local, sustainable options",
+                "Healthy grocery stores, markets, and local sellers offering organic and sustainable food options.",
         },
         {
             id: "supplements",
             name: "Supplements Guide",
             description:
-                "Quality supplements including online resources that ship to Portugal",
+                "Trusted supplement brands available in local stores and online retailers that ship to Portugal.",
         },
     ];
 
@@ -256,8 +256,8 @@ export default function FindMyFood() {
                             Find My Food
                         </h1>
                         <p className="text-lg text-gray-600">
-                            Discover sustainable food sources tailored to your
-                            location and dietary needs
+                            Discover healthy, organic grocery stores and supplements near you,
+                            curated for your diet and location in Portugal.
                         </p>
                     </div>
 
@@ -313,7 +313,7 @@ export default function FindMyFood() {
                                 Guide Type
                             </CardTitle>
                             <p className="text-gray-600">
-                                Choose one guide type:
+                                Choose what you are looking for:
                             </p>
                         </CardHeader>
                         <CardContent>
@@ -360,7 +360,7 @@ export default function FindMyFood() {
                                 Dietary Preferences
                             </CardTitle>
                             <p className="text-gray-600">
-                                Select any dietary preferences that apply:
+                                Select all dietary preferences that apply.
                             </p>
                         </CardHeader>
                         <CardContent>
@@ -424,7 +424,7 @@ export default function FindMyFood() {
                         >
                             <Link href="/contact" className="flex items-center justify-center">
                                 <MessageCircle className="mr-2 h-5 w-5 flex-shrink-0" />
-                                <span className="text-center">I want someone to figure this all out for me</span>
+                                <span className="text-center">I want someone to figure this out for me</span>
                             </Link>
                         </Button>
                     </div>

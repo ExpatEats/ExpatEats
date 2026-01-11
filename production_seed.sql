@@ -52,9 +52,8 @@ INSERT INTO cities (name, slug, country, region, is_active) VALUES
     ('Cascais', 'cascais', 'Portugal', 'Lisbon', true),
     ('Sintra', 'sintra', 'Portugal', 'Lisbon', true),
     ('Oeiras', 'oeiras', 'Portugal', 'Lisbon', true),
-    ('Mafra', 'mafra', 'Portugal', 'Lisbon', true),
-    ('Parede', 'parede', 'Portugal', 'Lisbon', true),
-    ('Ourém', 'ourem', 'Portugal', 'Santarém', true),
+    ('Ericeira/Mafra', 'ericeira-mafra', 'Portugal', 'Lisbon', true),
+    ('Carcavelos/Parede', 'carcavelos-parede', 'Portugal', 'Lisbon', true),
     ('Online', 'online', 'Online', NULL, true);
 
 -- Verify
