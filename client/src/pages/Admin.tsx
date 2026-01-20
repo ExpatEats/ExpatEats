@@ -60,6 +60,7 @@ import {
     Map,
     MapPin,
     Loader2,
+    Edit,
 } from "lucide-react";
 
 const foodSourceSchema = z.object({
@@ -170,6 +171,9 @@ export default function Admin() {
     const [geocodedCoordinates, setGeocodedCoordinates] = React.useState<{ latitude: string; longitude: string } | null>(null);
     const [pendingApprovalData, setPendingApprovalData] = React.useState<{ softRating?: string; michaelesNotes?: string } | null>(null);
     const [currentPlaceForPreview, setCurrentPlaceForPreview] = React.useState<any>(null);
+
+    // Edit location state (general editing, not just geocoding retry)
+    const [placeToEdit, setPlaceToEdit] = React.useState<any>(null);
 
     // Batch geocoding state
     const [batchGeocodeResults, setBatchGeocodeResults] = React.useState<any>(null);
@@ -463,6 +467,46 @@ export default function Admin() {
 
             setEditLocationModalOpen(false);
             setGeocodingError(null);
+        } catch (error: any) {
+            showNotification("Error", `Failed to update location: ${error.message}`, "error");
+        }
+    };
+
+    // Handle general edit save (not geocoding retry)
+    const handleEditSave = async (updatedData: any) => {
+        if (!placeToEdit) return;
+
+        try {
+            const response = await apiRequest(
+                "PATCH",
+                `/api/admin/update-place/${placeToEdit.id}`,
+                updatedData
+            );
+
+            const result = await response.json();
+
+            // Show geocoding results if location changed
+            if (result.geocoding?.triggered) {
+                if (result.geocoding.success) {
+                    showNotification(
+                        "Success",
+                        `Location updated and re-geocoded successfully`,
+                        "success"
+                    );
+                } else {
+                    showNotification(
+                        "Warning",
+                        `Location updated but geocoding failed: ${result.geocoding.error}`,
+                        "warning"
+                    );
+                }
+            } else {
+                showNotification("Success", "Location updated successfully", "success");
+            }
+
+            setEditLocationModalOpen(false);
+            setPlaceToEdit(null);
+            refetchPending();
         } catch (error: any) {
             showNotification("Error", `Failed to update location: ${error.message}`, "error");
         }
@@ -1135,6 +1179,22 @@ export default function Admin() {
                                     <div className="flex gap-2 pt-3 border-t">
                                         <Button
                                             onClick={() => {
+                                                setPlaceToEdit(place);
+                                                setEditLocationModalOpen(true);
+                                            }}
+                                            disabled={
+                                                approvePlaceMutation.isPending ||
+                                                rejectPlaceMutation.isPending
+                                            }
+                                            variant="outline"
+                                            size="sm"
+                                            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                                        >
+                                            <Edit className="h-4 w-4 mr-1" />
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
                                                 setPlaceToApprove(place.id);
                                                 setApprovalDialogOpen(true);
                                             }}
@@ -1465,9 +1525,15 @@ export default function Admin() {
             {/* Edit Location Modal */}
             <EditLocationModal
                 open={editLocationModalOpen}
-                onOpenChange={setEditLocationModalOpen}
-                place={geocodingError?.place || null}
-                onSaveAndRetry={handleSaveAndRetryGeocode}
+                onOpenChange={(open) => {
+                    setEditLocationModalOpen(open);
+                    if (!open) {
+                        setPlaceToEdit(null);
+                        setGeocodingError(null);
+                    }
+                }}
+                place={placeToEdit || geocodingError?.place || null}
+                onSaveAndRetry={placeToEdit ? handleEditSave : handleSaveAndRetryGeocode}
                 isLoading={approvePlaceMutation.isPending}
             />
 

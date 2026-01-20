@@ -37,6 +37,7 @@ interface Storage {
     getPlaces(filters?: PlaceFilters): Promise<Place[]>;
     getPlace(id: number): Promise<Place | null>;
     createPlace(place: InsertPlace): Promise<Place>;
+    bulkCreatePlaces(places: InsertPlace[]): Promise<Place[]>;
     updatePlaceRating(placeId: number, rating: number): Promise<void>;
 
     // Review methods
@@ -150,6 +151,14 @@ class DatabaseStorage implements Storage {
     async createPlace(place: InsertPlace): Promise<Place> {
         const [newPlace] = await db.insert(places).values(place).returning();
         return newPlace;
+    }
+
+    async bulkCreatePlaces(placesArray: InsertPlace[]): Promise<Place[]> {
+        if (placesArray.length === 0) {
+            return [];
+        }
+        const newPlaces = await db.insert(places).values(placesArray).returning();
+        return newPlaces;
     }
 
     async updatePlaceRating(placeId: number, rating: number): Promise<void> {

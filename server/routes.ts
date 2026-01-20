@@ -494,24 +494,182 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
-    // Admin: Update place data (for edit & retry geocoding scenario)
+    // Admin: Update place data (comprehensive edit for all fields)
     app.patch("/api/admin/update-place/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
         try {
             const placeId = parseInt(req.params.id);
-            const { address, city, region, country } = req.body;
 
+            // Get current place data to compare location fields
+            const currentPlace = await storage.getPlace(placeId);
+            if (!currentPlace) {
+                return res.status(404).json({ message: "Place not found" });
+            }
+
+            // Editable fields - exclude system-managed fields
+            const {
+                // Basic info
+                name,
+                description,
+                category,
+                // Location
+                address,
+                city,
+                region,
+                country,
+                // Contact
+                phone,
+                email,
+                website,
+                instagram,
+                // Tags
+                tags,
+                // Boolean features
+                glutenFree,
+                dairyFree,
+                nutFree,
+                vegan,
+                organic,
+                localFarms,
+                freshVegetables,
+                farmRaisedMeat,
+                noProcessed,
+                kidFriendly,
+                bulkBuying,
+                zeroWaste,
+                // Admin fields
+                status,
+                softRating,
+                michaelesNotes,
+                adminNotes,
+            } = req.body;
+
+            // Build update object with only provided fields
             const updateData: any = {};
-            if (address) updateData.address = address;
-            if (city) updateData.city = city;
+
+            // Basic info
+            if (name !== undefined) updateData.name = name;
+            if (description !== undefined) updateData.description = description;
+            if (category !== undefined) {
+                // Validate category
+                const validCategories = ['market', 'restaurant', 'grocery', 'community'];
+                if (!validCategories.includes(category)) {
+                    return res.status(400).json({ message: `Invalid category. Must be one of: ${validCategories.join(', ')}` });
+                }
+                updateData.category = category;
+            }
+
+            // Location
+            if (address !== undefined) updateData.address = address;
+            if (city !== undefined) updateData.city = city;
             if (region !== undefined) updateData.region = region;
-            if (country) updateData.country = country;
+            if (country !== undefined) updateData.country = country;
+
+            // Contact
+            if (phone !== undefined) updateData.phone = phone;
+            if (email !== undefined) updateData.email = email;
+            if (website !== undefined) updateData.website = website;
+            if (instagram !== undefined) updateData.instagram = instagram;
+
+            // Tags
+            if (tags !== undefined) updateData.tags = tags;
+
+            // Boolean features
+            if (glutenFree !== undefined) updateData.glutenFree = glutenFree;
+            if (dairyFree !== undefined) updateData.dairyFree = dairyFree;
+            if (nutFree !== undefined) updateData.nutFree = nutFree;
+            if (vegan !== undefined) updateData.vegan = vegan;
+            if (organic !== undefined) updateData.organic = organic;
+            if (localFarms !== undefined) updateData.localFarms = localFarms;
+            if (freshVegetables !== undefined) updateData.freshVegetables = freshVegetables;
+            if (farmRaisedMeat !== undefined) updateData.farmRaisedMeat = farmRaisedMeat;
+            if (noProcessed !== undefined) updateData.noProcessed = noProcessed;
+            if (kidFriendly !== undefined) updateData.kidFriendly = kidFriendly;
+            if (bulkBuying !== undefined) updateData.bulkBuying = bulkBuying;
+            if (zeroWaste !== undefined) updateData.zeroWaste = zeroWaste;
+
+            // Admin fields
+            if (status !== undefined) {
+                const validStatuses = ['pending', 'approved', 'rejected'];
+                if (!validStatuses.includes(status)) {
+                    return res.status(400).json({ message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+                }
+                updateData.status = status;
+            }
+            if (softRating !== undefined) updateData.softRating = softRating;
+            if (michaelesNotes !== undefined) updateData.michaelesNotes = michaelesNotes;
+            if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
 
             if (Object.keys(updateData).length === 0) {
                 return res.status(400).json({ message: "No fields to update" });
             }
 
+            // Check if location fields changed (address, city, region, country)
+            const locationChanged =
+                (address !== undefined && address !== currentPlace.address) ||
+                (city !== undefined && city !== currentPlace.city) ||
+                (region !== undefined && region !== currentPlace.region) ||
+                (country !== undefined && country !== currentPlace.country);
+
+            // Apply the update
             await storage.updatePlaceData(placeId, updateData);
-            res.json({ success: true, message: "Place updated successfully" });
+
+            // Build response
+            const response: any = {
+                success: true,
+                message: "Place updated successfully",
+                geocoding: {
+                    triggered: false,
+                },
+            };
+
+            // If location changed, attempt re-geocoding
+            if (locationChanged) {
+                console.log(`Location changed for place ${placeId}, attempting re-geocode...`);
+
+                // Get updated values (use new values if provided, otherwise keep existing)
+                const newAddress = address !== undefined ? address : currentPlace.address;
+                const newCity = city !== undefined ? city : currentPlace.city;
+                const newRegion = region !== undefined ? region : currentPlace.region;
+                const newCountry = country !== undefined ? country : currentPlace.country;
+
+                response.geocoding.triggered = true;
+
+                try {
+                    const geocodeResult = await GeocodingService.geocodeAddress(
+                        newAddress,
+                        newCity,
+                        newRegion || undefined,
+                        newCountry
+                    );
+
+                    if (geocodeResult.success && geocodeResult.coordinates) {
+                        // Update coordinates
+                        await storage.updatePlaceCoordinates(
+                            placeId,
+                            geocodeResult.coordinates.latitude,
+                            geocodeResult.coordinates.longitude
+                        );
+
+                        response.geocoding.success = true;
+                        response.geocoding.coordinates = geocodeResult.coordinates;
+                        console.log(`✓ Successfully geocoded place ${placeId}`);
+                    } else {
+                        response.geocoding.success = false;
+                        response.geocoding.error = geocodeResult.error || 'Geocoding failed';
+                        console.warn(`✗ Geocoding failed for place ${placeId}: ${geocodeResult.error}`);
+                    }
+                } catch (geocodeError: any) {
+                    response.geocoding.success = false;
+                    response.geocoding.error = geocodeError.message || 'Geocoding error';
+                    console.error(`✗ Geocoding error for place ${placeId}:`, geocodeError);
+                }
+            }
+
+            // Get updated place
+            const updatedPlace = await storage.getPlace(placeId);
+            response.place = updatedPlace;
+
+            res.json(response);
         } catch (error) {
             console.error("Error updating place:", error);
             res.status(500).json({ message: "Failed to update place" });
@@ -601,6 +759,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
             console.error("Error creating city:", error);
             res.status(500).json({ message: "Failed to create city" });
+        }
+    });
+
+    // Admin: Bulk create places from JSON array
+    app.post("/api/admin/bulk-places", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const { places: placesData, skipGeocode } = req.body;
+
+            if (!placesData || !Array.isArray(placesData)) {
+                return res.status(400).json({ message: "Request body must contain a 'places' array" });
+            }
+
+            if (placesData.length === 0) {
+                return res.status(400).json({ message: "Places array cannot be empty" });
+            }
+
+            console.log(`Received bulk import request with ${placesData.length} places`);
+
+            // Validate each place against the schema
+            const validatedPlaces = [];
+            const errors = [];
+
+            for (let i = 0; i < placesData.length; i++) {
+                try {
+                    const placeData = insertPlaceSchema.parse(placesData[i]);
+                    validatedPlaces.push(placeData);
+                } catch (error) {
+                    if (error instanceof z.ZodError) {
+                        errors.push({
+                            index: i,
+                            place: placesData[i],
+                            errors: error.errors,
+                        });
+                    }
+                }
+            }
+
+            // If there are validation errors, return them
+            if (errors.length > 0) {
+                return res.status(400).json({
+                    message: `${errors.length} places failed validation`,
+                    validCount: validatedPlaces.length,
+                    invalidCount: errors.length,
+                    errors: errors,
+                });
+            }
+
+            // Geocode addresses for places without coordinates (unless skipGeocode is true)
+            const geocodingResults = {
+                total: validatedPlaces.length,
+                geocoded: 0,
+                skipped: 0,
+                failed: 0,
+                errors: [] as any[],
+            };
+
+            if (!skipGeocode) {
+                console.log('Starting geocoding for places without coordinates...');
+
+                for (let i = 0; i < validatedPlaces.length; i++) {
+                    const place = validatedPlaces[i];
+
+                    // Check if place already has coordinates
+                    const hasCoordinates = place.latitude && place.longitude;
+
+                    if (hasCoordinates) {
+                        geocodingResults.skipped++;
+                        continue;
+                    }
+
+                    // Geocode the address
+                    try {
+                        console.log(`Geocoding: ${place.name} at ${place.address}, ${place.city}`);
+
+                        const geocodeResult = await GeocodingService.geocodeAddress(
+                            place.address,
+                            place.city,
+                            place.region || undefined,
+                            place.country
+                        );
+
+                        if (geocodeResult.success && geocodeResult.coordinates) {
+                            place.latitude = geocodeResult.coordinates.latitude;
+                            place.longitude = geocodeResult.coordinates.longitude;
+                            geocodingResults.geocoded++;
+                            console.log(`✓ Geocoded: ${place.name} (${place.latitude}, ${place.longitude})`);
+                        } else {
+                            geocodingResults.failed++;
+                            geocodingResults.errors.push({
+                                index: i,
+                                name: place.name,
+                                address: `${place.address}, ${place.city}`,
+                                error: geocodeResult.error || 'Unknown error',
+                            });
+                            console.warn(`✗ Failed to geocode: ${place.name} - ${geocodeResult.error}`);
+                        }
+                    } catch (error) {
+                        geocodingResults.failed++;
+                        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                        geocodingResults.errors.push({
+                            index: i,
+                            name: place.name,
+                            address: `${place.address}, ${place.city}`,
+                            error: errorMessage,
+                        });
+                        console.error(`✗ Geocoding error for ${place.name}:`, errorMessage);
+                    }
+                }
+
+                console.log(`Geocoding complete: ${geocodingResults.geocoded} geocoded, ${geocodingResults.skipped} skipped, ${geocodingResults.failed} failed`);
+            }
+
+            // Insert all validated places
+            const newPlaces = await storage.bulkCreatePlaces(validatedPlaces);
+
+            console.log(`Successfully created ${newPlaces.length} places`);
+
+            res.status(201).json({
+                message: `Successfully created ${newPlaces.length} places`,
+                count: newPlaces.length,
+                places: newPlaces,
+                geocoding: geocodingResults,
+            });
+        } catch (error) {
+            console.error("Error in bulk place creation:", error);
+            res.status(500).json({ message: "Failed to create places in bulk" });
         }
     });
 

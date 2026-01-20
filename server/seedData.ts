@@ -171,11 +171,26 @@ async function seedCities() {
             { name: "Online", slug: "online", country: "Online", region: null },
         ];
 
+        let insertedCount = 0;
+        let skippedCount = 0;
+
         for (const city of citiesToSeed) {
-            await db.insert(schema.cities).values(city);
+            // Check if city already exists by slug (unique identifier)
+            const existingCity = await db
+                .select()
+                .from(schema.cities)
+                .where(sql`${schema.cities.slug} = ${city.slug}`)
+                .limit(1);
+
+            if (existingCity.length === 0) {
+                await db.insert(schema.cities).values(city);
+                insertedCount++;
+            } else {
+                skippedCount++;
+            }
         }
 
-        console.log(`✅ Seeded ${citiesToSeed.length} cities`);
+        console.log(`✅ Cities seeded: ${insertedCount} inserted, ${skippedCount} already existed`);
     } catch (error) {
         console.error("❌ Failed to seed cities:", error);
         throw error;
@@ -197,7 +212,7 @@ async function seedEvents() {
                 country: "Portugal",
                 organizerName: "Maria Santos",
                 organizerRole: "Local Food Guide",
-                category: "Market Tour",
+                category: "Food & Nutrition",
                 imageUrl: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
                 submittedBy: "ExpatEats Team",
                 submitterEmail: "team@expateats.com",
@@ -213,7 +228,7 @@ async function seedEvents() {
                 country: "Portugal",
                 organizerName: "João Silva",
                 organizerRole: "Zero Waste Advocate",
-                category: "Workshop",
+                category: "Workshops & Talks",
                 imageUrl: "https://images.unsplash.com/photo-1579113800032-c38bd7635818?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
                 submittedBy: "ExpatEats Team",
                 submitterEmail: "team@expateats.com",
@@ -229,7 +244,7 @@ async function seedEvents() {
                 country: "Portugal",
                 organizerName: "ExpatEats Community",
                 organizerRole: "Community Organization",
-                category: "Social",
+                category: "Community & Social",
                 imageUrl: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
                 submittedBy: "ExpatEats Team",
                 submitterEmail: "team@expateats.com",
@@ -237,11 +252,26 @@ async function seedEvents() {
             }
         ];
 
+        let insertedCount = 0;
+        let skippedCount = 0;
+
         for (const event of eventsToSeed) {
-            await db.insert(schema.events).values(event);
+            // Check if event already exists by title and date
+            const existingEvent = await db
+                .select()
+                .from(schema.events)
+                .where(sql`${schema.events.title} = ${event.title} AND ${schema.events.date} = ${event.date}`)
+                .limit(1);
+
+            if (existingEvent.length === 0) {
+                await db.insert(schema.events).values(event);
+                insertedCount++;
+            } else {
+                skippedCount++;
+            }
         }
 
-        console.log(`✅ Seeded ${eventsToSeed.length} events`);
+        console.log(`✅ Events seeded: ${insertedCount} inserted, ${skippedCount} already existed`);
     } catch (error) {
         console.error("❌ Failed to seed events:", error);
         throw error;
@@ -278,8 +308,15 @@ export async function runSeedData() {
         console.log("🔍 Verifying database tables...");
         await verifyDatabaseTables();
 
-        // Clear all tables before seeding
-        await clearAllTables();
+        // Clear all tables before seeding (only in development or if explicitly enabled)
+        const shouldClearTables = process.env.CLEAR_TABLES === "true" || process.env.NODE_ENV === "development";
+
+        if (shouldClearTables) {
+            console.log("⚠️  Clearing all tables...");
+            await clearAllTables();
+        } else {
+            console.log("ℹ️  Skipping table clearing (set CLEAR_TABLES=true to enable)");
+        }
 
         // Seed cities first
         await seedCities();

@@ -1,0 +1,485 @@
+{
+  "summary": {
+    "original_count": 156,
+    "deduplicated_count": 119,
+    "removed_count": 37,
+    "duplicate_groups": 18
+  },
+  "duplicate_groups": [
+    {
+      "name": "cayu veg",
+      "kept": {
+        "index": 3,
+        "score": 156,
+        "address": "Cascais, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 136,
+          "score": 156,
+          "address": "Cascais, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "celeiro",
+      "kept": {
+        "index": 53,
+        "score": 266,
+        "address": "R. Abílio Mendes 16A 1500, 1500-458 Lisboa, Portugal",
+        "city": "Lisbon",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 63,
+          "score": 266,
+          "address": "R. Abílio Mendes 16A 1500, 1500-458 Lisboa, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "herdade do freixo do meio",
+      "kept": {
+        "index": 14,
+        "score": 175,
+        "address": "Santarem, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 83,
+          "score": 175,
+          "address": "Santarem, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 141,
+          "score": 175,
+          "address": "Santarem, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "jacaranda teas",
+      "kept": {
+        "index": 17,
+        "score": 165,
+        "address": "Lisbon, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 84,
+          "score": 165,
+          "address": "Lisbon, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 121,
+          "score": 165,
+          "address": "Lisbon, Portugal",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 143,
+          "score": 165,
+          "address": "Lisbon, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "miosotis",
+      "kept": {
+        "index": 23,
+        "score": 78,
+        "address": "Address to be confirmed",
+        "city": "Cascais",
+        "has_coords": false
+      },
+      "removed": [
+        {
+          "index": 92,
+          "score": 78,
+          "address": "Address to be confirmed",
+          "city": "Lisbon",
+          "has_coords": false
+        }
+      ]
+    },
+    {
+      "name": "nathalie's healthy kitchen",
+      "kept": {
+        "index": 25,
+        "score": 177,
+        "address": "Cascais, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 94,
+          "score": 177,
+          "address": "Cascais, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 124,
+          "score": 177,
+          "address": "Cascais, Portugal",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 146,
+          "score": 177,
+          "address": "Cascais, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "nourish and nosh pt",
+      "kept": {
+        "index": 26,
+        "score": 250,
+        "address": "R. Ary dos Santos 62 LJA, 2775-338 Parede, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 95,
+          "score": 250,
+          "address": "R. Ary dos Santos 62 LJA, 2775-338 Parede, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 125,
+          "score": 250,
+          "address": "R. Ary dos Santos 62 LJA, 2775-338 Parede, Portugal",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 147,
+          "score": 250,
+          "address": "R. Ary dos Santos 62 LJA, 2775-338 Parede, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "oeiras",
+      "kept": {
+        "index": 27,
+        "score": 27,
+        "address": "Address to be confirmed",
+        "city": "Cascais",
+        "has_coords": false
+      },
+      "removed": [
+        {
+          "index": 96,
+          "score": 27,
+          "address": "Address to be confirmed",
+          "city": "Lisbon",
+          "has_coords": false
+        }
+      ]
+    },
+    {
+      "name": "quinta linda",
+      "kept": {
+        "index": 28,
+        "score": 198,
+        "address": "2825-836 Caparica, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 148,
+          "score": 198,
+          "address": "2825-836 Caparica, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "quinta do arneiro",
+      "kept": {
+        "index": 29,
+        "score": 263,
+        "address": "Quinta do Arneiro, 2665-004 Azueira, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 102,
+          "score": 263,
+          "address": "Quinta do Arneiro, 2665-004 Azueira, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 126,
+          "score": 263,
+          "address": "Quinta do Arneiro, 2665-004 Azueira, Portugal",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 149,
+          "score": 263,
+          "address": "Quinta do Arneiro, 2665-004 Azueira, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "qunita das abelhas",
+      "kept": {
+        "index": 30,
+        "score": 250,
+        "address": "Cortico, Fornos de Algodres, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 103,
+          "score": 250,
+          "address": "Cortico, Fornos de Algodres, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "qunita do montalto",
+      "kept": {
+        "index": 31,
+        "score": 264,
+        "address": "Quinta do Montalto EN 349, 2435-439 Olival, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 104,
+          "score": 264,
+          "address": "Quinta do Montalto EN 349, 2435-439 Olival, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "raizes mercearia a granel",
+      "kept": {
+        "index": 32,
+        "score": 229,
+        "address": "R. São João 108, 2300-568 Tomar, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 105,
+          "score": 229,
+          "address": "R. São João 108, 2300-568 Tomar, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 127,
+          "score": 229,
+          "address": "R. São João 108, 2300-568 Tomar, Portugal",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 150,
+          "score": 229,
+          "address": "R. São João 108, 2300-568 Tomar, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "raizes verdas",
+      "kept": {
+        "index": 33,
+        "score": 173,
+        "address": "Address to be confirmed",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 106,
+          "score": 173,
+          "address": "Address to be confirmed",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 128,
+          "score": 173,
+          "address": "Address to be confirmed",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 151,
+          "score": 173,
+          "address": "Address to be confirmed",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "talhos das manas",
+      "kept": {
+        "index": 38,
+        "score": 259,
+        "address": "R. António Cartaxo 1, 2560-063 A dos Cunhados, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 111,
+          "score": 259,
+          "address": "R. António Cartaxo 1, 2560-063 A dos Cunhados, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 129,
+          "score": 259,
+          "address": "R. António Cartaxo 1, 2560-063 A dos Cunhados, Portugal",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 152,
+          "score": 259,
+          "address": "R. António Cartaxo 1, 2560-063 A dos Cunhados, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "terra leaf",
+      "kept": {
+        "index": 40,
+        "score": 260,
+        "address": "R. Dr. Alfredo da Costa 32, 2710-523 Sintra, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 153,
+          "score": 260,
+          "address": "R. Dr. Alfredo da Costa 32, 2710-523 Sintra, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "the broth kitchen",
+      "kept": {
+        "index": 41,
+        "score": 160,
+        "address": "Address to be confirmed",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 112,
+          "score": 160,
+          "address": "Address to be confirmed",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 130,
+          "score": 160,
+          "address": "Address to be confirmed",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 154,
+          "score": 160,
+          "address": "Address to be confirmed",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "name": "the hummus shack",
+      "kept": {
+        "index": 42,
+        "score": 155,
+        "address": "Cascais, Portugal",
+        "city": "Cascais",
+        "has_coords": true
+      },
+      "removed": [
+        {
+          "index": 115,
+          "score": 155,
+          "address": "Cascais, Portugal",
+          "city": "Lisbon",
+          "has_coords": true
+        },
+        {
+          "index": 131,
+          "score": 155,
+          "address": "Cascais, Portugal",
+          "city": "Oeiras",
+          "has_coords": true
+        },
+        {
+          "index": 155,
+          "score": 155,
+          "address": "Cascais, Portugal",
+          "city": "Sintra",
+          "has_coords": true
+        }
+      ]
+    }
+  ]
+}

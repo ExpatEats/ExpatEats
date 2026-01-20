@@ -28,38 +28,11 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { NotificationDialog } from "@/components/NotificationDialog";
 import { EditNotesDialog } from "@/components/EditNotesDialog";
+import { EditLocationModal } from "@/components/EditLocationModal";
 import { MapView } from "@/components/MapView";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/contexts/AuthContext";
-
-interface Place {
-    id: number;
-    uniqueId?: string;
-    name: string;
-    description: string;
-    address: string;
-    city: string;
-    region?: string;
-    country: string;
-    category: string;
-    tags: string[];
-    latitude?: string;
-    longitude?: string;
-
-    // Contact Information
-    phone?: string;
-    email?: string;
-
-    // Social Media
-    instagram?: string;
-    website?: string;
-
-    imageUrl?: string;
-    averageRating?: number;
-    softRating?: string;
-    michaelesNotes?: string;
-    createdAt?: string;
-}
+import type { Place } from "@shared/schema";
 
 // Function to get icon for a tag
 const getTagIcon = (tagId: string) => {
@@ -107,6 +80,7 @@ export default function Store() {
     const [isSaved, setIsSaved] = useState(false);
     const [notificationOpen, setNotificationOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [editLocationModalOpen, setEditLocationModalOpen] = useState(false);
     const [notificationConfig, setNotificationConfig] = useState<{
         title: string;
         description?: string;
@@ -215,6 +189,42 @@ export default function Store() {
         updatePlaceMutation.mutate({ softRating, michaelesNotes });
     };
 
+    // Update full place mutation
+    const updateFullPlaceMutation = useMutation({
+        mutationFn: async (updatedPlace: Partial<Place>) => {
+            return await apiRequest("PATCH", `/api/admin/update-place/${storeId}`, updatedPlace);
+        },
+        onSuccess: (data) => {
+            // Show success notification with geocoding info if available
+            let description = "Location information updated successfully";
+            if (data.geocoding?.triggered) {
+                if (data.geocoding.success) {
+                    description += ". Location coordinates updated.";
+                } else {
+                    description += ". Note: Geocoding failed - coordinates not updated.";
+                }
+            }
+            showNotification("Success", description, "success");
+
+            // Close modal and refetch the place data
+            setEditLocationModalOpen(false);
+            queryClient.invalidateQueries({
+                queryKey: ["/api/places", storeId],
+            });
+        },
+        onError: (error: any) => {
+            showNotification(
+                "Error",
+                error.message || "Failed to update location information",
+                "error"
+            );
+        },
+    });
+
+    const handleUpdateFullPlace = (updatedPlace: Partial<Place>) => {
+        updateFullPlaceMutation.mutate(updatedPlace);
+    };
+
     const handleShare = async () => {
         if (navigator.share && store) {
             try {
@@ -286,15 +296,26 @@ export default function Store() {
 
                     <div className="flex gap-2">
                         {user?.role === "admin" && (
-                            <Button
-                                onClick={() => setEditDialogOpen(true)}
-                                variant="outline"
-                                size="sm"
-                                className="border-amber-600 text-amber-700 hover:bg-amber-600 hover:text-white"
-                            >
-                                <Edit className="h-4 w-4 mr-1" />
-                                Edit Notes & Rating
-                            </Button>
+                            <>
+                                <Button
+                                    onClick={() => setEditLocationModalOpen(true)}
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white"
+                                >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Edit Location
+                                </Button>
+                                <Button
+                                    onClick={() => setEditDialogOpen(true)}
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-amber-600 text-amber-700 hover:bg-amber-600 hover:text-white"
+                                >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Edit Notes & Rating
+                                </Button>
+                            </>
                         )}
 
                         <Button
@@ -595,6 +616,13 @@ export default function Store() {
                 initialMichaelesNotes={store?.michaelesNotes || ""}
                 onConfirm={handleUpdateNotesAndRating}
                 isLoading={updatePlaceMutation.isPending}
+            />
+            <EditLocationModal
+                open={editLocationModalOpen}
+                onOpenChange={setEditLocationModalOpen}
+                place={store || null}
+                onSaveAndRetry={handleUpdateFullPlace}
+                isLoading={updateFullPlaceMutation.isPending}
             />
         </div>
     );
