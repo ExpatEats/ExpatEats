@@ -10,3 +10,7 @@ cookies.txt
 .DS_Store
 user_cookies.txt
 admin_cookies.txt
+
+# Guide PDFs (exclude actual files but keep directory structure)
+/guides/full/*.pdf
+!/guides/full/.gitkeep

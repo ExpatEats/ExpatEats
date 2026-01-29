@@ -18,6 +18,7 @@ import { CsrfService } from "./services/csrfService";
 import { RateLimitService } from "./services/rateLimitService";
 import { GeocodingService } from "./services/geocodingService";
 import { registerCommunityRoutes } from "./routes/community";
+import { registerGuidesRoutes } from "./routes/guides";
 
 const submissionSchema = z.object({
     name: z.string(),
@@ -2071,6 +2072,9 @@ Please follow up with the customer to schedule their discovery call.
 
     // Register community routes
     registerCommunityRoutes(app);
+
+    // Register guides routes
+    registerGuidesRoutes(app);
 
     const httpServer = createServer(app);
     return httpServer;

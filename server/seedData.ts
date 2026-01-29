@@ -8,6 +8,73 @@ import { AuthService } from "./services/authService.js";
 import { db } from "./db.js";
 import { sql } from "drizzle-orm";
 import * as schema from "../shared/schema.js";
+import fs from "fs";
+import path from "path";
+
+async function seedGuides() {
+    try {
+        console.log("📚 Seeding guides from PDF files...");
+
+        // Path to guides directory
+        const guidesDir = path.join(process.cwd(), "guides", "full");
+
+        // Check if directory exists
+        if (!fs.existsSync(guidesDir)) {
+            console.log("  ⚠️  Guides directory not found, skipping guide seeding");
+            return;
+        }
+
+        // Read all PDF files from the directory
+        const files = fs.readdirSync(guidesDir);
+        const pdfFiles = files.filter(file => file.toLowerCase().endsWith('.pdf'));
+
+        if (pdfFiles.length === 0) {
+            console.log("  ⚠️  No PDF files found in guides/full, skipping guide seeding");
+            return;
+        }
+
+        console.log(`  Found ${pdfFiles.length} PDF file(s)`);
+
+        // Create guide entries for each PDF
+        for (const filename of pdfFiles) {
+            // Generate slug from filename
+            // Remove .pdf extension and convert to slug
+            const nameWithoutExt = filename.replace(/\.pdf$/i, '');
+            const slug = nameWithoutExt
+                .toLowerCase()
+                .replace(/copy of /gi, '') // Remove "Copy of " prefix
+                .replace(/expat eats guide /gi, '') // Remove common prefix
+                .trim()
+                .replace(/\s+/g, '-') // Replace spaces with hyphens
+                .replace(/[^a-z0-9-]/g, '') // Remove special characters
+                .replace(/-+/g, '-') // Replace multiple hyphens with single
+                .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+
+            const url = `/guides/full/${filename}`;
+
+            // Check if guide already exists
+            const [existingGuide] = await db
+                .select()
+                .from(schema.guides)
+                .where(sql`${schema.guides.slug} = ${slug}`);
+
+            if (existingGuide) {
+                console.log(`  ✓ Guide "${slug}" already exists, skipping`);
+            } else {
+                await db.insert(schema.guides).values({
+                    slug,
+                    url,
+                });
+                console.log(`  ✅ Added guide: "${slug}" -> ${filename}`);
+            }
+        }
+
+        console.log("✅ Guide seeding completed");
+    } catch (error) {
+        console.error("❌ Failed to seed guides:", error);
+        throw error;
+    }
+}
 
 async function createAdminUser() {
     try {
@@ -83,6 +150,12 @@ async function clearAllTables() {
 
         await db.delete(schema.cities);
         console.log("  ✓ Cleared cities");
+
+        await db.delete(schema.guidePurchases);
+        console.log("  ✓ Cleared guide_purchases");
+
+        await db.delete(schema.guides);
+        console.log("  ✓ Cleared guides");
 
         console.log("✅ All tables cleared successfully");
     } catch (error) {
@@ -415,6 +488,10 @@ export async function runSeedData() {
         // Create admin user if it doesn't exist
         console.log("👤 Creating admin user...");
         await createAdminUser();
+
+        // Seed guides from PDF files
+        console.log("📚 Seeding guides...");
+        await seedGuides();
 
         console.log("🎉 Seed data import completed!");
         return { success: true };

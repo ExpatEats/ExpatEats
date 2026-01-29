@@ -38,5 +38,8 @@ export default defineConfig(async () => {
       outDir: path.resolve(__dirname, "dist/public"),
       emptyOutDir: true,
     },
+    optimizeDeps: {
+      include: ['pdfjs-dist'],
+    },
   };
 });

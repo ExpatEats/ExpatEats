@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, UserCircle, LogOut, Settings, Heart } from "lucide-react";
+import { Menu, UserCircle, LogOut, Settings, Heart, ShoppingBag } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
     DropdownMenu,
@@ -125,6 +125,12 @@ const Header = () => {
                                             Favorites
                                         </Link>
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/purchases">
+                                            <ShoppingBag className="h-4 w-4 mr-2" />
+                                            My Guides
+                                        </Link>
+                                    </DropdownMenuItem>
                                     {user?.role === "admin" && (
                                         <DropdownMenuItem asChild>
                                             <Link href="/admin">
@@ -233,6 +239,19 @@ const Header = () => {
                                                 <Link href="/favorites">
                                                     <Heart className="h-4 w-4 mr-2" />
                                                     Favorites
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full rounded-full"
+                                                onClick={() => {
+                                                    setIsSheetOpen(false);
+                                                }}
+                                                asChild
+                                            >
+                                                <Link href="/purchases">
+                                                    <ShoppingBag className="h-4 w-4 mr-2" />
+                                                    My Guides
                                                 </Link>
                                             </Button>
                                             {user?.role === "admin" && (

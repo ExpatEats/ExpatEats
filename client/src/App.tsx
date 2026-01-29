@@ -24,6 +24,8 @@ import Terms from "./pages/Terms";
 import FindMyFood from "./pages/FindMyFood";
 import Store from "./pages/Store";
 import Favorites from "./pages/Favorites";
+import Purchases from "./pages/Purchases";
+import GuideViewer from "./pages/GuideViewer";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/not-found";
 import PersonalizedMealPlans from "./pages/PersonalizedMealPlans";
@@ -108,6 +110,12 @@ function Router() {
                 </Route>
                 <Route path="/favorites">
                     <RequireAuth component={Favorites} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/purchases">
+                    <RequireAuth component={Purchases} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/guides/:slug">
+                    <RequireAuth component={GuideViewer} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/community">
                     <RequireAuth component={Community} redirectTo="/unauthorized" />

@@ -243,6 +243,28 @@ export const newsletterSubscribers = pgTable("newsletter_subscribers", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const guides = pgTable("guides", {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(), // URL-friendly identifier (e.g., 'lisbon-food-guide')
+    url: text("url").notNull(), // Full path to PDF file (e.g., '/guides/full/lisbon-food-guide.pdf')
+    createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const guidePurchases = pgTable("guide_purchases", {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+        .references(() => users.id)
+        .notNull(),
+    guideId: integer("guide_id")
+        .references(() => guides.id)
+        .notNull(),
+    paymentProvider: text("payment_provider").notNull(), // 'stripe', 'paypal', 'manual'
+    purchasedAt: timestamp("purchased_at").defaultNow(),
+}, (table) => ({
+    // Unique constraint to prevent duplicate purchases
+    uniqueUserGuide: unique().on(table.userId, table.guideId),
+}));
+
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -320,6 +342,16 @@ export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSub
     updatedAt: true,
 });
 
+export const insertGuideSchema = createInsertSchema(guides).omit({
+    id: true,
+    createdAt: true,
+});
+
+export const insertGuidePurchaseSchema = createInsertSchema(guidePurchases).omit({
+    id: true,
+    purchasedAt: true,
+});
+
 
 // Types
 export type InsertCity = z.infer<typeof insertCitySchema>;
@@ -357,4 +389,10 @@ export type EmailLog = typeof emailLogs.$inferSelect;
 
 export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+
+export type InsertGuide = z.infer<typeof insertGuideSchema>;
+export type Guide = typeof guides.$inferSelect;
+
+export type InsertGuidePurchase = z.infer<typeof insertGuidePurchaseSchema>;
+export type GuidePurchase = typeof guidePurchases.$inferSelect;
 
