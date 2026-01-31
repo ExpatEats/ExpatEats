@@ -8,6 +8,8 @@ import {
     savedStores,
     cities,
     events,
+    guides,
+    guidePurchases,
 } from "@shared/schema";
 import {
     InsertPlace,
@@ -17,6 +19,8 @@ import {
     InsertSavedStore,
     InsertCity,
     InsertEvent,
+    InsertGuide,
+    InsertGuidePurchase,
     Place,
     User,
     Review,
@@ -24,6 +28,8 @@ import {
     SavedStore,
     City,
     Event,
+    Guide,
+    GuidePurchase,
 } from "@shared/schema";
 
 interface PlaceFilters {
@@ -37,6 +43,7 @@ interface Storage {
     getPlaces(filters?: PlaceFilters): Promise<Place[]>;
     getPlace(id: number): Promise<Place | null>;
     createPlace(place: InsertPlace): Promise<Place>;
+    bulkCreatePlaces(places: InsertPlace[]): Promise<Place[]>;
     updatePlaceRating(placeId: number, rating: number): Promise<void>;
 
     // Review methods
@@ -80,6 +87,14 @@ interface Storage {
     rejectEvent(id: number, adminId: number, adminNotes: string): Promise<void>;
     updateEvent(id: number, eventData: Partial<InsertEvent>): Promise<Event>;
     deleteEvent(id: number): Promise<void>;
+
+    // Guide methods
+    getAllGuides(): Promise<Guide[]>;
+    getGuideById(id: number): Promise<Guide | null>;
+    getGuideBySlug(slug: string): Promise<Guide | null>;
+    getUserGuides(userId: number): Promise<Guide[]>;
+    getUserGuidePurchase(userId: number, guideId: number): Promise<GuidePurchase | null>;
+    createGuidePurchase(purchase: InsertGuidePurchase): Promise<GuidePurchase>;
 }
 
 class DatabaseStorage implements Storage {
@@ -150,6 +165,14 @@ class DatabaseStorage implements Storage {
     async createPlace(place: InsertPlace): Promise<Place> {
         const [newPlace] = await db.insert(places).values(place).returning();
         return newPlace;
+    }
+
+    async bulkCreatePlaces(placesArray: InsertPlace[]): Promise<Place[]> {
+        if (placesArray.length === 0) {
+            return [];
+        }
+        const newPlaces = await db.insert(places).values(placesArray).returning();
+        return newPlaces;
     }
 
     async updatePlaceRating(placeId: number, rating: number): Promise<void> {
@@ -567,6 +590,61 @@ class DatabaseStorage implements Storage {
         await db
             .delete(events)
             .where(eq(events.id, id));
+    }
+
+    // Guide methods
+    async getAllGuides(): Promise<Guide[]> {
+        return await db.select().from(guides);
+    }
+
+    async getGuideById(id: number): Promise<Guide | null> {
+        const [guide] = await db
+            .select()
+            .from(guides)
+            .where(eq(guides.id, id));
+        return guide || null;
+    }
+
+    async getGuideBySlug(slug: string): Promise<Guide | null> {
+        const [guide] = await db
+            .select()
+            .from(guides)
+            .where(eq(guides.slug, slug));
+        return guide || null;
+    }
+
+    async getUserGuides(userId: number): Promise<Guide[]> {
+        const result = await db
+            .select({
+                id: guides.id,
+                slug: guides.slug,
+                url: guides.url,
+                createdAt: guides.createdAt,
+            })
+            .from(guidePurchases)
+            .innerJoin(guides, eq(guidePurchases.guideId, guides.id))
+            .where(eq(guidePurchases.userId, userId));
+
+        return result;
+    }
+
+    async getUserGuidePurchase(userId: number, guideId: number): Promise<GuidePurchase | null> {
+        const [purchase] = await db
+            .select()
+            .from(guidePurchases)
+            .where(and(
+                eq(guidePurchases.userId, userId),
+                eq(guidePurchases.guideId, guideId)
+            ));
+        return purchase || null;
+    }
+
+    async createGuidePurchase(purchase: InsertGuidePurchase): Promise<GuidePurchase> {
+        const [newPurchase] = await db
+            .insert(guidePurchases)
+            .values(purchase)
+            .returning();
+        return newPurchase;
     }
 }
 

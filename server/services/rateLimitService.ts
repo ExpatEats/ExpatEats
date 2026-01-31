@@ -49,4 +49,20 @@ export class RateLimitService {
         standardHeaders: true,
         legacyHeaders: false,
     });
+
+    /**
+     * Rate limiter for PDF viewing endpoints
+     * Allows 50 requests per hour to prevent bulk scraping
+     * while still allowing legitimate page-by-page viewing
+     */
+    static pdfViewLimiter = rateLimit({
+        windowMs: 60 * 60 * 1000, // 1 hour
+        max: 50, // limit each IP to 50 PDF requests per hour
+        message: {
+            message: "Too many PDF access attempts, please try again in an hour",
+            code: "PDF_RATE_LIMIT_EXCEEDED"
+        },
+        standardHeaders: true,
+        legacyHeaders: false,
+    });
 }

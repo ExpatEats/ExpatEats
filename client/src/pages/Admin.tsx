@@ -60,6 +60,8 @@ import {
     Map,
     MapPin,
     Loader2,
+    Edit,
+    Users,
 } from "lucide-react";
 
 const foodSourceSchema = z.object({
@@ -128,6 +130,12 @@ const ADMIN_SECTIONS = [
         name: "Batch Geocode",
         description: "Add coordinates to existing locations",
         icon: Map
+    },
+    {
+        id: "user-management",
+        name: "User Management",
+        description: "Manage user roles and permissions",
+        icon: Users
     }
 ] as const;
 
@@ -137,6 +145,8 @@ export default function Admin() {
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
     const [selectedCountry, setSelectedCountry] = React.useState<string>("");
     const [activeSection, setActiveSection] = React.useState<string>("data-admin");
+    const [searchEmail, setSearchEmail] = React.useState<string>("");
+    const [foundUser, setFoundUser] = React.useState<any>(null);
     const { user, isAuthenticated, logout, isLoading } = useAuth();
     const [notificationOpen, setNotificationOpen] = React.useState(false);
     const [notificationConfig, setNotificationConfig] = React.useState<{
@@ -171,6 +181,9 @@ export default function Admin() {
     const [pendingApprovalData, setPendingApprovalData] = React.useState<{ softRating?: string; michaelesNotes?: string } | null>(null);
     const [currentPlaceForPreview, setCurrentPlaceForPreview] = React.useState<any>(null);
 
+    // Edit location state (general editing, not just geocoding retry)
+    const [placeToEdit, setPlaceToEdit] = React.useState<any>(null);
+
     // Batch geocoding state
     const [batchGeocodeResults, setBatchGeocodeResults] = React.useState<any>(null);
 
@@ -202,17 +215,17 @@ export default function Admin() {
 
     const { data: pendingPlaces = [], refetch: refetchPending } = useQuery({
         queryKey: ["/api/admin/pending-places"],
-        enabled: isAuthenticated && user?.role === "admin",
+        enabled: isAuthenticated && (user?.role === "admin" || user?.role === "superadmin"),
     });
 
     const { data: pendingEvents = [], refetch: refetchPendingEvents } = useQuery({
         queryKey: ["/api/admin/pending-events"],
-        enabled: isAuthenticated && user?.role === "admin",
+        enabled: isAuthenticated && (user?.role === "admin" || user?.role === "superadmin"),
     });
 
     const { data: cities = [], isLoading: citiesLoading } = useQuery<{id: number, name: string, slug: string, country: string}[]>({
         queryKey: ["/api/cities"],
-        enabled: isAuthenticated && user?.role === "admin",
+        enabled: isAuthenticated && (user?.role === "admin" || user?.role === "superadmin"),
     });
 
     // Get unique countries from cities
@@ -425,6 +438,43 @@ export default function Admin() {
         },
     });
 
+    const searchUserMutation = useMutation({
+        mutationFn: async (email: string) => {
+            const response = await apiRequest("GET", `/api/admin/users/search?email=${encodeURIComponent(email)}`);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Failed to find user");
+            }
+            return response.json();
+        },
+        onSuccess: (data) => {
+            setFoundUser(data.user);
+            showNotification("User Found", `Found user: ${data.user.email}`, "success");
+        },
+        onError: (error: Error) => {
+            setFoundUser(null);
+            showNotification("Search Failed", error.message, "error");
+        },
+    });
+
+    const updateRoleMutation = useMutation({
+        mutationFn: async ({ userId, role }: { userId: number; role: string }) => {
+            const response = await apiRequest("PATCH", `/api/admin/users/${userId}/role`, { role });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Failed to update role");
+            }
+            return response.json();
+        },
+        onSuccess: (data) => {
+            setFoundUser(data.user);
+            showNotification("Role Updated", `User role updated to ${data.user.role}`, "success");
+        },
+        onError: (error: Error) => {
+            showNotification("Update Failed", error.message, "error");
+        },
+    });
+
     // Geocoding handlers
     const handleApproveWithoutCoords = () => {
         if (!geocodingError || !pendingApprovalData) return;
@@ -468,6 +518,46 @@ export default function Admin() {
         }
     };
 
+    // Handle general edit save (not geocoding retry)
+    const handleEditSave = async (updatedData: any) => {
+        if (!placeToEdit) return;
+
+        try {
+            const response = await apiRequest(
+                "PATCH",
+                `/api/admin/update-place/${placeToEdit.id}`,
+                updatedData
+            );
+
+            const result = await response.json();
+
+            // Show geocoding results if location changed
+            if (result.geocoding?.triggered) {
+                if (result.geocoding.success) {
+                    showNotification(
+                        "Success",
+                        `Location updated and re-geocoded successfully`,
+                        "success"
+                    );
+                } else {
+                    showNotification(
+                        "Warning",
+                        `Location updated but geocoding failed: ${result.geocoding.error}`,
+                        "warning"
+                    );
+                }
+            } else {
+                showNotification("Success", "Location updated successfully", "success");
+            }
+
+            setEditLocationModalOpen(false);
+            setPlaceToEdit(null);
+            refetchPending();
+        } catch (error: any) {
+            showNotification("Error", `Failed to update location: ${error.message}`, "error");
+        }
+    };
+
     const handleRemoveFromPending = () => {
         setGeocodingErrorModalOpen(false);
         setGeocodingError(null);
@@ -489,6 +579,16 @@ export default function Admin() {
         setEditLocationModalOpen(true);
     };
 
+    const handleSearchUser = () => {
+        if (searchEmail.trim()) {
+            searchUserMutation.mutate(searchEmail.trim());
+        }
+    };
+
+    const handleUpdateRole = (userId: number, role: string) => {
+        updateRoleMutation.mutate({ userId, role });
+    };
+
     // Effects and handlers
     useEffect(() => {
         if (!isLoading) {
@@ -496,7 +596,7 @@ export default function Admin() {
                 setLocation("/register");
                 return;
             }
-            if (user?.role !== "admin") {
+            if (user?.role !== "admin" && user?.role !== "superadmin") {
                 setLocation("/");
                 showNotification("Access Denied", "Admin privileges required to access this page.", "error");
                 return;
@@ -581,7 +681,7 @@ export default function Admin() {
         );
     }
 
-    if (!isAuthenticated || user?.role !== "admin") {
+    if (!isAuthenticated || (user?.role !== "admin" && user?.role !== "superadmin")) {
         return null; // useEffect will handle redirect
     }
 
@@ -617,25 +717,32 @@ export default function Admin() {
                                     <CardTitle className="text-lg font-semibold">Admin Sections</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
-                                    {ADMIN_SECTIONS.map((section) => (
-                                        <button
-                                            key={section.id}
-                                            onClick={() => setActiveSection(section.id)}
-                                            className={`w-full text-left p-3 rounded-lg transition-colors ${
-                                                activeSection === section.id
-                                                    ? "bg-primary/10 text-primary border border-primary/20"
-                                                    : "hover:bg-gray-100 text-gray-700"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-2 font-medium">
-                                                <section.icon className="h-4 w-4" />
-                                                {section.name}
-                                            </div>
-                                            <div className="text-sm text-gray-500 mt-1">
-                                                {section.description}
-                                            </div>
-                                        </button>
-                                    ))}
+                                    {ADMIN_SECTIONS.map((section) => {
+                                        // Hide user management section if not superadmin
+                                        if (section.id === "user-management" && user?.role !== "superadmin") {
+                                            return null;
+                                        }
+
+                                        return (
+                                            <button
+                                                key={section.id}
+                                                onClick={() => setActiveSection(section.id)}
+                                                className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                                    activeSection === section.id
+                                                        ? "bg-primary/10 text-primary border border-primary/20"
+                                                        : "hover:bg-gray-100 text-gray-700"
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-2 font-medium">
+                                                    <section.icon className="h-4 w-4" />
+                                                    {section.name}
+                                                </div>
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {section.description}
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                 </CardContent>
                             </Card>
                         </div>
@@ -1135,6 +1242,22 @@ export default function Admin() {
                                     <div className="flex gap-2 pt-3 border-t">
                                         <Button
                                             onClick={() => {
+                                                setPlaceToEdit(place);
+                                                setEditLocationModalOpen(true);
+                                            }}
+                                            disabled={
+                                                approvePlaceMutation.isPending ||
+                                                rejectPlaceMutation.isPending
+                                            }
+                                            variant="outline"
+                                            size="sm"
+                                            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                                        >
+                                            <Edit className="h-4 w-4 mr-1" />
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
                                                 setPlaceToApprove(place.id);
                                                 setApprovalDialogOpen(true);
                                             }}
@@ -1414,6 +1537,106 @@ export default function Admin() {
                                     </CardContent>
                                 </Card>
                             )}
+
+                            {activeSection === "user-management" && user?.role === "superadmin" && (
+                                <Card className="w-full">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Users className="h-5 w-5" />
+                                            User Management
+                                        </CardTitle>
+                                        <CardDescription>
+                                            Search for users by email and manage their roles
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-6">
+                                            {/* Search User Form */}
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="text-sm font-medium">Search User by Email</label>
+                                                    <div className="flex gap-2 mt-2">
+                                                        <Input
+                                                            type="email"
+                                                            placeholder="user@example.com"
+                                                            value={searchEmail}
+                                                            onChange={(e) => setSearchEmail(e.target.value)}
+                                                        />
+                                                        <Button
+                                                            onClick={handleSearchUser}
+                                                            disabled={searchUserMutation.isPending || !searchEmail}
+                                                        >
+                                                            {searchUserMutation.isPending ? "Searching..." : "Search"}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Display Found User */}
+                                                {foundUser && (
+                                                    <Card className="border-2">
+                                                        <CardContent className="pt-6">
+                                                            <div className="space-y-3">
+                                                                <div>
+                                                                    <span className="text-sm font-medium">Name:</span>
+                                                                    <span className="ml-2">{foundUser.name || "N/A"}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-sm font-medium">Email:</span>
+                                                                    <span className="ml-2">{foundUser.email}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-sm font-medium">Username:</span>
+                                                                    <span className="ml-2">{foundUser.username || "N/A"}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-sm font-medium">Current Role:</span>
+                                                                    <Badge className="ml-2" variant={
+                                                                        foundUser.role === "admin" ? "default" : "secondary"
+                                                                    }>
+                                                                        {foundUser.role}
+                                                                    </Badge>
+                                                                </div>
+
+                                                                {/* Role Change Buttons */}
+                                                                {foundUser.role !== "superadmin" && (
+                                                                    <div className="flex gap-2 pt-4">
+                                                                        {foundUser.role !== "admin" && (
+                                                                            <Button
+                                                                                onClick={() => handleUpdateRole(foundUser.id, "admin")}
+                                                                                disabled={updateRoleMutation.isPending}
+                                                                                variant="default"
+                                                                            >
+                                                                                Promote to Admin
+                                                                            </Button>
+                                                                        )}
+                                                                        {foundUser.role !== "user" && (
+                                                                            <Button
+                                                                                onClick={() => handleUpdateRole(foundUser.id, "user")}
+                                                                                disabled={updateRoleMutation.isPending}
+                                                                                variant="outline"
+                                                                            >
+                                                                                Demote to User
+                                                                            </Button>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+
+                                                                {foundUser.role === "superadmin" && (
+                                                                    <Alert>
+                                                                        <AlertDescription>
+                                                                            Superadmin roles cannot be modified through the UI
+                                                                        </AlertDescription>
+                                                                    </Alert>
+                                                                )}
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -1465,9 +1688,15 @@ export default function Admin() {
             {/* Edit Location Modal */}
             <EditLocationModal
                 open={editLocationModalOpen}
-                onOpenChange={setEditLocationModalOpen}
-                place={geocodingError?.place || null}
-                onSaveAndRetry={handleSaveAndRetryGeocode}
+                onOpenChange={(open) => {
+                    setEditLocationModalOpen(open);
+                    if (!open) {
+                        setPlaceToEdit(null);
+                        setGeocodingError(null);
+                    }
+                }}
+                place={placeToEdit || geocodingError?.place || null}
+                onSaveAndRetry={placeToEdit ? handleEditSave : handleSaveAndRetryGeocode}
                 isLoading={approvePlaceMutation.isPending}
             />
 

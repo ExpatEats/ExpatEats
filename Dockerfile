@@ -1,5 +1,5 @@
 # Production Dockerfile for ExpatEats
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Install dependencies for native modules
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -11,7 +11,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (needed for build)
-RUN npm ci
+RUN npm ci && \
+    # Force install correct esbuild binary for Alpine Linux x64
+    npm install --force @esbuild/linux-x64@latest
 
 # Copy source code
 COPY . .

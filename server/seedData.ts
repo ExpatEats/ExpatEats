@@ -8,6 +8,73 @@ import { AuthService } from "./services/authService.js";
 import { db } from "./db.js";
 import { sql } from "drizzle-orm";
 import * as schema from "../shared/schema.js";
+import fs from "fs";
+import path from "path";
+
+async function seedGuides() {
+    try {
+        console.log("📚 Seeding guides from PDF files...");
+
+        // Path to guides directory
+        const guidesDir = path.join(process.cwd(), "guides", "full");
+
+        // Check if directory exists
+        if (!fs.existsSync(guidesDir)) {
+            console.log("  ⚠️  Guides directory not found, skipping guide seeding");
+            return;
+        }
+
+        // Read all PDF files from the directory
+        const files = fs.readdirSync(guidesDir);
+        const pdfFiles = files.filter(file => file.toLowerCase().endsWith('.pdf'));
+
+        if (pdfFiles.length === 0) {
+            console.log("  ⚠️  No PDF files found in guides/full, skipping guide seeding");
+            return;
+        }
+
+        console.log(`  Found ${pdfFiles.length} PDF file(s)`);
+
+        // Create guide entries for each PDF
+        for (const filename of pdfFiles) {
+            // Generate slug from filename
+            // Remove .pdf extension and convert to slug
+            const nameWithoutExt = filename.replace(/\.pdf$/i, '');
+            const slug = nameWithoutExt
+                .toLowerCase()
+                .replace(/copy of /gi, '') // Remove "Copy of " prefix
+                .replace(/expat eats guide /gi, '') // Remove common prefix
+                .trim()
+                .replace(/\s+/g, '-') // Replace spaces with hyphens
+                .replace(/[^a-z0-9-]/g, '') // Remove special characters
+                .replace(/-+/g, '-') // Replace multiple hyphens with single
+                .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+
+            const url = `/guides/full/${filename}`;
+
+            // Check if guide already exists
+            const [existingGuide] = await db
+                .select()
+                .from(schema.guides)
+                .where(sql`${schema.guides.slug} = ${slug}`);
+
+            if (existingGuide) {
+                console.log(`  ✓ Guide "${slug}" already exists, skipping`);
+            } else {
+                await db.insert(schema.guides).values({
+                    slug,
+                    url,
+                });
+                console.log(`  ✅ Added guide: "${slug}" -> ${filename}`);
+            }
+        }
+
+        console.log("✅ Guide seeding completed");
+    } catch (error) {
+        console.error("❌ Failed to seed guides:", error);
+        throw error;
+    }
+}
 
 async function createAdminUser() {
     try {
@@ -33,15 +100,15 @@ async function createAdminUser() {
         if (existingAaron) {
             console.log("✅ Aaron user already exists");
         } else {
-            // Create Aaron user
+            // Create Aaron user as superadmin
             await AuthService.createUser({
                 username: "aaronrous",
                 email: "aaron145165@gmail.com",
                 password: "Cool!123129",
                 name: "Aaron Roussel",
-                role: "admin"
+                role: "superadmin"
             });
-            console.log("✅ Aaron user created successfully");
+            console.log("✅ Aaron user created successfully as superadmin");
         }
     } catch (error) {
         console.error("❌ Failed to create users:", error);
@@ -83,6 +150,12 @@ async function clearAllTables() {
 
         await db.delete(schema.cities);
         console.log("  ✓ Cleared cities");
+
+        await db.delete(schema.guidePurchases);
+        console.log("  ✓ Cleared guide_purchases");
+
+        await db.delete(schema.guides);
+        console.log("  ✓ Cleared guides");
 
         console.log("✅ All tables cleared successfully");
     } catch (error) {
@@ -171,11 +244,26 @@ async function seedCities() {
             { name: "Online", slug: "online", country: "Online", region: null },
         ];
 
+        let insertedCount = 0;
+        let skippedCount = 0;
+
         for (const city of citiesToSeed) {
-            await db.insert(schema.cities).values(city);
+            // Check if city already exists by slug (unique identifier)
+            const existingCity = await db
+                .select()
+                .from(schema.cities)
+                .where(sql`${schema.cities.slug} = ${city.slug}`)
+                .limit(1);
+
+            if (existingCity.length === 0) {
+                await db.insert(schema.cities).values(city);
+                insertedCount++;
+            } else {
+                skippedCount++;
+            }
         }
 
-        console.log(`✅ Seeded ${citiesToSeed.length} cities`);
+        console.log(`✅ Cities seeded: ${insertedCount} inserted, ${skippedCount} already existed`);
     } catch (error) {
         console.error("❌ Failed to seed cities:", error);
         throw error;
@@ -197,7 +285,7 @@ async function seedEvents() {
                 country: "Portugal",
                 organizerName: "Maria Santos",
                 organizerRole: "Local Food Guide",
-                category: "Market Tour",
+                category: "Food & Nutrition",
                 imageUrl: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
                 submittedBy: "ExpatEats Team",
                 submitterEmail: "team@expateats.com",
@@ -213,7 +301,7 @@ async function seedEvents() {
                 country: "Portugal",
                 organizerName: "João Silva",
                 organizerRole: "Zero Waste Advocate",
-                category: "Workshop",
+                category: "Workshops & Talks",
                 imageUrl: "https://images.unsplash.com/photo-1579113800032-c38bd7635818?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
                 submittedBy: "ExpatEats Team",
                 submitterEmail: "team@expateats.com",
@@ -229,7 +317,7 @@ async function seedEvents() {
                 country: "Portugal",
                 organizerName: "ExpatEats Community",
                 organizerRole: "Community Organization",
-                category: "Social",
+                category: "Community & Social",
                 imageUrl: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
                 submittedBy: "ExpatEats Team",
                 submitterEmail: "team@expateats.com",
@@ -237,11 +325,26 @@ async function seedEvents() {
             }
         ];
 
+        let insertedCount = 0;
+        let skippedCount = 0;
+
         for (const event of eventsToSeed) {
-            await db.insert(schema.events).values(event);
+            // Check if event already exists by title and date
+            const existingEvent = await db
+                .select()
+                .from(schema.events)
+                .where(sql`${schema.events.title} = ${event.title} AND ${schema.events.date} = ${event.date}`)
+                .limit(1);
+
+            if (existingEvent.length === 0) {
+                await db.insert(schema.events).values(event);
+                insertedCount++;
+            } else {
+                skippedCount++;
+            }
         }
 
-        console.log(`✅ Seeded ${eventsToSeed.length} events`);
+        console.log(`✅ Events seeded: ${insertedCount} inserted, ${skippedCount} already existed`);
     } catch (error) {
         console.error("❌ Failed to seed events:", error);
         throw error;
@@ -278,27 +381,14 @@ export async function runSeedData() {
         console.log("🔍 Verifying database tables...");
         await verifyDatabaseTables();
 
-        // Clear all tables before seeding
-        await clearAllTables();
+        // Clear all tables before seeding (only in development or if explicitly enabled)
+        const shouldClearTables = process.env.CLEAR_TABLES === "true" || process.env.NODE_ENV === "development";
 
-        // Seed cities first
-        await seedCities();
-
-        // Seed events
-        await seedEvents();
-
-        // Import food sources
-        console.log("📦 Importing food sources...");
-        const foodSourcesResult = await importFoodSources();
-        if (foodSourcesResult.success) {
-            console.log(
-                `✅ Food sources imported: ${foodSourcesResult.count} items`,
-            );
+        if (shouldClearTables) {
+            console.log("⚠️  Clearing all tables...");
+            await clearAllTables();
         } else {
-            console.error(
-                "❌ Food sources import failed:",
-                foodSourcesResult.error,
-            );
+            console.log("ℹ️  Skipping table clearing (set CLEAR_TABLES=true to enable)");
         }
 
         // Import supplements data
@@ -315,69 +405,13 @@ export async function runSeedData() {
             );
         }
 
-        // Import enhanced stores
-        console.log("🏪 Importing enhanced stores...");
-        const enhancedStoresResult = await importEnhancedStores();
-        if (enhancedStoresResult.success) {
-            console.log(
-                `✅ Enhanced stores imported: ${enhancedStoresResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Enhanced stores import failed:",
-                enhancedStoresResult.error,
-            );
-        }
-
-        // Import Lisbon food sources
-        console.log("🇵🇹 Importing Lisbon food sources...");
-        const lisbonResult = await importLisbonFoodSources();
-        if (lisbonResult.success) {
-            console.log(
-                `✅ Lisbon food sources imported: ${lisbonResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Lisbon food sources import failed:",
-                lisbonResult.error,
-            );
-        }
-
-        // Import location guides
-        console.log("📍 Importing location guides...");
-        const locationGuidesResult = await importLocationGuides();
-        if (locationGuidesResult.success) {
-            console.log(
-                `✅ Location guides imported: ${locationGuidesResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Location guides import failed:",
-                locationGuidesResult.error,
-            );
-        }
-
-        // Import additional food sources
-        console.log("➕ Importing additional food sources...");
-        const additionalResult = await importAdditionalFoodSources();
-        if (additionalResult.success) {
-            console.log(
-                `✅ Additional food sources imported: ${additionalResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Additional food sources import failed:",
-                additionalResult.error,
-            );
-        }
-
-        // Deduplicate places after all imports
-        console.log("🔄 Deduplicating places...");
-        await deduplicatePlaces();
-
         // Create admin user if it doesn't exist
-        console.log("👤 Creating admin user...");
+        console.log("👤 Creating users...");
         await createAdminUser();
+
+        // Seed guides from PDF files
+        console.log("📚 Seeding guides...");
+        await seedGuides();
 
         console.log("🎉 Seed data import completed!");
         return { success: true };

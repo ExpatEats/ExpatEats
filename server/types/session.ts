@@ -4,7 +4,7 @@ declare module "express-session" {
     interface SessionData {
         userId?: number;
         username?: string;
-        isAdmin?: boolean;
+        role?: string;
         lastActivity?: Date;
         csrfSecret?: string;
     }
@@ -16,7 +16,7 @@ export interface AuthenticatedRequest extends Request {
     session: {
         userId?: number;
         username?: string;
-        isAdmin?: boolean;
+        role?: string;
         lastActivity?: Date;
         csrfSecret?: string;
     } & import('express-session').Session;
