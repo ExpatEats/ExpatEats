@@ -12,5 +12,6 @@ user_cookies.txt
 admin_cookies.txt
 
 # Guide PDFs (exclude actual files but keep directory structure)
-/guides/full/*.pdf
+# Uncomment to exclude PDFs from git (use persistent disk instead)
+# /guides/full/*.pdf
 !/guides/full/.gitkeep
