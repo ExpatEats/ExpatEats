@@ -2,7 +2,7 @@
 const esbuild = require('esbuild');
 
 esbuild.build({
-  entryPoints: ['server/index.ts'],
+  entryPoints: ['server/index.ts', 'server/migrate.ts', 'server/startup.ts'],
   platform: 'node',
   packages: 'external',
   bundle: true,
