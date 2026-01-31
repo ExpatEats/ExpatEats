@@ -34,6 +34,9 @@ RUN adduser --system --uid 1001 nextjs
 # Change ownership of necessary files
 RUN chown -R nextjs:nodejs /app
 
+# Create guides directory with proper permissions
+RUN mkdir -p /app/guides/full && chown -R nextjs:nodejs /app/guides
+
 # Copy health check script
 COPY --chown=nextjs:nodejs healthcheck.js ./
 
