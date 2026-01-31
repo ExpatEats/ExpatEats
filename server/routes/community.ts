@@ -34,6 +34,7 @@ interface PostWithUserAndLikes {
     body: string;
     userId: number;
     username: string;
+    userRole: string;
     section: string;
     status: string;
     createdAt: Date;
@@ -48,6 +49,7 @@ interface CommentWithUser {
     postId: number;
     userId: number;
     username: string;
+    userRole: string;
     body: string;
     status: string;
     createdAt: Date;
@@ -69,6 +71,7 @@ export function registerCommunityRoutes(app: Express) {
                     body: posts.body,
                     userId: posts.userId,
                     username: users.username,
+                    userRole: users.role,
                     section: posts.section,
                     status: posts.status,
                     createdAt: posts.createdAt,
@@ -158,6 +161,7 @@ export function registerCommunityRoutes(app: Express) {
                     body: posts.body,
                     userId: posts.userId,
                     username: users.username,
+                    userRole: users.role,
                     section: posts.section,
                     status: posts.status,
                     createdAt: posts.createdAt,
@@ -190,6 +194,7 @@ export function registerCommunityRoutes(app: Express) {
                     postId: comments.postId,
                     userId: comments.userId,
                     username: users.username,
+                    userRole: users.role,
                     body: comments.body,
                     status: comments.status,
                     createdAt: comments.createdAt,
@@ -316,7 +321,7 @@ export function registerCommunityRoutes(app: Express) {
         try {
             const postId = parseInt(req.params.id);
             const userId = req.session.userId!;
-            const isAdmin = req.session.isAdmin || false;
+            const isAdmin = req.session.role === "admin" || req.session.role === "superadmin";
 
             if (!postId || isNaN(postId)) {
                 return res.status(400).json({ message: "Invalid post ID" });
@@ -479,7 +484,7 @@ export function registerCommunityRoutes(app: Express) {
         try {
             const commentId = parseInt(req.params.id);
             const userId = req.session.userId!;
-            const isAdmin = req.session.isAdmin || false;
+            const isAdmin = req.session.role === "admin" || req.session.role === "superadmin";
 
             if (!commentId || isNaN(commentId)) {
                 return res.status(400).json({ message: "Invalid comment ID" });

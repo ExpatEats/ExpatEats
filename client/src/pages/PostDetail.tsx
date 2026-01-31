@@ -32,6 +32,7 @@ interface PostComment {
     postId: number;
     userId: number;
     username: string;
+    userRole: string;
     body: string;
     status: string;
     createdAt: string;
@@ -44,6 +45,7 @@ interface PostDetail {
     body: string;
     userId: number;
     username: string;
+    userRole: string;
     section: string;
     status: string;
     createdAt: string;
@@ -438,8 +440,18 @@ const PostDetail: React.FC = () => {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <div className="font-medium text-gray-900 text-lg">
+                                        <div className="font-medium text-gray-900 text-lg flex items-center gap-2">
                                             {post.username}
+                                            {post.userRole === "superadmin" && (
+                                                <Badge variant="default" className="bg-purple-600 hover:bg-purple-700 text-xs">
+                                                    Superadmin
+                                                </Badge>
+                                            )}
+                                            {post.userRole === "admin" && (
+                                                <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
+                                                    Admin
+                                                </Badge>
+                                            )}
                                         </div>
                                         <div className="text-sm text-gray-500 flex items-center">
                                             <Calendar className="h-3 w-3 mr-1" />
@@ -447,7 +459,7 @@ const PostDetail: React.FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {(user?.id === post.userId || user?.role === "admin") && (
+                                {(user?.id === post.userId || user?.role === "admin" || user?.role === "superadmin") && (
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="ghost" size="sm">
@@ -576,11 +588,21 @@ const PostDetail: React.FC = () => {
                                                             <span className="font-medium text-gray-900">
                                                                 {comment.username}
                                                             </span>
+                                                            {comment.userRole === "superadmin" && (
+                                                                <Badge variant="default" className="bg-purple-600 hover:bg-purple-700 text-xs">
+                                                                    Superadmin
+                                                                </Badge>
+                                                            )}
+                                                            {comment.userRole === "admin" && (
+                                                                <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
+                                                                    Admin
+                                                                </Badge>
+                                                            )}
                                                             <span className="text-sm text-gray-500">
                                                                 {formatTimeAgo(comment.createdAt)}
                                                             </span>
                                                         </div>
-                                                        {(user?.id === comment.userId || user?.role === "admin") && (
+                                                        {(user?.id === comment.userId || user?.role === "admin" || user?.role === "superadmin") && (
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>
                                                                     <Button

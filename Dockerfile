@@ -11,7 +11,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (needed for build)
-RUN npm ci
+RUN npm ci && \
+    # Force install correct esbuild binary for Alpine Linux x64
+    npm install --force @esbuild/linux-x64@latest
 
 # Copy source code
 COPY . .

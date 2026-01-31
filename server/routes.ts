@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import passport from "./config/passport";
 import { storage } from "./storage";
+import { db } from "./db";
 import {
     insertPlaceSchema,
     insertReviewSchema,
@@ -9,9 +10,11 @@ import {
     insertNutritionSchema,
     insertSavedStoreSchema,
     savedStores,
+    users,
 } from "@shared/schema";
 import { z } from "zod";
-import { requireAuth, requireAdmin, optionalAuth } from "./middleware/auth";
+import { eq } from "drizzle-orm";
+import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from "./middleware/auth";
 import { AuthService } from "./services/authService";
 import { AuthenticatedRequest } from "./types/session";
 import { CsrfService } from "./services/csrfService";
@@ -109,7 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const session = req.session as AuthenticatedRequest["session"];
             session.userId = newUser.id;
             session.username = newUser.username;
-            session.isAdmin = newUser.role === "admin";
+            session.role = newUser.role || "user";
             session.lastActivity = new Date();
 
             res.status(201).json({
@@ -155,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const user = (authResult as any).user;
             session.userId = user.id;
             session.username = user.username;
-            session.isAdmin = user.role === "admin";
+            session.role = user.role || "user";
             session.lastActivity = new Date();
 
             // Extend session duration if "remember me" is checked
@@ -238,7 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 const session = req.session as AuthenticatedRequest["session"];
                 session.userId = user.id;
                 session.username = user.username || user.email;
-                session.isAdmin = user.role === "admin";
+                session.role = user.role || "user";
                 session.lastActivity = new Date();
 
                 // Save session before redirect
@@ -387,6 +390,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
+
+    // Superadmin-only: Search users by email
+    app.get("/api/admin/users/search", requireSuperAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const { email } = req.query;
+
+            if (!email || typeof email !== "string") {
+                return res.status(400).json({ message: "Email parameter required" });
+            }
+
+            const foundUsers = await db
+                .select({
+                    id: users.id,
+                    username: users.username,
+                    email: users.email,
+                    name: users.name,
+                    role: users.role,
+                })
+                .from(users)
+                .where(eq(users.email, email))
+                .limit(1);
+
+            if (foundUsers.length === 0) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            res.json({ user: foundUsers[0] });
+        } catch (error) {
+            console.error("Error searching user:", error);
+            res.status(500).json({ message: "Failed to search user" });
+        }
+    });
+
+    // Superadmin-only: Update user role
+    app.patch("/api/admin/users/:id/role", requireSuperAdmin, CsrfService.middleware(), async (req: AuthenticatedRequest, res) => {
+        try {
+            const userId = parseInt(req.params.id);
+            const { role } = req.body;
+
+            if (!userId || isNaN(userId)) {
+                return res.status(400).json({ message: "Invalid user ID" });
+            }
+
+            // Validate role
+            if (!["user", "admin"].includes(role)) {
+                return res.status(400).json({ message: "Invalid role. Must be 'user' or 'admin'" });
+            }
+
+            // Get user to update
+            const [existingUser] = await db
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .limit(1);
+
+            if (!existingUser) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            // Prevent modifying superadmins
+            if (existingUser.role === "superadmin") {
+                return res.status(403).json({ message: "Cannot modify superadmin role" });
+            }
+
+            // Update user role
+            await db
+                .update(users)
+                .set({ role })
+                .where(eq(users.id, userId));
+
+            res.json({
+                message: `User role updated to ${role}`,
+                user: { ...existingUser, role }
+            });
+        } catch (error) {
+            console.error("Error updating user role:", error);
+            res.status(500).json({ message: "Failed to update user role" });
+        }
+    });
 
     // Admin endpoints for place review
     app.get("/api/admin/pending-places", requireAdmin, async (req: AuthenticatedRequest, res) => {
@@ -1904,7 +1986,9 @@ Please follow up with the customer to schedule their discovery call.
             }
 
             // Only show approved events to public (unless admin)
-            if (event.status !== "approved" && !(req as any).session?.isAdmin) {
+            const session = (req as any).session;
+            const isAdmin = session?.role === "admin" || session?.role === "superadmin";
+            if (event.status !== "approved" && !isAdmin) {
                 return res.status(404).json({ message: "Event not found" });
             }
 

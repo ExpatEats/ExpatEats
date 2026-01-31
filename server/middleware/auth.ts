@@ -24,19 +24,44 @@ export const requireAdmin = (
     next: NextFunction
 ) => {
     if (!req.session?.userId) {
-        return res.status(401).json({ 
+        return res.status(401).json({
             message: "Authentication required",
-            code: "AUTH_REQUIRED" 
+            code: "AUTH_REQUIRED"
         });
     }
-    
-    if (!req.session?.isAdmin) {
-        return res.status(403).json({ 
+
+    // Allow both admin and superadmin roles
+    if (req.session?.role !== "admin" && req.session?.role !== "superadmin") {
+        return res.status(403).json({
             message: "Admin access required",
-            code: "ADMIN_REQUIRED" 
+            code: "ADMIN_REQUIRED"
         });
     }
-    
+
+    // Update last activity
+    req.session.lastActivity = new Date();
+    next();
+};
+
+export const requireSuperAdmin = (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    if (!req.session?.userId) {
+        return res.status(401).json({
+            message: "Authentication required",
+            code: "AUTH_REQUIRED"
+        });
+    }
+
+    if (req.session?.role !== "superadmin") {
+        return res.status(403).json({
+            message: "Superadmin access required",
+            code: "SUPERADMIN_REQUIRED"
+        });
+    }
+
     // Update last activity
     req.session.lastActivity = new Date();
     next();

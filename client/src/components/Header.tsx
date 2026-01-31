@@ -131,7 +131,7 @@ const Header = () => {
                                             My Guides
                                         </Link>
                                     </DropdownMenuItem>
-                                    {user?.role === "admin" && (
+                                    {(user?.role === "admin" || user?.role === "superadmin") && (
                                         <DropdownMenuItem asChild>
                                             <Link href="/admin">
                                                 <Settings className="h-4 w-4 mr-2" />
@@ -254,7 +254,7 @@ const Header = () => {
                                                     My Guides
                                                 </Link>
                                             </Button>
-                                            {user?.role === "admin" && (
+                                            {(user?.role === "admin" || user?.role === "superadmin") && (
                                                 <Button
                                                     variant="outline"
                                                     className="w-full rounded-full"

@@ -19,7 +19,7 @@ export function registerGuidesRoutes(app: Express) {
     app.get("/api/user/guides", requireAuth, async (req: AuthenticatedRequest, res) => {
         try {
             const userId = req.session.userId!;
-            const isAdmin = req.session.isAdmin || false;
+            const isAdmin = req.session.role === "admin" || req.session.role === "superadmin";
 
             // Get user's purchased guides
             const userGuides = await storage.getUserGuides(userId);
@@ -53,7 +53,7 @@ export function registerGuidesRoutes(app: Express) {
         try {
             const { slug } = req.params;
             const userId = req.session.userId!;
-            const isAdmin = req.session.isAdmin || false;
+            const isAdmin = req.session.role === "admin" || req.session.role === "superadmin";
 
             // Get guide by slug
             const guide = await storage.getGuideBySlug(slug);
@@ -123,7 +123,7 @@ export function registerGuidesRoutes(app: Express) {
             }
 
             const userId = req.session.userId!;
-            const isAdmin = req.session.isAdmin || false;
+            const isAdmin = req.session.role === "admin" || req.session.role === "superadmin";
 
             // Verify the token's userId matches the session userId
             if (verification.userId !== userId) {

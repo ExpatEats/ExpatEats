@@ -295,7 +295,7 @@ export default function Store() {
                     </Button>
 
                     <div className="flex gap-2">
-                        {user?.role === "admin" && (
+                        {(user?.role === "admin" || user?.role === "superadmin") && (
                             <>
                                 <Button
                                     onClick={() => setEditLocationModalOpen(true)}

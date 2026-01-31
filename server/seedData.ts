@@ -100,15 +100,15 @@ async function createAdminUser() {
         if (existingAaron) {
             console.log("✅ Aaron user already exists");
         } else {
-            // Create Aaron user
+            // Create Aaron user as superadmin
             await AuthService.createUser({
                 username: "aaronrous",
                 email: "aaron145165@gmail.com",
                 password: "Cool!123129",
                 name: "Aaron Roussel",
-                role: "admin"
+                role: "superadmin"
             });
-            console.log("✅ Aaron user created successfully");
+            console.log("✅ Aaron user created successfully as superadmin");
         }
     } catch (error) {
         console.error("❌ Failed to create users:", error);
@@ -391,26 +391,6 @@ export async function runSeedData() {
             console.log("ℹ️  Skipping table clearing (set CLEAR_TABLES=true to enable)");
         }
 
-        // Seed cities first
-        await seedCities();
-
-        // Seed events
-        await seedEvents();
-
-        // Import food sources
-        console.log("📦 Importing food sources...");
-        const foodSourcesResult = await importFoodSources();
-        if (foodSourcesResult.success) {
-            console.log(
-                `✅ Food sources imported: ${foodSourcesResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Food sources import failed:",
-                foodSourcesResult.error,
-            );
-        }
-
         // Import supplements data
         console.log("💊 Importing supplements data...");
         const supplementsResult = await importSupplementsData();
@@ -425,68 +405,8 @@ export async function runSeedData() {
             );
         }
 
-        // Import enhanced stores
-        console.log("🏪 Importing enhanced stores...");
-        const enhancedStoresResult = await importEnhancedStores();
-        if (enhancedStoresResult.success) {
-            console.log(
-                `✅ Enhanced stores imported: ${enhancedStoresResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Enhanced stores import failed:",
-                enhancedStoresResult.error,
-            );
-        }
-
-        // Import Lisbon food sources
-        console.log("🇵🇹 Importing Lisbon food sources...");
-        const lisbonResult = await importLisbonFoodSources();
-        if (lisbonResult.success) {
-            console.log(
-                `✅ Lisbon food sources imported: ${lisbonResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Lisbon food sources import failed:",
-                lisbonResult.error,
-            );
-        }
-
-        // Import location guides
-        console.log("📍 Importing location guides...");
-        const locationGuidesResult = await importLocationGuides();
-        if (locationGuidesResult.success) {
-            console.log(
-                `✅ Location guides imported: ${locationGuidesResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Location guides import failed:",
-                locationGuidesResult.error,
-            );
-        }
-
-        // Import additional food sources
-        console.log("➕ Importing additional food sources...");
-        const additionalResult = await importAdditionalFoodSources();
-        if (additionalResult.success) {
-            console.log(
-                `✅ Additional food sources imported: ${additionalResult.count} items`,
-            );
-        } else {
-            console.error(
-                "❌ Additional food sources import failed:",
-                additionalResult.error,
-            );
-        }
-
-        // Deduplicate places after all imports
-        console.log("🔄 Deduplicating places...");
-        await deduplicatePlaces();
-
         // Create admin user if it doesn't exist
-        console.log("👤 Creating admin user...");
+        console.log("👤 Creating users...");
         await createAdminUser();
 
         // Seed guides from PDF files
