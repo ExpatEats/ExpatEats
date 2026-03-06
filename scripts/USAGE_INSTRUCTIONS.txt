@@ -1,0 +1,58 @@
+====================================================================
+RECREATE PLACES TABLE - SIMPLE INSTRUCTIONS
+====================================================================
+
+FILE: recreate_places_table.sql
+
+PURPOSE: Drop and recreate places table with new structure
+
+WARNING: This will DELETE all existing places data, reviews, and saved stores!
+
+====================================================================
+HOW TO USE:
+====================================================================
+
+1. BACKUP YOUR DATABASE FIRST!
+   docker exec expatdb pg_dump -U expatuser expatdb > backup.sql
+
+2. RUN THE SCRIPT:
+   docker exec -i expatdb psql -U expatuser -d expatdb < scripts/recreate_places_table.sql
+
+3. IMPORT YOUR DATA:
+   Use the bulk upload script in bulk_script/ folder
+
+====================================================================
+WHAT IT DOES:
+====================================================================
+
+✓ Drops places table
+✓ Creates new places table (52 columns)
+✓ Adds new columns:
+  - grocery_and_market (boolean)
+  - supplements (boolean)
+  - city_tags (text)
+  - badges (text)
+  - 10 supplement filter columns (omega3, vitamins, etc.)
+✓ Creates 6 performance indexes
+✓ Restores foreign key constraints
+
+====================================================================
+NEW COLUMNS:
+====================================================================
+
+grocery_and_market  - Shows in grocery searches
+supplements         - Shows in supplement searches
+city_tags          - City-specific tags
+badges             - Special badges
+general_supplements - Has general supplements
+omega3             - Has omega-3 products
+vegan_supplements  - Has vegan supplements
+online_retailer    - Online retailer
+vitamins           - Has vitamins
+herbal_remedies    - Has herbal remedies
+organic_supplements - Has organic supplements
+sports_nutrition   - Has sports nutrition
+practitioner_grade - Practitioner grade products
+hypoallergenic     - Hypoallergenic products
+
+====================================================================

@@ -33,6 +33,7 @@ import { MapView } from "@/components/MapView";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Place } from "@shared/schema";
+import { getTagsFromPlace } from "@/lib/tagUtils";
 
 // Function to get icon for a tag
 const getTagIcon = (tagId: string) => {
@@ -50,18 +51,20 @@ const getTagIcon = (tagId: string) => {
         "kid-friendly": <Baby className="h-4 w-4 text-[#E07A5F]" />,
         "bulk-buying": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
         "zero-waste": <Leaf className="h-4 w-4 text-[#E07A5F]" />,
-        
+
         // Supplement tags
-        "supplements": <Package2 className="h-4 w-4 text-[#E07A5F]" />,
+        "general-supplements": <Package2 className="h-4 w-4 text-[#E07A5F]" />,
         "vitamins": <Apple className="h-4 w-4 text-[#E07A5F]" />,
         "sports-nutrition": <Truck className="h-4 w-4 text-[#94AF9F]" />,
         "omega-3": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
         "herbal-remedies": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
         "practitioner-grade": <Search className="h-4 w-4 text-[#E07A5F]" />,
         "hypoallergenic": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
-        "online": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+        "online-retailer": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+        "vegan-supplements": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
+        "organic-supplements": <Apple className="h-4 w-4 text-[#94AF9F]" />,
     };
-    
+
     return iconMap[tagId] || null;
 };
 
@@ -373,7 +376,7 @@ export default function Store() {
 
                             {/* Tags */}
                             <div className="flex flex-wrap gap-2 mb-4">
-                                {store.tags.map((tag, index) => {
+                                {getTagsFromPlace(store).map((tag, index) => {
                                     const tagIcon = getTagIcon(tag);
                                     return (
                                         <Badge
