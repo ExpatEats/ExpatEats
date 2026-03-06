@@ -41,6 +41,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import type { Place } from "@shared/schema";
+import { getTagsFromPlace } from "@/lib/tagUtils";
 import {
     Dialog,
     DialogContent,
@@ -1198,14 +1200,15 @@ export default function Admin() {
                                             </p>
                                         </div>
                                         <div>
-                                            {place.tags &&
-                                                place.tags.length > 0 && (
+                                            {(() => {
+                                                const tags = getTagsFromPlace(place as Place);
+                                                return tags.length > 0 && (
                                                     <div>
                                                         <p className="text-sm font-medium mb-1">
                                                             Tags:
                                                         </p>
                                                         <div className="flex flex-wrap gap-1">
-                                                            {place.tags.map(
+                                                            {tags.map(
                                                                 (
                                                                     tag: string,
                                                                     index: number,
@@ -1223,7 +1226,8 @@ export default function Admin() {
                                                             )}
                                                         </div>
                                                     </div>
-                                                )}
+                                                );
+                                            })()}
                                             {place.website && (
                                                 <p className="text-sm mt-2">
                                                     <strong>Website:</strong>{" "}

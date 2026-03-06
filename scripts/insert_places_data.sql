@@ -1,0 +1,1291 @@
+-- =====================================================
+-- INSERT PLACES DATA FROM CSV
+-- =====================================================
+-- This script inserts all 85 places from initialPlacesData.csv
+-- =====================================================
+
+BEGIN;
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Aldea Coop', 'A sustainability-minded cooperative shop in Sintra offering organic bulk goods and refillable household items. A great option for low-waste, community-supported shopping.', 'Largo Visc. da Asseca 6A, 2710-277 Sintra, Portugal', 'Sintra', 'Lisbon', 'Portugal', 'grocery', '38.82759', '-9.43796', '+351211352699', 'coopjanas@gmail.com', '@coopaldea.org', 'https://www.coopaldea.org/', true, false, 'Sintra', 'local favorite', true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Auchan', 'Large French Hypermarket chain that has a Provides a selection of dry goods and frozen items in bulk or extra-large formats, often with store-brand discounts.', 'Estrada Nacional 6, 2754-522 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.703027', '-9.420246', '+351210403270', 'apoiocliente@auchan.pt', '@auchan_pt', 'auchan.pt', true, false, 'Cascais', NULL, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Auchan', 'Large French Hypermarket chain that has a Provides a selection of dry goods and frozen items in bulk or extra-large formats, often with store-brand discounts.', 'Estrada de Paço de Arcos 48, 2770-129 Paço de Arcos, Portugal', 'Oeiras', 'Lisbon', 'Portugal', 'grocery', '38.7074', '-9.29414', '+351210403270', 'apoiocliente@auchan.pt', '@auchan_pt', 'auchan.pt', true, false, 'Oeiras', NULL, true, true, true, true, true, false, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Auchan', 'Large French Hypermarket chain that has a Provides a selection of dry goods and frozen items in bulk or extra-large formats, often with store-brand discounts.', 'R. Francisco Lyon de Castro, 2725-397 Mem Martins, Portugal', 'Sintra', 'LIsbon', 'Portugal', 'grocery', '38.78068', '-9.34928', '+351210403270', 'apoiocliente@auchan.pt', '@auchan_pt', 'auchan.pt', true, false, 'Sintra', NULL, true, true, true, true, true, false, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Bioshop Cascais', 'Bioshop Cascais is a small, organic shop located in Cascais selling a variety of organic and natural products.', 'Av. 25 de Abril 672, 2750-512 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', NULL, NULL, '+351 919 039 523', NULL, NULL, 'https://', true, false, 'Cascais', NULL, true, true, true, true, true, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Bomercado', 'Bomercado is an organic grocery store offering a variety of vegan products, including fruits, beverages, and gluten-free items, focusing on supporting small producers.', 'R. dos Cavaleiros 10, 1100-132 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.71804', '-9.13282', '+351960302224', 'bomcliente[@]bomercado.pt', '@bomercado247', 'bomercado.pt', true, false, 'Lisbon', NULL, true, true, true, true, true, true, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Cayuveg', 'This small Cascais producer offers handcrafted vegan cheese and fermented products. Available at local farmers markets.', 'Estoril, Portugal', 'Estoril', 'Lisbon', 'Portugal', 'grocery', '38.6979', '-9.4223', '936397766', NULL, '@cayuveg', NULL, true, false, 'Cascais', NULL, true, true, false, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Estrada Nacional 9, 2645-543 Alcabideche, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.73959', '-9.39902', '+351214607304', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Cascais', NULL, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Praça Alvalade 6 14, 1700-036 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.75433', '-9.14471', '+351210106735', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Av. de Roma 12, 1000-298 Lisboa, Portugal', 'Lisbon', 'LIsbon', 'Portugal', 'grocery', '38.74415', '-9.13489', '+351218486908', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Av. da República 83C, 1050-190 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.74356', '-9.14815', '+351217952823', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Av. Duque de Ávila 141B, 1050-053 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.73611', '-9.14676', '+351967858091', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Av. António Augusto de Aguiar 130A, 1050-020 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.76973', '-9.15819', '+351917059965', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'R. Abílio Mendes 16A 1500, 1500-458 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.75005', '-9.17726', '+351969105572', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'R. Morais Soares 83 A, 1900-342 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.73418', '-9.12978', '+351218141913', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'R. 1º de Dezembro 65, 1200-357 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.71461', '-9.13095', '+351210306030', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'R. Eng. Vieira da Silva 3A, 1050-250 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.73351.', '-9.14523', NULL, 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Av. Fontes Pereira de Melo 42 E, 1050-250 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.7365', '-9.14395', '+351212696483', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Alameda das Linhas de Torres n 169, 1750-142 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.77372', '-915905', '+351917059965', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'R. Cidade de Bolama 17, 1800-079 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.77157', '-9.11236', '+351218515063', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'R. 4 de Infantaria 34, 1350-273 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.72472', '-9.16454', '+351213971648', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Avenida Lusíada, C. C. Colombo - Loja 0.051/0.052, 1500-392 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.76113', '-9.18823', '+351217111005', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Av. Eng. Duarte Pacheco 1131, 1070-103 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.73082', '-9.16042', '+351210177800', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Lisbon', NULL, true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Alameda António Sérgio, 69 Centro Comercial Torre das Flores, Lojas 21 e 23, 2795-024 Linda-a-Velha, Portugal', 'Oeiras', 'Lisbon', 'Portugal', 'grocery', '38.7235', '-9.23521', '+351214140589', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Oeiras', NULL, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'Av. António Bernardo Cabral de Macedo 42, 2770-219 Paço de Arcos, Portugal', 'Oeiras', 'Lisbon', 'Portugal', 'grocery', '38.7064', '-9.30175', '+351214460786', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Oeiras', NULL, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Celeiro', 'Health food chain with select locations offering bulk bins for grains, dried fruits, and other pantry staples.', 'R. Alto do Forte IC 19 Loja 0.16, 2635-018 Rio de Mouro, Portugal', 'Sintra', 'Lisbon', 'Portugal', 'grocery', '38.79011', '-9.33316', '+351211513569', 'celeiro.forumviseu@celeiro.pt', '@celiero.pt', 'celeiro.pt', true, true, 'Sintra', NULL, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Continente', 'Large supermarket chain with a wide range of fresh vegetables including local and organic selections.', 'Estrada Nacional Nº 9 118, 2645-543 Alcabideche, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.73982', '-9.39872', '+351214600005', 'apoiocliente@continente.pt', '@continente', 'continente.pt', true, false, 'Cascais', NULL, true, true, true, true, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Continente', 'Large supermarket chain with a wide range of fresh vegetables including local and organic selections.', 'Colombo Shopping Centre, Av. Lusíada, 1500-392 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.75868', '-9.18935', '+351217113800', 'apoiocliente@continente.pt', '@continente', 'continente.pt', true, false, 'Lisbon', 'will do in a pinch!', true, true, true, true, true, false, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Continente', 'Large supermarket chain with a wide range of fresh vegetables including local and organic selections.', 'R. Alexandre Herculano 66, 1250-012 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.72325', '-9.15308', '+351937780434', 'apoiocliente@continente.pt', '@continente', 'continente.pt', true, false, 'Lisbon', 'will do in a pinch!', true, true, true, true, true, false, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Continente', 'Large supermarket chain with a wide range of fresh vegetables including local and organic selections.', 'Parque, Av. António Bernardo Cabral de Macedo, 2770-219 Oeiras, Portugal', 'Oeiras', 'Lisbon', 'Portugal', 'grocery', '38.70764', '-9.30173', '+351214468200', 'apoiocliente@continente.pt', '@continente', 'continente.pt', true, false, 'Oeiras', NULL, true, true, true, true, true, false, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Continente', 'Large supermarket chain with a wide range of fresh vegetables including local and organic selections.', 'Estr. Cavaleira 1, 2710-140 Sintra, Portugal', 'Sintra', 'Lisbon', 'Portugal', 'grocery', '38.81482', '-9.36205', '+351219106940', 'apoiocliente@continente.pt', '@continente', 'continente.pt', true, false, 'Sintra', NULL, true, true, true, true, true, false, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Cria Bread Bakery', 'A micro-bakery specializing in long-fermented sourdough, including gluten-free and vegan options. A neighborhood gem for clean-ingredient baking.', 'R. José Florindo 523, 2750-675 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.70706', '-9.42676', '+351918399047', NULL, '@cria_padaria_artesanal', 'https://www.facebook.com/criapadariaartesanal', true, false, 'Cascais', NULL, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Despensa No. 6', 'Fully gluten-free and sugar-free bakery and café, offering a variety of pastries and brunch options.', 'Av. Sacadura Cabral 6A, 1000-274 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.7475', '-9.14068', '+351925258744', 'geral@despensa6.pt', '@despensa6', 'www.despensa6.pt', true, false, 'Lisbon', NULL, true, true, true, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'El Corte Ingles Supercor', 'El Corte Inglés brand includes a supermarket called Supercor that stocks a variety of dairy-free and vegan products, catering to various dietary needs.', 'Beloura Shopping Estrada Nacional nº9 Loja A08 A12 Quinta da Beloura II, 2710-701 Sintra, Portugal', 'Sintra', 'Lisbon', 'Portugal', 'grocery', '38.77505', '-9.38781', '+351213711800', 'serviço_clientes@elcorteingles.pt', '@elcortesinglespt', 'elcorteingles.pt', true, false, 'Sintra', NULL, true, true, true, true, true, false, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'El Corte Ingles Supermarcado', 'El Corte Inglés includes a supermarket that stocks a variety of dairy-free and vegan products, catering to various dietary needs. It includes a gourmet meat section with humane and sustainably raised meats.', 'Av. António Augusto de Aguiar 31, 1069-413 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.73659', '-9.15308', '+351213532020', 'serviço_clientes@elcorteingles.pt', '@elcortesinglespt', 'elcorteingles.pt', true, false, 'Lisbon', 'local favorite', true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Fabrica Coffee', 'Known for excellent espresso and organic sourdough toast, this Lisbon café is a clean-eating breakfast favorite. Cozy space for work, coffee, and health-conscious bites.', 'Av. Valbom 26B, 2750-355 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.706', '-9.41908', NULL, 'info@fabricacoffeeroasters.com', '@fabricacoffeeroasters', 'http://www.fabricacoffeeroasters.com/', true, false, 'Cascais', 'local favorite', true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Fabrica Coffee', 'Known for excellent espresso and organic sourdough toast, this Lisbon café is a clean-eating breakfast favorite. Cozy space for work, coffee, and health-conscious bites.', 'R. das Portas de Santo Antão 136, 1150-269 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.7207', '-9.14067', '+351211399261', 'info@fabricacoffeeroasters.com', '@fabricacoffeeroasters', 'http://www.fabricacoffeeroasters.com/', true, false, 'Lisbon', 'local favorite', true, true, false, true, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Fabrica Coffee', 'Known for excellent espresso and organic sourdough toast, this Lisbon café is a clean-eating breakfast favorite. Cozy space for work, coffee, and health-conscious bites.', 'R. do Comércio 111, 1100-150 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.71233', '-9.13827', '+351215841405', 'info@fabricacoffeeroasters.com', '@fabricacoffeeroasters', 'http://www.fabricacoffeeroasters.com/', true, false, 'Lisbon', 'local favorite', true, true, false, true, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Fabrica Coffee', 'Known for excellent espresso and organic sourdough toast, this Lisbon café is a clean-eating breakfast favorite. Cozy space for work, coffee, and health-conscious bites.', 'Av. Dom Carlos I 100 114, 1200-650 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.71391', '-9.1527', '+351211357645', 'info@fabricacoffeeroasters.com', '@fabricacoffeeroasters', 'http://www.fabricacoffeeroasters.com/', true, false, 'Lisbon', 'local favorite', true, true, false, true, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Fabrica Coffee', 'Known for excellent espresso and organic sourdough toast, this Lisbon café is a clean-eating breakfast favorite. Cozy space for work, coffee, and health-conscious bites.', 'Botanic Garden - Museu Nacional de História Natural, R. da Escola Politécnica 56, 1250-102 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.72084', '-9.14992', NULL, 'info@fabricacoffeeroasters.com', '@fabricacoffeeroasters', 'http://www.fabricacoffeeroasters.com/', true, false, 'Lisbon', 'local favorite', true, true, false, true, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'R. Acácio de Paiva 3, 1700-003 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.76915', '-9.14467', '+351927702098', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Lisbon', 'local favorite', true, true, false, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'Rua da Ilha dos Amores 54A, 1990-377 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.79698', '-9.09661', '+351910337573', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Lisbon', 'local favorite', true, true, false, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'R. Biarritz 12, 2765-200 Estoril, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.71618', '-9.39969', '+351913561574', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Cascais', 'local favorite', false, true, false, false, true, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'Estr. Nacional 9, 2645-543 Alcabideche, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.74987', '-9.40079', '+351915391421', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Cascais', 'local favorite', false, true, false, false, true, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'R. José Carvalho Araújo 236 Lj RC, 2750-296 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.71024', '-9.42414', '+351927711446', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Cascais', 'local favorite', false, true, false, false, true, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'R. José Elias Garcia 20, 2775-193 Parede, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.6888', '-9.36097', '+351913193372', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Cascais', 'local favorite', false, true, false, false, true, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'Rua Prior do Crato 16, 1350-261 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.72149', '-9.17489', '+351966064697', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Lisbon', 'local favorite', false, false, false, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'R. Padre Francisco 43, 1350-318 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.73059', '-9.16733', '+351927711391', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Lisbon', 'local favorite', false, false, false, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'R. Dom Pedro V 9, 1250-092 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.72952', '-9.14811', '+351915722375', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Lisbon', 'local favorite', false, false, false, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'Av. Elias Garcia 80, 1050-100 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.75094', '-9.14467', '+351927711817', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Lisbon', 'local favorite', false, false, false, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Gleba', 'Lisbon’s cult-favorite bakery known for its artisanal sourdough breads made from locally milled, organic grains. Perfect for those seeking heritage flavor and clean ingredients.', 'Av. António Bernardo Cabral de Macedo 1020 / 1020A, 2770-219 Oeiras, Portugal', 'Oeiras', 'Lisbon', 'Portugal', 'grocery', '38.71774', '-9.30329', '+351966972286', 'geral@gleba-nossa.pt', '@gleba_padaria', 'https://mygleba.com/pt', true, false, 'Oeiras', NULL, false, false, false, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Green Beans Mercado Vegan', 'GreenBeans is a 100% vegan grocery store offering a fair, ethical, biological, and healthy alternative for shoppers.', 'R. do Poço dos Negros 15, 1200-335 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.71183', '-9.14977', '+351924216519', NULL, '@greenbeans_vegn_cafe', 'greenbeans.pt', true, false, 'Lisbon', NULL, true, true, true, true, true, true, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Healthy Herbal Teas by Stephanie', 'Hand blended organic herbal tea blends, ceated by a certified health coach with a passion for holistic wellbeing, each blend is thoughtfully formulated to support your body''s natural healing processes.', 'Rua Nova 75, 2765-122 Estoril, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.71198', '-9.37504', NULL, 'connect@stephaniefairbank.com', '@holisticby steph', NULL, true, false, 'Cascais', NULL, true, true, true, true, true, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Jacaranda Teas', 'Blended by hand in small batches, these organic herbal teas are inspired by the Portuguese landscape and herbal traditions. Each blend is curated for balance and beauty.', 'Lisbon, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.7223', '–9.1393', NULL, NULL, '@jacarandateas', 'https://jacarandateas.com/', true, false, 'Lisbon', NULL, true, true, true, true, true, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'R. João Villaret 74, 2785-404 São Domingos de Rana, Portugal', 'Parede', 'Lisbon', 'Portugal', 'grocery', '38.69719', '-9.34364', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Parede', 'will do in a pinch!', true, false, false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'R. São José 102, 2750-134 Cascais, Portugal', 'Cascais', 'LIsbon', 'Portugal', 'grocery', '38.71658', '-9.42115', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Cascais', 'will do in a pinch!', true, false, false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'R. da Torre 831 nº, 2750-269 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.70989', '-9.44209', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Cascias', 'will do in a pinch!', true, false, false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'Av. República 2562, 2645-565 Alcabideche, Portugal', 'Alchabideche', 'Lisbon', 'Portugal', 'grocery', '38.7431', '-9.39746', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Cascais', 'will do in a pinch!', true, false, false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'MERCADO DO FORNO DO TIJOLO, loja 37, 1170-221 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.72438', '-9.13288', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Lisbon', 'will do in a pinch!', true, true, false, false, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'R. Leão de Oliveira 19, 1300-350 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.70827', '-9.17944', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Lisbon', 'will do in a pinch!', true, true, false, false, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'A5, 2780-000 Oeiras, Portugal', 'Oeiras', 'Lisbon', 'Portugal', 'grocery', '38.7162', '-9.28522', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Oeiras', NULL, true, true, false, false, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'Praça Sérgio Vieira de Mello 22, 2740-287 Porto Salvo, Portugal', 'Oeiras', 'Lisbon', 'Portugal', 'grocery', '38.70733', '-9.30087', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Oeiras', NULL, true, true, false, false, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Lidle', 'Lidl regularly offers bulk items, bio/organic and frozen items at discount prices. You can often find organic meat and dairy products here as well.', 'Av. Pedro Álvares Cabral 212, 2710-297 Sintra, Portugal', 'Sintra', 'Lisbon', 'Portugal', 'grocery', '38.76874', '-9.37617', '+351210207000', 'press@lidl.pt', '@lidlportugal', 'lidl.pt', true, false, 'Sintra', NULL, true, false, false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Maria Granel', 'Portugal’s first zero-waste grocery store offering bulk organic grains, seeds, legumes, spices, and baking ingredients.', 'R. Coelho da Rocha 37, 1250-087 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.71711', '-9.16017', '351214056077', 'geral@mariagranel.com, loja@mariagranel.com', '@mariagranel.l', 'marigranel.com', true, false, 'Lisbon', NULL, true, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Maria Granel', 'Portugal’s first zero-waste grocery store offering bulk organic grains, seeds, legumes, spices, and baking ingredients.', 'R. José Duro 22 C, 1700-261 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.75506', '-9.14106', '+351211351896', 'geral@mariagranel.com, loja@mariagranel.com', '@mariagranel.l', 'marigranel.com', true, false, 'Lisbon', NULL, true, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Mercado do Campo de Orique', 'Traditional market with butchers offering farm-sourced meats including pasture-raised and locally butchered cuts.', 'Rua Coelho da Rocha, 104', 'Lisbon', 'LIsbon', 'Portugal', 'grocery', '38.71711', '-9.16242', NULL, NULL, NULL, NULL, true, false, 'Lisbon', 'local favorite', true, true, true, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Mercado do Villa', 'An indoor artisan market in Cascais featuring local producers, food stands, and handmade goods. A beautiful space to explore slow food and neighborhood flavor.', 'R. Padre Moisés da Silva 1, 2754-529 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'market', '38.70333', '-9.42202', '+351214825000', NULL, '@mercadodavilacascais', 'https://www.cascais.pt/area/mercado-da-vila-um-centro-de-vida-em-cascais', true, false, 'Cascais', 'local favorite', true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Mundo Bio', 'Mundo Bio is a well-stocked natural foods and supplement store offering a wide range of organic groceries, herbal remedies, and eco-friendly household products. Known for its knowledgeable staff and local Portuguese brands, it''s a trusted stop for health-conscious shoppers in the Lisbon area.', 'R. das Codornizes 115, 2750-005 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.70905', '-9.44531', '+351211608284', NULL, '@mundobio', 'mundobio.pt', true, false, 'Cascais', 'local favorite', true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Mundo Bio', 'Mundo Bio is a well-stocked natural foods and supplement store offering a wide range of organic groceries, herbal remedies, and eco-friendly household products. Known for its knowledgeable staff and local Portuguese brands, it''s a trusted stop for health-conscious shoppers in the Lisbon area.', 'Health Clube Quinta da Marinha Estrada Nova de, 2750-004 Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', NULL, NULL, '351210149172', NULL, '@mundobio', 'mundobio.pt', true, false, 'Cascais', 'local favorite', true, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Nathalie''s Healthy Kitchen', 'A plant-forward meal-kit service designed by a dietitian, delivering fresh, pre-portioned ingredients and easy-to-follow recipes across Cascais and Lisbon instagram.com+7natalieshealthykitchen.com+7natalieshealthykitchen.com+7. It’s the perfect solution for expats craving healthy, hassle-free cooking without the stress of shopping and planning.', 'Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.6979', '-9.4223', '351915688462', 'nathalieshealthykitchenpt@gmail.com', '@nathalieshealthykitchen', 'nathalieshealthykitchen.com', true, false, 'Parede/Carcavelos, Cascais, Lisbon, Oeires, Sintra', NULL, false, true, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Nourish and Nosh PT', 'Nourish and Nosh PT offers nutrient-dense, plant-forward prepared meals and snacks using locally sourced, organic ingredients. Ideal for busy expats looking for healthy, ready-to-eat options that don’t compromise on flavor or quality.', 'R. Ary dos Santos 62 LJA, 2775-338 Parede, Portugal', 'Parede', 'Lisbon', 'Portugal', 'grocery', '38.70377', '-9.35607', '+351927380576', NULL, '@nourishandnosh.pt', 'https://nourishandnosh.pt/', true, false, 'Parede/Carcavelos, Cascais, Lisbon, Oeires, Sintra', NULL, true, true, false, true, true, false, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Quinta do Arneiro', 'Certified organic farm offering direct delivery of vegetable boxes, eggs, and seasonal items to the Lisbon area.', 'Quinta do Arneiro, 2665-004 Azueira, Portugal', 'Azueiro', 'Lisbon', 'Portugal', 'grocery', '39.0115', '-9.27891', '+351261961219', 'aquinta@quintadoarneiro.com', '@quintadoarneiro', 'https://quintadoarneiro.pt/en/', true, false, 'Parede/Carcavelos, Cascais, Lisbon, Oeires, Mafra, Sintra', 'local favorite', true, true, false, true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Quinta Linda', 'This local honey farm offers raw, unfiltered honey from hives in the Portuguese countryside. A sweet, antioxidant-rich treat straight from the source.', '2825-836 Caparica, Portugal', 'Caparica', 'Lisbon', 'Portugal', 'grocery', '40.74561', '-8.98415', '+351912511893', 'quintalinda@quinta-linda.com', '@quintalinda', 'https://www.quinta-linda.com/', true, false, 'Lisbon, Cascais', NULL, true, true, true, true, true, true, true, false, true, false, true, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Qunita das Abelhas', 'Produces seasonal vegetables, herbs, and preserves. Available at Lisbon markets or by farm pickup with pre-order.', 'Cortico, Fornos de Algodres, Portugal', 'Cortico, Fornos de Algodres', 'Lisbon', 'Portugal', 'grocery', '40.6202', '-7.5396', '351 913 272 253', 'quintadasabelhas@pm.me', '@quintadasabelhas)', 'https://www.quintadasabelhas.com/', true, false, 'Lisbon', NULL, true, true, true, true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Qunita do Montalto', 'Family-run organic farm offering wine, olive oil, and seasonal produce for direct online order and Lisbon-area delivery.', 'Quinta do Montalto EN 349, 2435-439 Olival, Portugal', 'Olival', 'Lisbon', 'Portugal', 'grocery', '39.6991', '-8.59929', '+351249581224', 'info@quintadomontalto.com', '@quintadomontalto', 'https://www.quintadomontalto.com/pt/', true, false, 'Parede/Carcavelos, Cascais, Lisbon, Oeires, Sintra', NULL, true, true, false, false, true, true, true, false, true, false, true, true, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Raizes Mercearia a Granel', 'Store located in Tomar with bulk buying options and natural and sustainable products.', 'R. São João 108, 2300-568 Tomar, Portugal', 'Tomar', 'Lisbon', 'Portugal', 'grocery', '39.63505', '-8.28757', '+351926125455', NULL, 'raizes_mercearia', NULL, true, false, 'Mafra', NULL, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Raizes Verdas', 'Provides local vegetable baskets sourced from sustainable farms, available via weekly subscription with Lisbon drop-off points.', 'R. 24 de Julho 110, 2080-526 Fazendas de Almeirim, Portugal', 'Fazendas de Almeirim', 'Lisbon', 'Portugal', 'grocery', '39.22774', '-8.5842', '+351928142000', NULL, NULL, 'https://raizesverdes.pt/?srsltid=AfmBOorcpENzwuEIw7R-PkDAskYgoZOtUmPf2urJcAfW2JEtnmZU9HRB', true, false, 'Lisbon', NULL, true, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Salude Pastelaria Fit', 'Bakery that is fully gluten-free, lactose-free, and refined sugar-free, providing a range of baked goods and brunch items.', 'Rua Bartolomeu da Costa 30, 1170-049 Lisboa, Portugal', 'Lisbon', 'LIsbon', 'Portugal', 'grocery', '38.72237', '-9.1252', NULL, 'saludepastelariafit@gmail.com', '@saludepastelariafit', 'https://www.saludepastelariafit.com', true, false, 'Lisbon', NULL, true, true, true, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Sam Pestelaria Saudavel', 'Health-focused bakery offering certified gluten-free products, including vegan and sugar-free options.', 'R. Luís Augusto Palmeirim 1 D, 1700-272 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.75708', '-9.14216', '+351937646733', 'sampastelariasaudavel@gmail.com', '@sampastelariasaudavel', 'https://www.sampastelariasaudavel.com/', true, false, NULL, NULL, true, true, true, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Supermercado Tradicional', 'A small local market in Estoril offering pantry staples, seasonal produce, and specialty goods. Great for everyday items without the overwhelm of a big chain store.', 'Edificio Junta de Freguesia do Estoril, loja 6, Largo Amália Rodrigues 8, 2765-281 Estoril, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.70542', '-9.39167', '+351214680566', NULL, '@sup_traicional', NULL, true, false, 'Cascias', 'local favorite', true, true, false, true, true, true, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Talhos das Manas', 'A woman-owned butcher shop sourcing high-quality, pasture-raised meats. A trustworthy stop for ethical animal products and old-school service.', 'R. António Cartaxo 1, 2560-063 A dos Cunhados, Portugal', 'A dos Cunhados', 'Lisbon', 'Portugal', 'grocery', '39.14914', '-9.28375', '+351961102201', NULL, '@talhosdasmanas', 'https://talhodasmanas.com/', true, false, 'Parede/Carcavelos, Cascais, Lisbon, Oeires, Sintra', NULL, true, true, true, false, true, true, false, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Terra Leaf', 'A plant-based vendor focused on nourishing, vegan food using clean, organic ingredients. You’ll often find them at local markets and wellness events.', 'R. Dr. Alfredo da Costa 32, 2710-523 Sintra, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '39.0397', '-9.39112', '+351916309754', NULL, '@terraleaf.greens', 'www.terraleafgreens.com', true, false, 'Cascais, Sintra', NULL, true, true, true, true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'The Broth Kitchen', 'A Lisbon-based delivery service offering slow-simmered, nutrient-dense bone broths. Ideal for boosting immunity, gut health, or simply warming up.', 'Lisbon, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.725981', '-9.139534', NULL, NULL, '@thebrothkitchen', NULL, true, false, 'Cascais, Lisbon', NULL, true, true, true, false, true, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'the Hummus shack', 'A local vendor making delicious, gluten-free hummus with clean oils and minimal ingredients. Often found at fairs, festivals, and weekend markets.', 'Cascais, Portugal', 'Cascais', 'Lisbon', 'Portugal', 'grocery', '38.6952', '-9.4213', NULL, NULL, '@the.hummus.shack', NULL, true, false, 'Cascais', NULL, true, true, false, true, true, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+INSERT INTO places (
+    name, description, address, city, region, country, category,
+    latitude, longitude, phone, email, instagram, website,
+    grocery_and_market, supplements, city_tags, badges,
+    gluten_free, dairy_free, nut_free, vegan, organic, local_farms,
+    fresh_vegetables, farm_raised_meat, no_processed, kid_friendly,
+    bulk_buying, zero_waste,
+    general_supplements, omega3, vegan_supplements, online_retailer,
+    vitamins, herbal_remedies, organic_supplements, sports_nutrition,
+    practitioner_grade, hypoallergenic,
+    status, submitted_by
+) VALUES (
+    'Time Out Market', 'Several vendors sell farm-direct meat and vegetables, including sausages and specialty cuts, often from small Portuguese producers.', 'Av. 24 de Julho, 1200-479 Lisboa, Portugal', 'Lisbon', 'Lisbon', 'Portugal', 'grocery', '38.70856', '-914591', '+351210607403', 'info@timeoutmarket.com', '@timeoutmarketlisboa', 'timeoutmarket.com/lisboa/', true, false, 'Lisbon', NULL, true, true, true, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, 'pending', 'Michaele-Initial'
+);
+
+COMMIT;
+
+-- =====================================================
+-- VERIFICATION
+-- =====================================================
+
+SELECT COUNT(*) as total_places FROM places;
+SELECT status, COUNT(*) FROM places GROUP BY status;
