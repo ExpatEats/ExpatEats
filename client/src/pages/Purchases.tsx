@@ -124,13 +124,13 @@ export default function Purchases() {
                 No guides yet
               </h3>
               <p className="text-gray-600 mb-6">
-                You haven't purchased any guides yet. Browse our services to get started!
+                You haven't purchased any guides yet. Browse our guides to get started!
               </p>
               <Button
-                onClick={() => setLocation("/services")}
+                onClick={() => setLocation("/resources")}
                 className="bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
               >
-                Browse Services
+                Browse Guides
               </Button>
             </CardContent>
           </Card>

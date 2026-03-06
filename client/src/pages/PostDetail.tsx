@@ -444,12 +444,12 @@ const PostDetail: React.FC = () => {
                                             {post.username}
                                             {post.userRole === "superadmin" && (
                                                 <Badge variant="default" className="bg-purple-600 hover:bg-purple-700 text-xs">
-                                                    Superadmin
+                                                    Founding Team
                                                 </Badge>
                                             )}
                                             {post.userRole === "admin" && (
                                                 <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
-                                                    Admin
+                                                    City Ambassador
                                                 </Badge>
                                             )}
                                         </div>
@@ -590,12 +590,12 @@ const PostDetail: React.FC = () => {
                                                             </span>
                                                             {comment.userRole === "superadmin" && (
                                                                 <Badge variant="default" className="bg-purple-600 hover:bg-purple-700 text-xs">
-                                                                    Superadmin
+                                                                    Founding Team
                                                                 </Badge>
                                                             )}
                                                             {comment.userRole === "admin" && (
                                                                 <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
-                                                                    Admin
+                                                                    City Ambassador
                                                                 </Badge>
                                                             )}
                                                             <span className="text-sm text-gray-500">

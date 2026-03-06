@@ -369,12 +369,12 @@ const Community: React.FC = () => {
                                                                 {post.username}
                                                                 {post.userRole === "superadmin" && (
                                                                     <Badge variant="default" className="bg-purple-600 hover:bg-purple-700 text-xs">
-                                                                        Superadmin
+                                                                        Founding Team
                                                                     </Badge>
                                                                 )}
                                                                 {post.userRole === "admin" && (
                                                                     <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
-                                                                        Admin
+                                                                        City Ambassador
                                                                     </Badge>
                                                                 )}
                                                             </div>

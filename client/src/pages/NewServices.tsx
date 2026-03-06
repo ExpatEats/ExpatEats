@@ -9,6 +9,7 @@ import {
     MapPin,
     Package,
     Info,
+    Star,
 } from "lucide-react";
 
 export default function NewServices() {
@@ -44,6 +45,14 @@ export default function NewServices() {
                 "High touch arrival services designed to help you settle into daily life in Portugal with ease.",
             icon: <MapPin className="h-8 w-8" />,
             path: "/services/arrival-packages",
+        },
+        {
+            id: "vip-experience",
+            name: "VIP Experience",
+            description:
+                "Our most comprehensive service with complete white-glove arrival support, curated pantry setup, and one-year community membership.",
+            icon: <Star className="h-8 w-8" />,
+            path: "/services/vip-experience",
         },
         {
             id: "before-you-go",
