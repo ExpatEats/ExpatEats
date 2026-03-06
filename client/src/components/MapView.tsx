@@ -2,33 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin } from "lucide-react";
-
-interface Place {
-    id: number;
-    uniqueId?: string;
-    name: string;
-    description: string;
-    address: string;
-    city: string;
-    region?: string;
-    country: string;
-    category: string;
-    tags: string[];
-    latitude?: string;
-    longitude?: string;
-
-    // Contact Information
-    phone?: string;
-    email?: string;
-
-    // Social Media
-    instagram?: string;
-    website?: string;
-
-    imageUrl?: string;
-    averageRating?: number;
-    createdAt?: string;
-}
+import type { Place } from "@shared/schema";
+import { getTagsFromPlace } from "@/lib/tagUtils";
 
 interface MapViewProps {
     places: Place[];
@@ -212,11 +187,12 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
              </div>`
                     : "";
 
+                const placeTags = getTagsFromPlace(place);
                 const popupContent = `
           <div class="p-3 max-w-xs">
             <h3 class="font-semibold text-sm mb-1">${place.name}</h3>
             <div class="flex flex-wrap gap-1 mb-2">
-              ${place.tags
+              ${placeTags
                   .slice(0, 3)
                   .map(
                       (tag) =>

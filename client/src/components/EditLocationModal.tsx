@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, MapPin, CheckCircle2, XCircle } from "lucide-react";
 import type { Place } from "@shared/schema";
+import { getTagsFromPlace } from "@/lib/tagUtils";
 
 interface EditLocationModalProps {
     open: boolean;
@@ -110,7 +111,7 @@ export const EditLocationModal = ({
             setInstagram(place.instagram || "");
 
             // Tags
-            setTagsInput(place.tags?.join(", ") || "");
+            setTagsInput(getTagsFromPlace(place).join(", ") || "");
 
             // Features
             const newFeatures: Record<string, boolean> = {};
@@ -189,7 +190,7 @@ export const EditLocationModal = ({
             setEmail(place.email || "");
             setWebsite(place.website || "");
             setInstagram(place.instagram || "");
-            setTagsInput(place.tags?.join(", ") || "");
+            setTagsInput(getTagsFromPlace(place).join(", ") || "");
             setStatus(place.status || "pending");
             setSoftRating(place.softRating || "");
             setMichaelesNotes(place.michaelesNotes || "");
