@@ -78,7 +78,15 @@ export const places = pgTable("places", {
     instagram: text("instagram"),
     website: text("website"),
 
-    // Boolean Filters
+    // Category Filters
+    groceryAndMarket: boolean("grocery_and_market").default(false),
+    supplements: boolean("supplements").default(false),
+
+    // Additional Text Fields
+    cityTags: text("city_tags"),
+    badges: text("badges"),
+
+    // Grocery & Market Boolean Filters
     glutenFree: boolean("gluten_free").default(false),
     dairyFree: boolean("dairy_free").default(false),
     nutFree: boolean("nut_free").default(false),
@@ -91,6 +99,18 @@ export const places = pgTable("places", {
     kidFriendly: boolean("kid_friendly").default(false),
     bulkBuying: boolean("bulk_buying").default(false),
     zeroWaste: boolean("zero_waste").default(false),
+
+    // Supplement Boolean Filters
+    generalSupplements: boolean("general_supplements").default(false),
+    omega3: boolean("omega3").default(false),
+    veganSupplements: boolean("vegan_supplements").default(false),
+    onlineRetailer: boolean("online_retailer").default(false),
+    vitamins: boolean("vitamins").default(false),
+    herbalRemedies: boolean("herbal_remedies").default(false),
+    organicSupplements: boolean("organic_supplements").default(false),
+    sportsNutrition: boolean("sports_nutrition").default(false),
+    practitionerGrade: boolean("practitioner_grade").default(false),
+    hypoallergenic: boolean("hypoallergenic").default(false),
 
     userId: integer("user_id").references(() => users.id),
     imageUrl: text("image_url"),

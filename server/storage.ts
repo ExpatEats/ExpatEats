@@ -103,6 +103,18 @@ class DatabaseStorage implements Storage {
     async getPlaces(filters?: PlaceFilters): Promise<Place[]> {
         let whereConditions = [eq(places.status, "approved")];
 
+        // Determine if this is a supplements search based on category filter
+        const isSupplementsSearch = filters?.category?.includes("Health Food Store") ||
+                                   filters?.category?.includes("Online Store") ||
+                                   filters?.category?.includes("Department Store");
+
+        // Filter by groceryAndMarket or supplements based on search type
+        if (isSupplementsSearch) {
+            whereConditions.push(eq(places.supplements, true));
+        } else {
+            whereConditions.push(eq(places.groceryAndMarket, true));
+        }
+
         if (filters?.city) {
             const cities = filters.city
                 .split(",")
@@ -142,13 +154,71 @@ class DatabaseStorage implements Storage {
         }
 
         if (filters?.tags && filters.tags.length > 0) {
-            // Use PostgreSQL array overlap operator to check if any of the requested tags match
-            const tagConditions = filters.tags.map(tag => 
-                sql`${places.tags} && ARRAY[${tag}]`
-            );
-            
+            const tagConditions = filters.tags.map(tag => {
+                // Map tag IDs to database columns
+                if (isSupplementsSearch) {
+                    // Supplement tags
+                    switch(tag) {
+                        case "supplements":
+                            return eq(places.generalSupplements, true);
+                        case "vitamins":
+                            return eq(places.vitamins, true);
+                        case "sports-nutrition":
+                            return eq(places.sportsNutrition, true);
+                        case "omega-3":
+                            return eq(places.omega3, true);
+                        case "herbal-remedies":
+                            return eq(places.herbalRemedies, true);
+                        case "practitioner-grade":
+                            return eq(places.practitionerGrade, true);
+                        case "vegan":
+                            return eq(places.veganSupplements, true);
+                        case "organic":
+                            return eq(places.organicSupplements, true);
+                        case "hypoallergenic":
+                            return eq(places.hypoallergenic, true);
+                        case "online":
+                            return eq(places.onlineRetailer, true);
+                        default:
+                            return null;
+                    }
+                } else {
+                    // Grocery & Market tags
+                    switch(tag) {
+                        case "gluten-free":
+                            return eq(places.glutenFree, true);
+                        case "dairy-free":
+                            return eq(places.dairyFree, true);
+                        case "nut-free":
+                            return eq(places.nutFree, true);
+                        case "vegan":
+                            return eq(places.vegan, true);
+                        case "organic":
+                            return eq(places.organic, true);
+                        case "local-farms":
+                            return eq(places.localFarms, true);
+                        case "fresh-vegetables":
+                            return eq(places.freshVegetables, true);
+                        case "farm-raised-meat":
+                            return eq(places.farmRaisedMeat, true);
+                        case "no-processed":
+                            return eq(places.noProcessed, true);
+                        case "kid-friendly":
+                            return eq(places.kidFriendly, true);
+                        case "bulk-buying":
+                            return eq(places.bulkBuying, true);
+                        case "zero-waste":
+                            return eq(places.zeroWaste, true);
+                        default:
+                            return null;
+                    }
+                }
+            }).filter(condition => condition !== null);
+
             // Use OR condition to find places that have ANY of the requested tags
-            whereConditions.push(or(...tagConditions) as any);
+            if (tagConditions.length > 0) {
+                whereConditions.push(or(...tagConditions) as any);
+            }
         }
 
         return await db

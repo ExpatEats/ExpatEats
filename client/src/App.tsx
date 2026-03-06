@@ -33,6 +33,7 @@ import BeforeYouGo from "./pages/BeforeYouGo";
 import ArrivalPackages from "./pages/ArrivalPackages";
 import StockPantry from "./pages/StockPantry";
 import GroceryTour from "./pages/GroceryTour";
+import VIPExperience from "./pages/VIPExperience";
 import { useEffect } from "react";
 
 // Authentication guard component
@@ -99,6 +100,7 @@ function Router() {
                 <Route path="/services/arrival-packages" component={ArrivalPackages} />
                 <Route path="/services/stock-pantry" component={StockPantry} />
                 <Route path="/services/grocery-tour" component={GroceryTour} />
+                <Route path="/services/vip-experience" component={VIPExperience} />
                 <Route path="/events">
                     <RequireAuth component={Events} redirectTo="/unauthorized" />
                 </Route>

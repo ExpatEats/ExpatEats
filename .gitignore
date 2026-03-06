@@ -15,3 +15,4 @@ admin_cookies.txt
 # Uncomment to exclude PDFs from git (use persistent disk instead)
 # /guides/full/*.pdf
 !/guides/full/.gitkeep
+guides.tar.gz
