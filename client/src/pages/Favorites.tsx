@@ -23,6 +23,8 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { NotificationDialog } from "@/components/NotificationDialog";
 import { apiRequest } from "@/lib/queryClient";
+import { getTagsFromPlace } from "@/lib/tagUtils";
+import type { Place as PlaceType } from "@shared/schema";
 
 interface Place {
     id: number;
@@ -257,13 +259,15 @@ export default function Favorites() {
                                             </p>
                                         </div>
 
-                                        {place.tags && place.tags.length > 0 && (
+                                        {(() => {
+                                            const tags = getTagsFromPlace(place as PlaceType);
+                                            return tags.length > 0 && (
                                             <div>
                                                 <p className="text-sm font-medium text-gray-700 mb-2">
                                                     Features
                                                 </p>
                                                 <div className="flex flex-wrap gap-1.5">
-                                                    {place.tags
+                                                    {tags
                                                         .slice(0, 4)
                                                         .map(
                                                             (tag: string, index: number) => {
@@ -284,17 +288,18 @@ export default function Favorites() {
                                                                 );
                                                             },
                                                         )}
-                                                    {place.tags.length > 4 && (
+                                                    {tags.length > 4 && (
                                                         <Badge
                                                             variant="secondary"
                                                             className="text-xs"
                                                         >
-                                                            +{place.tags.length - 4} more
+                                                            +{tags.length - 4} more
                                                         </Badge>
                                                     )}
                                                 </div>
                                             </div>
-                                        )}
+                                            );
+                                        })()}
 
                                         <div className="pt-2">
                                             <p className="text-sm text-[#E07A5F] font-medium text-center">

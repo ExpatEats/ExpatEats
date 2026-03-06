@@ -27,6 +27,7 @@ import { MapView } from "@/components/MapView";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginModal } from "@/components/LoginModal";
+import { getTagsFromPlace } from "@/lib/tagUtils";
 
 interface Place {
     id: number;
@@ -407,14 +408,15 @@ const Results = () => {
                                                 </div>
                                             )}
 
-                                            {place.tags &&
-                                                place.tags.length > 0 && (
+                                            {(() => {
+                                                const tags = getTagsFromPlace(place);
+                                                return tags.length > 0 && (
                                                     <div>
                                                         <p className="text-sm font-medium text-gray-700 mb-2">
                                                             Features
                                                         </p>
                                                         <div className="flex flex-wrap gap-1.5">
-                                                            {place.tags
+                                                            {tags
                                                                 .slice(0, 4)
                                                                 .map(
                                                                     (
@@ -447,14 +449,14 @@ const Results = () => {
                                                                         );
                                                                     },
                                                                 )}
-                                                            {place.tags.length >
+                                                            {tags.length >
                                                                 4 && (
                                                                 <Badge
                                                                     variant="secondary"
                                                                     className="text-xs"
                                                                 >
                                                                     +
-                                                                    {place.tags
+                                                                    {tags
                                                                         .length -
                                                                         4}{" "}
                                                                     more
@@ -462,7 +464,8 @@ const Results = () => {
                                                             )}
                                                         </div>
                                                     </div>
-                                                )}
+                                                );
+                                            })()}
 
                                             <div className="pt-2">
                                                 <p className="text-sm text-[#E07A5F] font-medium text-center">
