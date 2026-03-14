@@ -12,11 +12,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.vers
 
 interface PdfViewerProps {
   pdfUrl: string;
-  userEmail?: string;
-  userName?: string;
 }
 
-export function PdfViewer({ pdfUrl, userEmail, userName }: PdfViewerProps) {
+export function PdfViewer({ pdfUrl }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
@@ -127,8 +125,6 @@ export function PdfViewer({ pdfUrl, userEmail, userName }: PdfViewerProps) {
     setScale((prev) => Math.max(prev - 0.2, 0.6));
   }
 
-  const watermarkText = userEmail || userName || "ExpatEats Guide";
-
   return (
     <div
       ref={containerRef}
@@ -218,32 +214,13 @@ export function PdfViewer({ pdfUrl, userEmail, userName }: PdfViewerProps) {
                 </div>
               }
             >
-              <div className="relative">
-                <Page
-                  pageNumber={pageNumber}
-                  scale={scale}
-                  renderTextLayer={true}
-                  renderAnnotationLayer={false}
-                  className="shadow-lg"
-                />
-
-                {/* Watermark Overlay */}
-                <div
-                  className="absolute top-0 left-0 w-full h-full pointer-events-none flex items-center justify-center"
-                  style={{
-                    background: "transparent",
-                  }}
-                >
-                  <div
-                    className="text-gray-400/20 font-bold text-4xl transform -rotate-45 select-none"
-                    style={{
-                      textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    {watermarkText}
-                  </div>
-                </div>
-              </div>
+              <Page
+                pageNumber={pageNumber}
+                scale={scale}
+                renderTextLayer={true}
+                renderAnnotationLayer={false}
+                className="shadow-lg"
+              />
             </Document>
           </div>
         ) : (
