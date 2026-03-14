@@ -238,7 +238,7 @@ async function seedCities() {
             { name: "Cascais", slug: "cascais", country: "Portugal", region: "Lisbon" },
             { name: "Sintra", slug: "sintra", country: "Portugal", region: "Lisbon" },
             { name: "Oeiras", slug: "oeiras", country: "Portugal", region: "Lisbon" },
-            { name: "Mafra", slug: "mafra", country: "Portugal", region: "Lisbon" },
+            { name: "Mafra/Ourem", slug: "mafra", country: "Portugal", region: "Lisbon" },
             { name: "Parede/Carcavelos", slug: "parede", country: "Portugal", region: "Lisbon" },
             { name: "Online", slug: "online", country: "Online", region: null },
         ];

@@ -24,7 +24,9 @@ const Footer = () => {
                                 <Facebook className="h-5 w-5" />
                             </a>
                             <a
-                                href="#"
+                                href="https://instagram.com/expateatsguide"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-[#F7F4EF] opacity-80 hover:opacity-100 transition"
                             >
                                 <Instagram className="h-5 w-5" />

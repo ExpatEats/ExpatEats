@@ -186,8 +186,6 @@ export default function GuideViewer() {
         {pdfUrl && (
           <PdfViewer
             pdfUrl={pdfUrl}
-            userEmail={user?.email}
-            userName={user?.name || user?.username}
           />
         )}
       </div>
