@@ -146,9 +146,10 @@ export default function Admin() {
     const [, setLocation] = useLocation();
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
     const [selectedCountry, setSelectedCountry] = React.useState<string>("");
-    const [activeSection, setActiveSection] = React.useState<string>("data-admin");
+    const [activeSection, setActiveSection] = React.useState<string>("overview");
     const [searchEmail, setSearchEmail] = React.useState<string>("");
     const [foundUser, setFoundUser] = React.useState<any>(null);
+    const [analyticsPeriod, setAnalyticsPeriod] = React.useState<"week" | "month" | "year" | "all">("week");
     const { user, isAuthenticated, logout, isLoading } = useAuth();
     const [notificationOpen, setNotificationOpen] = React.useState(false);
     const [notificationConfig, setNotificationConfig] = React.useState<{
@@ -227,6 +228,28 @@ export default function Admin() {
 
     const { data: cities = [], isLoading: citiesLoading } = useQuery<{id: number, name: string, slug: string, country: string}[]>({
         queryKey: ["/api/cities"],
+        enabled: isAuthenticated && (user?.role === "admin" || user?.role === "superadmin"),
+    });
+
+    const { data: analytics, isLoading: analyticsLoading, error: analyticsError } = useQuery<{
+        users: number;
+        posts: number;
+        places: number;
+        period: string;
+    }>({
+        queryKey: ["/api/admin/analytics", analyticsPeriod],
+        queryFn: async () => {
+            console.log("[Analytics] Fetching analytics for period:", analyticsPeriod);
+            const response = await fetch(`/api/admin/analytics?period=${analyticsPeriod}`, {
+                credentials: "include",
+            });
+            if (!response.ok) {
+                throw new Error("Failed to fetch analytics");
+            }
+            const data = await response.json();
+            console.log("[Analytics] Received data:", data);
+            return data;
+        },
         enabled: isAuthenticated && (user?.role === "admin" || user?.role === "superadmin"),
     });
 
@@ -752,19 +775,173 @@ export default function Admin() {
                         {/* Main Content */}
                         <div className="lg:col-span-3">
                             {activeSection === "overview" && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <LayoutDashboard className="h-5 w-5" />
-                                            Dashboard Overview
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-center py-8 text-gray-500">
-                                            <p>Dashboard statistics and overview coming soon...</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                <div className="space-y-6">
+                                    <Card>
+                                        <CardHeader>
+                                            <div className="flex items-center justify-between">
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <LayoutDashboard className="h-5 w-5" />
+                                                    Dashboard Overview
+                                                </CardTitle>
+                                                <Select
+                                                    value={analyticsPeriod}
+                                                    onValueChange={(value: "week" | "month" | "year" | "all") => setAnalyticsPeriod(value)}
+                                                >
+                                                    <SelectTrigger className="w-[150px]">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="week">Last Week</SelectItem>
+                                                        <SelectItem value="month">Last Month</SelectItem>
+                                                        <SelectItem value="year">Last Year</SelectItem>
+                                                        <SelectItem value="all">All Time</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <CardDescription>
+                                                View key metrics and platform statistics
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {analyticsLoading ? (
+                                                <div className="flex items-center justify-center py-12">
+                                                    <Loader2 className="h-8 w-8 animate-spin text-[#E07A5F]" />
+                                                </div>
+                                            ) : analyticsError ? (
+                                                <div className="text-center py-8 text-red-500">
+                                                    <p>Error loading analytics: {(analyticsError as Error).message}</p>
+                                                </div>
+                                            ) : (
+                                                <div className="grid gap-4 md:grid-cols-3">
+                                                    {/* Users Card */}
+                                                    <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                                                        <CardHeader className="pb-3">
+                                                            <div className="flex items-center justify-between">
+                                                                <CardTitle className="text-sm font-medium text-blue-900">
+                                                                    {analyticsPeriod === "all" ? "Total Users" : "New Users"}
+                                                                </CardTitle>
+                                                                <Users className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                        </CardHeader>
+                                                        <CardContent>
+                                                            <div className="text-3xl font-bold text-blue-900">
+                                                                {analytics?.users || 0}
+                                                            </div>
+                                                            <p className="text-xs text-blue-700 mt-1">
+                                                                {analyticsPeriod === "week" && "in the last 7 days"}
+                                                                {analyticsPeriod === "month" && "in the last 30 days"}
+                                                                {analyticsPeriod === "year" && "in the last 365 days"}
+                                                                {analyticsPeriod === "all" && "registered users"}
+                                                            </p>
+                                                        </CardContent>
+                                                    </Card>
+
+                                                    {/* Posts Card */}
+                                                    <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                                                        <CardHeader className="pb-3">
+                                                            <div className="flex items-center justify-between">
+                                                                <CardTitle className="text-sm font-medium text-green-900">
+                                                                    {analyticsPeriod === "all" ? "Total Posts" : "New Posts"}
+                                                                </CardTitle>
+                                                                <FileCheck className="h-4 w-4 text-green-600" />
+                                                            </div>
+                                                        </CardHeader>
+                                                        <CardContent>
+                                                            <div className="text-3xl font-bold text-green-900">
+                                                                {analytics?.posts || 0}
+                                                            </div>
+                                                            <p className="text-xs text-green-700 mt-1">
+                                                                {analyticsPeriod === "week" && "in the last 7 days"}
+                                                                {analyticsPeriod === "month" && "in the last 30 days"}
+                                                                {analyticsPeriod === "year" && "in the last 365 days"}
+                                                                {analyticsPeriod === "all" && "active posts"}
+                                                            </p>
+                                                        </CardContent>
+                                                    </Card>
+
+                                                    {/* Places Card */}
+                                                    <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+                                                        <CardHeader className="pb-3">
+                                                            <div className="flex items-center justify-between">
+                                                                <CardTitle className="text-sm font-medium text-orange-900">
+                                                                    {analyticsPeriod === "all" ? "Total Places" : "New Places"}
+                                                                </CardTitle>
+                                                                <MapPin className="h-4 w-4 text-orange-600" />
+                                                            </div>
+                                                        </CardHeader>
+                                                        <CardContent>
+                                                            <div className="text-3xl font-bold text-orange-900">
+                                                                {analytics?.places || 0}
+                                                            </div>
+                                                            <p className="text-xs text-orange-700 mt-1">
+                                                                {analyticsPeriod === "week" && "in the last 7 days"}
+                                                                {analyticsPeriod === "month" && "in the last 30 days"}
+                                                                {analyticsPeriod === "year" && "in the last 365 days"}
+                                                                {analyticsPeriod === "all" && "approved locations"}
+                                                            </p>
+                                                        </CardContent>
+                                                    </Card>
+                                                </div>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+
+                                    {/* Additional Info Card */}
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">Quick Actions</CardTitle>
+                                            <CardDescription>
+                                                Navigate to common admin tasks
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid gap-3 md:grid-cols-2">
+                                                <Button
+                                                    variant="outline"
+                                                    className="justify-start"
+                                                    onClick={() => setActiveSection("pending-approvals")}
+                                                >
+                                                    <FileCheck className="mr-2 h-4 w-4" />
+                                                    Review Pending Locations
+                                                    {pendingPlaces.length > 0 && (
+                                                        <Badge className="ml-auto" variant="destructive">
+                                                            {pendingPlaces.length}
+                                                        </Badge>
+                                                    )}
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    className="justify-start"
+                                                    onClick={() => setActiveSection("pending-events")}
+                                                >
+                                                    <Calendar className="mr-2 h-4 w-4" />
+                                                    Review Pending Events
+                                                    {pendingEvents.length > 0 && (
+                                                        <Badge className="ml-auto" variant="destructive">
+                                                            {pendingEvents.length}
+                                                        </Badge>
+                                                    )}
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    className="justify-start"
+                                                    onClick={() => setActiveSection("data-admin")}
+                                                >
+                                                    <Database className="mr-2 h-4 w-4" />
+                                                    Add New Location
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    className="justify-start"
+                                                    onClick={() => setActiveSection("batch-geocode")}
+                                                >
+                                                    <Map className="mr-2 h-4 w-4" />
+                                                    Batch Geocode Locations
+                                                </Button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             )}
 
                             {activeSection === "data-admin" && (

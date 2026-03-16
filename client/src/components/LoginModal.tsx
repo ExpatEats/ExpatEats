@@ -4,11 +4,13 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
+import { ArrowLeft } from "lucide-react";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import {
     Form,
@@ -23,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationDialog } from "@/components/NotificationDialog";
+import { apiRequest } from "@/lib/queryClient";
 
 const loginSchema = z.object({
     username: z.string().min(1, "Username is required"),
@@ -30,7 +33,12 @@ const loginSchema = z.object({
     rememberMe: z.boolean().optional(),
 });
 
+const passwordResetSchema = z.object({
+    email: z.string().email("Please enter a valid email address"),
+});
+
 type LoginFormValues = z.infer<typeof loginSchema>;
+type PasswordResetFormValues = z.infer<typeof passwordResetSchema>;
 
 interface LoginModalProps {
     open: boolean;
@@ -50,6 +58,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
         title: "",
         variant: "success"
     });
+    const [view, setView] = useState<"login" | "reset-password">("login");
+    const [isResetting, setIsResetting] = useState(false);
 
     const showNotification = (title: string, description?: string, variant: "success" | "error" | "warning" | "info" = "success") => {
         setNotificationConfig({ title, description, variant });
@@ -77,6 +87,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
             username: "",
             password: "",
             rememberMe: false,
+        },
+    });
+
+    const resetForm = useForm<PasswordResetFormValues>({
+        resolver: zodResolver(passwordResetSchema),
+        defaultValues: {
+            email: "",
         },
     });
 
@@ -110,11 +127,53 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
         navigate("/register");
     };
 
+    const onPasswordReset = async (data: PasswordResetFormValues) => {
+        setLocalError(null);
+        setIsResetting(true);
+
+        try {
+            const response = await apiRequest("POST", "/api/auth/request-password-reset", {
+                email: data.email,
+            });
+
+            if (response.requiresGoogle) {
+                showNotification(
+                    "Google Account Detected",
+                    "This email is registered with Google sign-in. Please use the 'Sign in with Google' button instead.",
+                    "info"
+                );
+            } else if (response.emailNotFound) {
+                showNotification(
+                    "Email Not Found",
+                    "No account exists with this email address. Please check your email or create a new account.",
+                    "error"
+                );
+            } else {
+                showNotification(
+                    "Reset Link Sent!",
+                    "If an account exists with this email, you will receive a password reset link. Please check your email (including spam folder). The link will expire in 1 hour.",
+                    "success"
+                );
+                resetForm.reset();
+                setView("login");
+            }
+        } catch (error) {
+            console.error("Password reset error:", error);
+            const errorMessage = error instanceof Error ? error.message : "Failed to send reset email. Please try again.";
+            setLocalError(errorMessage);
+            showNotification("Error", errorMessage, "error");
+        } finally {
+            setIsResetting(false);
+        }
+    };
+
     // Clear error when modal closes
     const handleModalChange = (open: boolean) => {
         if (!open) {
             setLocalError(null);
             form.reset();
+            resetForm.reset();
+            setView("login");
         }
         onOpenChange(open);
     };
@@ -124,8 +183,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-light text-center">
-                        Welcome Back
+                        {view === "login" ? "Welcome Back" : "Reset Password"}
                     </DialogTitle>
+                    {view === "reset-password" && (
+                        <DialogDescription className="text-center">
+                            Enter your email address and we'll send you a link to reset your password.
+                        </DialogDescription>
+                    )}
                 </DialogHeader>
 
                 <div className="space-y-4">
@@ -134,6 +198,58 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                             <p className="text-sm text-red-600">{localError}</p>
                         </div>
                     )}
+
+                    {view === "reset-password" && (
+                        <>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="w-full justify-start text-sm text-gray-600"
+                                onClick={() => {
+                                    setView("login");
+                                    setLocalError(null);
+                                    resetForm.reset();
+                                }}
+                            >
+                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                Back to Login
+                            </Button>
+
+                            <Form {...resetForm}>
+                                <form onSubmit={resetForm.handleSubmit(onPasswordReset)} className="space-y-4">
+                                    <FormField
+                                        control={resetForm.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Email Address</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="email"
+                                                        placeholder="Enter your email"
+                                                        {...field}
+                                                        autoComplete="email"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                        disabled={isResetting}
+                                    >
+                                        {isResetting ? "Sending Reset Link..." : "Send Reset Link"}
+                                    </Button>
+                                </form>
+                            </Form>
+                        </>
+                    )}
+
+                    {view === "login" && (
+                        <>
 
                     {/* Google Sign-In Button */}
                     <Button
@@ -241,9 +357,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                                     type="button"
                                     variant="ghost"
                                     className="w-full text-sm text-gray-600"
-                                    onClick={() => {
-                                        showNotification("Coming soon", "Password reset functionality will be available soon.", "info");
-                                    }}
+                                    onClick={() => setView("reset-password")}
                                     disabled={isLoading}
                                 >
                                     Forgot Password?
@@ -251,6 +365,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                             </div>
                         </form>
                     </Form>
+                    </>
+                    )}
                 </div>
             </DialogContent>
 

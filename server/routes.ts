@@ -11,15 +11,18 @@ import {
     insertSavedStoreSchema,
     savedStores,
     users,
+    posts,
+    places,
 } from "@shared/schema";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, sql, gte, and } from "drizzle-orm";
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from "./middleware/auth";
 import { AuthService } from "./services/authService";
 import { AuthenticatedRequest } from "./types/session";
 import { CsrfService } from "./services/csrfService";
 import { RateLimitService } from "./services/rateLimitService";
 import { GeocodingService } from "./services/geocodingService";
+import { EmailService } from "./services/emailService";
 import { registerCommunityRoutes } from "./routes/community";
 import { registerGuidesRoutes } from "./routes/guides";
 
@@ -323,6 +326,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     );
 
+    // =========================================================================
+    // PASSWORD RESET ROUTES
+    // =========================================================================
+
+    /**
+     * Request password reset
+     * Generates reset token and sends email
+     */
+    app.post(
+        "/api/auth/request-password-reset",
+        RateLimitService.authLimiter,
+        async (req, res) => {
+            try {
+                const { email } = req.body;
+
+                if (!email) {
+                    return res.status(400).json({ message: "Email is required" });
+                }
+
+                const result = await AuthService.requestPasswordReset(email);
+
+                if (result.emailNotFound) {
+                    return res.json({ emailNotFound: true });
+                }
+
+                if (result.requiresGoogle) {
+                    return res.json({ requiresGoogle: true });
+                }
+
+                // Send password reset email
+                if (result.success && result.resetToken && result.user) {
+                    const emailResult = await EmailService.sendPasswordResetEmail(
+                        result.user.email,
+                        result.user.name || null,
+                        result.resetToken
+                    );
+
+                    if (!emailResult.success) {
+                        console.error("Failed to send password reset email:", emailResult.error);
+                        // Don't reveal email sending failure to user for security
+                    }
+                }
+
+                res.json({
+                    success: true,
+                    message: "If an account exists with this email, you will receive a password reset link."
+                });
+            } catch (error) {
+                console.error("Password reset request error:", error);
+                res.status(500).json({ message: "Failed to process password reset request" });
+            }
+        }
+    );
+
+    /**
+     * Verify password reset token
+     * Used to check if token is valid before showing reset form
+     */
+    app.get(
+        "/api/auth/verify-reset-token/:token",
+        RateLimitService.generalLimiter,
+        async (req, res) => {
+            try {
+                const { token } = req.params;
+
+                if (!token) {
+                    return res.status(400).json({ message: "Token is required" });
+                }
+
+                const result = await AuthService.verifyResetToken(token);
+
+                if (!result.success) {
+                    return res.status(400).json({
+                        message: result.message,
+                        valid: false
+                    });
+                }
+
+                res.json({
+                    valid: true,
+                    email: result.user?.email
+                });
+            } catch (error) {
+                console.error("Token verification error:", error);
+                res.status(500).json({ message: "Failed to verify token" });
+            }
+        }
+    );
+
+    /**
+     * Reset password with token
+     * Actually changes the password
+     */
+    app.post(
+        "/api/auth/reset-password",
+        RateLimitService.authLimiter,
+        async (req, res) => {
+            try {
+                const { token, password } = req.body;
+
+                if (!token || !password) {
+                    return res.status(400).json({
+                        message: "Token and password are required"
+                    });
+                }
+
+                if (password.length < 8) {
+                    return res.status(400).json({
+                        message: "Password must be at least 8 characters long"
+                    });
+                }
+
+                const result = await AuthService.resetPassword(token, password);
+
+                if (!result.success) {
+                    return res.status(400).json({ message: result.message });
+                }
+
+                res.json({
+                    success: true,
+                    message: "Password reset successful. You can now login with your new password."
+                });
+            } catch (error) {
+                console.error("Password reset error:", error);
+                res.status(500).json({ message: "Failed to reset password" });
+            }
+        }
+    );
+
     // Get all places with optional filters
     app.get("/api/places", async (req, res) => {
         try {
@@ -467,6 +599,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
             console.error("Error updating user role:", error);
             res.status(500).json({ message: "Failed to update user role" });
+        }
+    });
+
+    // Admin analytics endpoint
+    app.get("/api/admin/analytics", requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const { period = "week" } = req.query;
+            console.log(`[Analytics] Fetching analytics for period: ${period}`);
+
+            let usersCount = 0;
+            let postsCount = 0;
+            let placesCount = 0;
+
+            if (period === "all") {
+                console.log("[Analytics] Fetching all-time counts");
+
+                // Get all users
+                const allUsers = await db.select().from(users);
+                usersCount = allUsers.length;
+                console.log(`[Analytics] Total users: ${usersCount}`);
+
+                // Get all active posts
+                const allPosts = await db
+                    .select()
+                    .from(posts)
+                    .where(eq(posts.status, "active"));
+                postsCount = allPosts.length;
+                console.log(`[Analytics] Total active posts: ${postsCount}`);
+
+                // Get all approved places
+                const allPlaces = await db
+                    .select()
+                    .from(places)
+                    .where(eq(places.status, "approved"));
+                placesCount = allPlaces.length;
+                console.log(`[Analytics] Total approved places: ${placesCount}`);
+            } else {
+                // Calculate date threshold based on period
+                const now = new Date();
+                let dateThreshold = new Date();
+
+                switch (period) {
+                    case "week":
+                        dateThreshold.setDate(now.getDate() - 7);
+                        break;
+                    case "month":
+                        dateThreshold.setMonth(now.getMonth() - 1);
+                        break;
+                    case "year":
+                        dateThreshold.setFullYear(now.getFullYear() - 1);
+                        break;
+                    default:
+                        dateThreshold.setDate(now.getDate() - 7);
+                }
+
+                console.log(`[Analytics] Date threshold: ${dateThreshold.toISOString()}`);
+
+                // Get users created in period
+                const newUsers = await db
+                    .select()
+                    .from(users)
+                    .where(gte(users.createdAt, dateThreshold));
+                usersCount = newUsers.length;
+                console.log(`[Analytics] New users in period: ${usersCount}`);
+
+                // Get posts created in period (active only)
+                const newPosts = await db
+                    .select()
+                    .from(posts)
+                    .where(
+                        and(
+                            eq(posts.status, "active"),
+                            gte(posts.createdAt, dateThreshold)
+                        )
+                    );
+                postsCount = newPosts.length;
+                console.log(`[Analytics] New posts in period: ${postsCount}`);
+
+                // Get places created in period (approved only)
+                const newPlaces = await db
+                    .select()
+                    .from(places)
+                    .where(
+                        and(
+                            eq(places.status, "approved"),
+                            gte(places.createdAt, dateThreshold)
+                        )
+                    );
+                placesCount = newPlaces.length;
+                console.log(`[Analytics] New places in period: ${placesCount}`);
+            }
+
+            const response = {
+                users: usersCount,
+                posts: postsCount,
+                places: placesCount,
+                period: period
+            };
+
+            console.log("[Analytics] Response:", response);
+            res.json(response);
+        } catch (error) {
+            console.error("Error fetching analytics:", error);
+            res.status(500).json({ message: "Failed to fetch analytics" });
         }
     });
 

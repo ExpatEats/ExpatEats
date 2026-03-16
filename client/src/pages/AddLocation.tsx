@@ -120,21 +120,36 @@ export default function AddLocation() {
             description: "",
             address: "",
             city: "",
-            country: "",
+            country: "Portugal", // Default to Portugal
             type: "",
             tags: [],
             imageUrl: "",
         },
     });
 
+    // Set initial country when form loads
+    React.useEffect(() => {
+        if (!selectedCountry && countries.includes("Portugal")) {
+            setSelectedCountry("Portugal");
+            form.setValue("country", "Portugal");
+        }
+    }, [countries, selectedCountry, form]);
+
     const addLocationMutation = useMutation({
         mutationFn: async (values: LocationFormValues) => {
             // Format values to match API expectations
             const { type, ...restValues } = values;
+
+            // Determine which boolean flags to set based on category
+            const supplementCategories = ["Health Food Store", "Online Store", "Department Store", "Pharmacy"];
+            const isSupplementStore = supplementCategories.includes(type);
+
             const formattedValues = {
                 ...restValues,
                 category: type,
                 tags: selectedTags,
+                groceryAndMarket: !isSupplementStore,
+                supplements: isSupplementStore,
             };
 
             console.log("Submitting location data:", formattedValues);
@@ -238,14 +253,8 @@ export default function AddLocation() {
                                                         <SelectItem value="Supermarket">
                                                             Supermarket
                                                         </SelectItem>
-                                                        <SelectItem value="Health Food Store">
-                                                            Health Food Store
-                                                        </SelectItem>
                                                         <SelectItem value="Market">
                                                             Market
-                                                        </SelectItem>
-                                                        <SelectItem value="Pharmacy">
-                                                            Pharmacy
                                                         </SelectItem>
                                                         <SelectItem value="Specialty Store">
                                                             Specialty Store
@@ -258,6 +267,18 @@ export default function AddLocation() {
                                                         </SelectItem>
                                                         <SelectItem value="Farm">
                                                             Farm
+                                                        </SelectItem>
+                                                        <SelectItem value="Health Food Store">
+                                                            Health Food Store (Supplements)
+                                                        </SelectItem>
+                                                        <SelectItem value="Pharmacy">
+                                                            Pharmacy (Supplements)
+                                                        </SelectItem>
+                                                        <SelectItem value="Online Store">
+                                                            Online Store (Supplements)
+                                                        </SelectItem>
+                                                        <SelectItem value="Department Store">
+                                                            Department Store (Supplements)
                                                         </SelectItem>
                                                         <SelectItem value="Other">
                                                             Other
