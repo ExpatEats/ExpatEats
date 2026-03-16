@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { db } from "../db";
 import { users } from "@shared/schema";
 import { eq, and, lt } from "drizzle-orm";
@@ -6,6 +7,7 @@ import { eq, and, lt } from "drizzle-orm";
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "12");
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_TIME = 30 * 60 * 1000; // 30 minutes
+const PASSWORD_RESET_EXPIRY = 60 * 60 * 1000; // 1 hour
 
 export class AuthService {
     static async hashPassword(password: string): Promise<string> {
@@ -293,5 +295,106 @@ export class AuthService {
         // Remove password from returned user
         const { password, ...userWithoutPassword } = updatedUser;
         return userWithoutPassword;
+    }
+
+    // =========================================================================
+    // PASSWORD RESET METHODS
+    // =========================================================================
+
+    /**
+     * Request a password reset - generates token and returns user info
+     */
+    static async requestPasswordReset(email: string) {
+        const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email));
+
+        if (!user) {
+            return { emailNotFound: true };
+        }
+
+        // Check if user is Google-only (no password set)
+        if (user.authProvider === "google" && !user.password) {
+            return { requiresGoogle: true };
+        }
+
+        // Generate secure reset token
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const hashedToken = await this.hashPassword(resetToken);
+        const expiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRY);
+
+        // Save hashed token and expiry to database
+        await db
+            .update(users)
+            .set({
+                passwordResetToken: hashedToken,
+                passwordResetExpires: expiresAt,
+                updatedAt: new Date(),
+            })
+            .where(eq(users.id, user.id));
+
+        return {
+            success: true,
+            resetToken, // Return plain token to send in email
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+            },
+            expiresAt,
+        };
+    }
+
+    /**
+     * Verify password reset token
+     */
+    static async verifyResetToken(token: string) {
+        const allUsers = await db
+            .select()
+            .from(users)
+            .where(lt(new Date(), users.passwordResetExpires));
+
+        // Find user with matching token
+        for (const user of allUsers) {
+            if (user.passwordResetToken) {
+                const isValidToken = await this.verifyPassword(token, user.passwordResetToken);
+                if (isValidToken) {
+                    // Remove password from returned user
+                    const { password, ...userWithoutPassword } = user;
+                    return { success: true, user: userWithoutPassword };
+                }
+            }
+        }
+
+        return { success: false, message: "Invalid or expired reset token" };
+    }
+
+    /**
+     * Reset password using token
+     */
+    static async resetPassword(token: string, newPassword: string) {
+        const verification = await this.verifyResetToken(token);
+
+        if (!verification.success || !verification.user) {
+            return { success: false, message: "Invalid or expired reset token" };
+        }
+
+        const hashedPassword = await this.hashPassword(newPassword);
+
+        // Update password and clear reset token
+        await db
+            .update(users)
+            .set({
+                password: hashedPassword,
+                passwordResetToken: null,
+                passwordResetExpires: null,
+                failedLoginAttempts: 0,
+                accountLockedUntil: null,
+                updatedAt: new Date(),
+            })
+            .where(eq(users.id, verification.user.id));
+
+        return { success: true, message: "Password reset successful" };
     }
 }

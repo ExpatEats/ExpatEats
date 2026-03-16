@@ -145,10 +145,18 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
                         const lat = parseFloat(latStr);
                         const lng = parseFloat(lngStr);
 
-                        // Validate parsed coordinates are valid numbers
-                        if (!isNaN(lat) && !isNaN(lng)) {
+                        // Validate parsed coordinates are valid numbers and within valid ranges
+                        // Latitude: -90 to 90, Longitude: -180 to 180
+                        if (
+                            !isNaN(lat) && !isNaN(lng) &&
+                            lat >= -90 && lat <= 90 &&
+                            lng >= -180 && lng <= 180
+                        ) {
                             coordinates = [lng, lat];
                             hasValidAddress = true;
+                        } else if (!isNaN(lat) && !isNaN(lng)) {
+                            // Log invalid coordinates for debugging
+                            console.warn(`Invalid coordinates for ${place.name}: lat=${lat}, lng=${lng}`);
                         }
                     }
                 }
@@ -233,10 +241,10 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
 
                 markers.current.push(marker);
 
-                if (hasValidAddress || places.length === 1) {
-                    bounds.extend(coordinates);
-                    validCoordinates = true;
-                }
+                // Always extend bounds for all markers, not just valid addresses
+                // This ensures all markers are visible on the map
+                bounds.extend(coordinates);
+                validCoordinates = true;
             }
 
             // Fit map to bounds if we have valid coordinates
