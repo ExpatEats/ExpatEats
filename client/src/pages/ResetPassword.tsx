@@ -83,10 +83,11 @@ export default function ResetPassword() {
         const verifyToken = async () => {
             try {
                 const response = await apiRequest("GET", `/api/auth/verify-reset-token/${tokenParam}`);
+                const data = await response.json();
 
-                if (response.valid) {
+                if (data.valid) {
                     setIsValid(true);
-                    setEmail(response.email);
+                    setEmail(data.email);
                 } else {
                     setErrorMessage("This reset link has expired or is invalid. Please request a new password reset.");
                 }
@@ -111,10 +112,11 @@ export default function ResetPassword() {
         setErrorMessage(null);
 
         try {
-            await apiRequest("POST", "/api/auth/reset-password", {
+            const response = await apiRequest("POST", "/api/auth/reset-password", {
                 token,
                 password: data.password,
             });
+            await response.json(); // Consume the response
 
             setResetSuccess(true);
             showNotification(

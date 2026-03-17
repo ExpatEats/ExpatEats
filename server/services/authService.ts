@@ -324,6 +324,11 @@ export class AuthService {
         const hashedToken = await this.hashPassword(resetToken);
         const expiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRY);
 
+        console.log("🔐 Generated reset token for:", user.email);
+        console.log("Plain token (first 10 chars):", resetToken.substring(0, 10) + "...");
+        console.log("Hashed token (first 20 chars):", hashedToken.substring(0, 20) + "...");
+        console.log("Expires at:", expiresAt);
+
         // Save hashed token and expiry to database
         await db
             .update(users)
@@ -350,23 +355,32 @@ export class AuthService {
      * Verify password reset token
      */
     static async verifyResetToken(token: string) {
+        console.log("🔍 Verifying reset token...");
+        console.log("Token received:", token?.substring(0, 10) + "...");
+
         const allUsers = await db
             .select()
             .from(users)
             .where(lt(new Date(), users.passwordResetExpires));
 
+        console.log(`Found ${allUsers.length} users with unexpired reset tokens`);
+
         // Find user with matching token
         for (const user of allUsers) {
             if (user.passwordResetToken) {
+                console.log(`Checking token for user: ${user.email}`);
                 const isValidToken = await this.verifyPassword(token, user.passwordResetToken);
+                console.log(`Token match result: ${isValidToken}`);
                 if (isValidToken) {
                     // Remove password from returned user
                     const { password, ...userWithoutPassword } = user;
+                    console.log("✅ Token verified successfully");
                     return { success: true, user: userWithoutPassword };
                 }
             }
         }
 
+        console.log("❌ No matching token found");
         return { success: false, message: "Invalid or expired reset token" };
     }
 
