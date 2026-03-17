@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { db } from "../db";
 import { users } from "@shared/schema";
-import { eq, and, lt } from "drizzle-orm";
+import { eq, and, lt, sql } from "drizzle-orm";
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "12");
 const MAX_FAILED_ATTEMPTS = 5;
@@ -42,25 +42,25 @@ export class AuthService {
     }
 
     static async authenticateUser(username: string, password: string) {
-        // Find user by username or email
+        // Find user by username or email (case-insensitive)
         const [user] = await db
             .select()
             .from(users)
             .where(
-                eq(users.username, username)
+                sql`LOWER(${users.username}) = LOWER(${username})`
             );
 
         if (!user) {
-            // Check if it's an email instead
+            // Check if it's an email instead (case-insensitive)
             const [userByEmail] = await db
                 .select()
                 .from(users)
-                .where(eq(users.email, username));
-            
+                .where(sql`LOWER(${users.email}) = LOWER(${username})`);
+
             if (!userByEmail) {
                 return { success: false, message: "Invalid credentials" };
             }
-            
+
             return this.validateUserLogin(userByEmail, password);
         }
 
@@ -146,7 +146,7 @@ export class AuthService {
         const [user] = await db
             .select()
             .from(users)
-            .where(eq(users.username, username));
+            .where(sql`LOWER(${users.username}) = LOWER(${username})`);
 
         if (!user) {
             return null;
@@ -161,7 +161,7 @@ export class AuthService {
         const [user] = await db
             .select()
             .from(users)
-            .where(eq(users.email, email));
+            .where(sql`LOWER(${users.email}) = LOWER(${email})`);
 
         if (!user) {
             return null;
