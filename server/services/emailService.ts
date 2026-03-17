@@ -35,6 +35,11 @@ export class EmailService {
                 to: toEmail,
                 from: FROM_EMAIL,
                 subject: "Reset Your ExpatEats Password",
+                trackingSettings: {
+                    clickTracking: {
+                        enable: false,
+                    },
+                },
                 text: `
 Hello ${recipientName},
 
@@ -142,6 +147,11 @@ The ExpatEats Team
                 to: toEmail,
                 from: FROM_EMAIL,
                 subject: "Welcome to ExpatEats!",
+                trackingSettings: {
+                    clickTracking: {
+                        enable: false,
+                    },
+                },
                 text: `
 Hello ${toName},
 
