@@ -75,6 +75,46 @@ const generateGoogleMapsUrl = (address: string, city: string, country: string) =
     return `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
 };
 
+// Function to open Google Maps (tries app first on mobile, then fallback to web)
+const openGoogleMaps = (place: Place) => {
+    if (place.latitude && place.longitude) {
+        const lat = parseFloat(String(place.latitude));
+        const lng = parseFloat(String(place.longitude));
+        // Try app URL scheme first (works on mobile if Google Maps app is installed)
+        window.location.href = `comgooglemaps://?center=${lat},${lng}&q=${encodeURIComponent(place.name)}`;
+        // Fallback to web after a short delay if app doesn't open
+        setTimeout(() => {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
+        }, 500);
+    } else {
+        const fullAddress = `${place.address}, ${place.city}, ${place.country}`;
+        window.location.href = `comgooglemaps://?q=${encodeURIComponent(fullAddress)}`;
+        setTimeout(() => {
+            window.open(generateGoogleMapsUrl(place.address, place.city, place.country), '_blank');
+        }, 500);
+    }
+};
+
+// Function to open Waze (tries app first on mobile, then fallback to web)
+const openWaze = (place: Place) => {
+    if (place.latitude && place.longitude) {
+        const lat = parseFloat(String(place.latitude));
+        const lng = parseFloat(String(place.longitude));
+        // Try app URL scheme first
+        window.location.href = `waze://?ll=${lat},${lng}&navigate=yes`;
+        // Fallback to web
+        setTimeout(() => {
+            window.open(`https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes`, '_blank');
+        }, 500);
+    } else {
+        const fullAddress = `${place.address}, ${place.city}, ${place.country}`;
+        window.location.href = `waze://?q=${encodeURIComponent(fullAddress)}`;
+        setTimeout(() => {
+            window.open(`https://www.waze.com/ul?q=${encodeURIComponent(fullAddress)}`, '_blank');
+        }, 500);
+    }
+};
+
 export default function Store() {
     const [, params] = useRoute("/store/:id");
     const [, setLocation] = useLocation();
@@ -450,13 +490,14 @@ export default function Store() {
                                 <div className="flex items-start gap-3">
                                     <MapPin className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0" />
                                     <div className="flex-1">
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between mb-1">
                                             <p className="font-medium">Address</p>
+                                            {/* Desktop: Single link */}
                                             <a
                                                 href={generateGoogleMapsUrl(store.address, store.city, store.country)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-[#E07A5F] hover:text-[#d06851] transition-colors"
+                                                className="hidden md:block text-[#E07A5F] hover:text-[#d06851] transition-colors"
                                                 title="Open in Google Maps"
                                             >
                                                 <ExternalLink className="h-4 w-4" />
@@ -465,9 +506,28 @@ export default function Store() {
                                         <p className="text-gray-600">
                                             {store.address}
                                         </p>
-                                        <p className="text-gray-600">
+                                        <p className="text-gray-600 mb-2">
                                             {store.city}, {store.country}
                                         </p>
+                                        {/* Mobile: Navigation buttons */}
+                                        <div className="flex gap-2 md:hidden">
+                                            <Button
+                                                onClick={() => openGoogleMaps(store)}
+                                                size="sm"
+                                                className="flex-1 bg-[#4285F4] hover:bg-[#3367D6] text-white"
+                                            >
+                                                <MapPin className="h-4 w-4 mr-1" />
+                                                Google Maps
+                                            </Button>
+                                            <Button
+                                                onClick={() => openWaze(store)}
+                                                size="sm"
+                                                className="flex-1 bg-[#33CCFF] hover:bg-[#00B8FF] text-white"
+                                            >
+                                                <MapPin className="h-4 w-4 mr-1" />
+                                                Waze
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
 
