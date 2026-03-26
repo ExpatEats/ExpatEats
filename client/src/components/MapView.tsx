@@ -83,6 +83,20 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
         }
     };
 
+    // Set up global function for popup buttons
+    useEffect(() => {
+        (window as any).viewStoreDetails = (placeId: number) => {
+            const place = places.find(p => p.id === placeId);
+            if (place && onPlaceClick) {
+                onPlaceClick(place);
+            }
+        };
+
+        return () => {
+            delete (window as any).viewStoreDetails;
+        };
+    }, [places, onPlaceClick]);
+
     useEffect(() => {
         const token =
             import.meta.env.VITE_MAPBOX_ACCESS_TOKEN ||
@@ -232,12 +246,8 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
 
                 marker.setPopup(popup);
 
-                // Add click handler
-                markerElement.addEventListener("click", () => {
-                    if (onPlaceClick) {
-                        onPlaceClick(place);
-                    }
-                });
+                // Marker click will automatically show popup
+                // "View Details" button in popup will call window.viewStoreDetails()
 
                 markers.current.push(marker);
 
