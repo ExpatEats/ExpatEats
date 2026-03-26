@@ -6,6 +6,10 @@ import { AuthenticatedRequest } from "../types/session";
 import { storage } from "../storage";
 import { generateSignedUrl, verifySignedUrl } from "../utils/signedUrl";
 import { RateLimitService } from "../services/rateLimitService";
+import { CsrfService } from "../services/csrfService";
+import { StripeService } from "../services/stripeService";
+import { AuthService } from "../services/authService";
+import type Stripe from "stripe";
 import fs from "fs";
 import path from "path";
 
@@ -199,44 +203,184 @@ export function registerGuidesRoutes(app: Express) {
 
     /**
      * POST /api/guides/:id/purchase
-     * Purchase a guide (placeholder for future payment integration)
+     * Create Stripe Checkout session for guide purchase
      */
-    app.post("/api/guides/:id/purchase", requireAuth, async (req: AuthenticatedRequest, res) => {
-        try {
-            const guideId = parseInt(req.params.id);
-            const userId = req.session.userId!;
-            const { paymentProvider = 'manual' } = req.body;
+    app.post(
+        "/api/guides/:id/purchase",
+        requireAuth,
+        RateLimitService.generalLimiter,
+        CsrfService.middleware(),
+        async (req: AuthenticatedRequest, res) => {
+            try {
+                const guideId = parseInt(req.params.id);
+                const userId = req.session.userId!;
 
-            if (isNaN(guideId)) {
-                return res.status(400).json({ message: "Invalid guide ID" });
+                if (isNaN(guideId)) {
+                    return res.status(400).json({ message: "Invalid guide ID" });
+                }
+
+                // Check if Stripe is configured
+                if (!StripeService.isConfigured()) {
+                    return res.status(503).json({
+                        message: "Payment system is currently unavailable. Please try again later."
+                    });
+                }
+
+                // Get guide details
+                const guide = await storage.getGuideById(guideId);
+                if (!guide) {
+                    return res.status(404).json({ message: "Guide not found" });
+                }
+
+                // Get user details
+                const user = await AuthService.getUserById(userId);
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+
+                // Check if already purchased (completed purchases only)
+                const existingPurchase = await storage.getUserGuidePurchase(userId, guideId);
+                if (existingPurchase && existingPurchase.purchaseStatus === 'completed') {
+                    return res.status(409).json({
+                        message: "You have already purchased this guide",
+                        alreadyPurchased: true
+                    });
+                }
+
+                // Create Stripe Checkout session
+                const result = await StripeService.createCheckoutSession({
+                    userId,
+                    guideId,
+                    userEmail: user.email,
+                    guideName: `ExpatEats Guide - ${guide.slug}`,
+                });
+
+                if ('error' in result) {
+                    return res.status(500).json({
+                        message: result.error
+                    });
+                }
+
+                res.status(200).json({
+                    sessionId: result.sessionId,
+                    checkoutUrl: result.url,
+                    message: "Checkout session created successfully"
+                });
+            } catch (error) {
+                console.error("Error creating checkout session:", error);
+                res.status(500).json({ message: "Failed to initiate purchase" });
             }
-
-            // Check if guide exists
-            const guide = await storage.getGuideById(guideId);
-            if (!guide) {
-                return res.status(404).json({ message: "Guide not found" });
-            }
-
-            // Check if already purchased
-            const existingPurchase = await storage.getUserGuidePurchase(userId, guideId);
-            if (existingPurchase) {
-                return res.status(409).json({ message: "Guide already purchased" });
-            }
-
-            // Create purchase record
-            const purchase = await storage.createGuidePurchase({
-                userId,
-                guideId,
-                paymentProvider
-            });
-
-            res.status(201).json({
-                message: "Guide purchased successfully",
-                purchase
-            });
-        } catch (error) {
-            console.error("Error purchasing guide:", error);
-            res.status(500).json({ message: "Failed to purchase guide" });
         }
-    });
+    );
+
+    /**
+     * POST /api/webhooks/stripe
+     * Handle Stripe webhook events
+     *
+     * IMPORTANT: This endpoint must use raw body, not JSON parsed body
+     * Configure in server/index.ts to skip JSON parsing for this route
+     */
+    app.post(
+        "/api/webhooks/stripe",
+        async (req, res) => {
+            try {
+                const signature = req.headers['stripe-signature'] as string;
+
+                if (!signature) {
+                    console.error("❌ Missing Stripe signature header");
+                    return res.status(400).json({ error: "Missing signature" });
+                }
+
+                // Verify webhook signature
+                const event = StripeService.verifyWebhookSignature(
+                    req.body,
+                    signature
+                );
+
+                if (!event) {
+                    console.error("❌ Invalid webhook signature");
+                    return res.status(401).json({ error: "Invalid signature" });
+                }
+
+                console.log(`📥 Webhook received: ${event.type}`);
+
+                // Handle different event types
+                switch (event.type) {
+                    case 'payment_intent.succeeded':
+                        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+                        await StripeService.handlePaymentSuccess(paymentIntent);
+                        break;
+
+                    case 'payment_intent.payment_failed':
+                        const failedPayment = event.data.object as Stripe.PaymentIntent;
+                        await StripeService.handlePaymentFailure(failedPayment);
+                        break;
+
+                    case 'checkout.session.completed':
+                        const session = event.data.object as Stripe.Checkout.Session;
+                        console.log(`✅ Checkout completed: ${session.id}`);
+                        // Payment intent will handle the actual purchase creation
+                        break;
+
+                    case 'checkout.session.expired':
+                        const expiredSession = event.data.object as Stripe.Checkout.Session;
+                        console.log(`⏰ Checkout expired: ${expiredSession.id}`);
+                        break;
+
+                    default:
+                        console.log(`ℹ️  Unhandled event type: ${event.type}`);
+                }
+
+                // Return 200 to acknowledge receipt
+                res.json({ received: true });
+            } catch (error) {
+                console.error("❌ Webhook processing error:", error);
+                res.status(500).json({ error: "Webhook processing failed" });
+            }
+        }
+    );
+
+    /**
+     * GET /api/guides/purchase-status/:sessionId
+     * Get purchase status after checkout
+     */
+    app.get(
+        "/api/guides/purchase-status/:sessionId",
+        requireAuth,
+        async (req: AuthenticatedRequest, res) => {
+            try {
+                const { sessionId } = req.params;
+                const userId = req.session.userId!;
+
+                // Retrieve checkout session from Stripe
+                const session = await StripeService.retrieveCheckoutSession(sessionId);
+
+                if (!session) {
+                    return res.status(404).json({ message: "Session not found" });
+                }
+
+                // Verify session belongs to this user
+                const sessionUserId = parseInt(session.metadata?.userId || "0");
+                if (sessionUserId !== userId) {
+                    return res.status(403).json({ message: "Unauthorized" });
+                }
+
+                // Get payment details
+                const payment = await storage.getPaymentByStripeIntentId(
+                    session.payment_intent as string
+                );
+
+                res.json({
+                    status: session.payment_status,
+                    paymentStatus: payment?.status || 'pending',
+                    guideSlug: session.metadata?.guideSlug,
+                    amountTotal: session.amount_total ? session.amount_total / 100 : 0,
+                    currency: session.currency,
+                });
+            } catch (error) {
+                console.error("Error fetching purchase status:", error);
+                res.status(500).json({ message: "Failed to fetch purchase status" });
+            }
+        }
+    );
 }

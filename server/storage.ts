@@ -10,6 +10,7 @@ import {
     events,
     guides,
     guidePurchases,
+    payments,
 } from "@shared/schema";
 import {
     InsertPlace,
@@ -21,6 +22,7 @@ import {
     InsertEvent,
     InsertGuide,
     InsertGuidePurchase,
+    InsertPayment,
     Place,
     User,
     Review,
@@ -30,6 +32,7 @@ import {
     Event,
     Guide,
     GuidePurchase,
+    Payment,
 } from "@shared/schema";
 
 interface PlaceFilters {
@@ -95,6 +98,19 @@ interface Storage {
     getUserGuides(userId: number): Promise<Guide[]>;
     getUserGuidePurchase(userId: number, guideId: number): Promise<GuidePurchase | null>;
     createGuidePurchase(purchase: InsertGuidePurchase): Promise<GuidePurchase>;
+
+    // Payment methods
+    getPaymentById(id: number): Promise<Payment | null>;
+    getPaymentsByUserId(userId: number): Promise<Payment[]>;
+    getPaymentByStripeIntentId(intentId: string): Promise<Payment | null>;
+    createPayment(payment: InsertPayment): Promise<Payment>;
+    updatePaymentStatus(paymentIntentId: string, status: string, metadata?: any): Promise<void>;
+    getPaymentAnalytics(period?: 'week' | 'month' | 'year' | 'all'): Promise<{
+        totalRevenue: number;
+        totalPurchases: number;
+        successfulPayments: number;
+        failedPayments: number;
+    }>;
 }
 
 class DatabaseStorage implements Storage {
@@ -715,6 +731,97 @@ class DatabaseStorage implements Storage {
             .values(purchase)
             .returning();
         return newPurchase;
+    }
+
+    // Payment methods
+    async getPaymentById(id: number): Promise<Payment | null> {
+        const [payment] = await db
+            .select()
+            .from(payments)
+            .where(eq(payments.id, id))
+            .limit(1);
+        return payment || null;
+    }
+
+    async getPaymentsByUserId(userId: number): Promise<Payment[]> {
+        return await db
+            .select()
+            .from(payments)
+            .where(eq(payments.userId, userId))
+            .orderBy(desc(payments.createdAt));
+    }
+
+    async getPaymentByStripeIntentId(intentId: string): Promise<Payment | null> {
+        const [payment] = await db
+            .select()
+            .from(payments)
+            .where(eq(payments.stripePaymentIntentId, intentId))
+            .limit(1);
+        return payment || null;
+    }
+
+    async createPayment(payment: InsertPayment): Promise<Payment> {
+        const [newPayment] = await db
+            .insert(payments)
+            .values(payment)
+            .returning();
+        return newPayment;
+    }
+
+    async updatePaymentStatus(
+        paymentIntentId: string,
+        status: string,
+        metadata?: any
+    ): Promise<void> {
+        await db
+            .update(payments)
+            .set({
+                status,
+                updatedAt: new Date(),
+                ...metadata,
+            })
+            .where(eq(payments.stripePaymentIntentId, paymentIntentId));
+    }
+
+    async getPaymentAnalytics(period: 'week' | 'month' | 'year' | 'all' = 'all') {
+        let dateThreshold: Date | null = null;
+
+        if (period !== 'all') {
+            const now = new Date();
+            dateThreshold = new Date();
+
+            switch (period) {
+                case 'week':
+                    dateThreshold.setDate(now.getDate() - 7);
+                    break;
+                case 'month':
+                    dateThreshold.setMonth(now.getMonth() - 1);
+                    break;
+                case 'year':
+                    dateThreshold.setFullYear(now.getFullYear() - 1);
+                    break;
+            }
+        }
+
+        const whereCondition = dateThreshold
+            ? gte(payments.createdAt, dateThreshold)
+            : undefined;
+
+        const allPayments = await db
+            .select()
+            .from(payments)
+            .where(whereCondition);
+
+        const successfulPayments = allPayments.filter(p => p.status === 'succeeded');
+        const failedPayments = allPayments.filter(p => p.status === 'failed');
+        const totalRevenue = successfulPayments.reduce((sum, p) => sum + p.amount, 0);
+
+        return {
+            totalRevenue: totalRevenue / 100, // Convert cents to euros
+            totalPurchases: successfulPayments.length,
+            successfulPayments: successfulPayments.length,
+            failedPayments: failedPayments.length,
+        };
     }
 }
 

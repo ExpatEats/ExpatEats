@@ -231,4 +231,123 @@ The ExpatEats Team
             };
         }
     }
+
+    /**
+     * Send guide purchase confirmation email
+     */
+    static async sendGuidePurchaseConfirmation(
+        toEmail: string,
+        toName: string,
+        guideSlug: string
+    ): Promise<{ success: boolean; error?: string }> {
+        try {
+            if (!SENDGRID_API_KEY) {
+                console.error("SendGrid API key not configured");
+                return { success: false, error: "Email service not configured" };
+            }
+
+            const guideAccessUrl = `${FRONTEND_URL}/guides/${guideSlug}`;
+
+            const msg = {
+                to: toEmail,
+                from: FROM_EMAIL,
+                subject: "Your ExpatEats Guide is Ready!",
+                trackingSettings: {
+                    clickTracking: {
+                        enable: false,
+                    },
+                },
+                text: `
+Hello ${toName},
+
+Thank you for your purchase! Your ExpatEats guide is now ready to access.
+
+Access your guide here: ${guideAccessUrl}
+
+Your purchase details:
+- Guide: ${guideSlug}
+- Amount: €25.00
+- Date: ${new Date().toLocaleDateString()}
+
+If you have any questions, please don't hesitate to reach out to us.
+
+Best regards,
+The ExpatEats Team
+                `.trim(),
+                html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f7f4ef; padding: 30px; border-radius: 10px;">
+        <h1 style="color: #94AF9F; margin-top: 0;">Your Guide is Ready! 🎉</h1>
+
+        <p>Hello ${toName},</p>
+
+        <p>Thank you for your purchase! Your ExpatEats guide is now ready to access.</p>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="${guideAccessUrl}"
+               style="background-color: #E07A5F; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+                Access Your Guide
+            </a>
+        </div>
+
+        <div style="background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #94AF9F; margin-top: 0;">Purchase Details</h3>
+            <p><strong>Guide:</strong> ${guideSlug}</p>
+            <p><strong>Amount:</strong> €25.00</p>
+            <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+        </div>
+
+        <p style="color: #666; font-size: 14px; margin-top: 30px;">
+            If you have any questions, please don't hesitate to reach out to us at <a href="mailto:admin@expateatsguide.com" style="color: #E07A5F;">admin@expateatsguide.com</a>.
+        </p>
+
+        <p style="margin-top: 30px;">
+            Best regards,<br>
+            <strong>The ExpatEats Team</strong>
+        </p>
+    </div>
+</body>
+</html>
+                `.trim(),
+            };
+
+            const response = await sgMail.send(msg);
+
+            // Log successful email send
+            await db.insert(emailLogs).values({
+                toEmail,
+                fromEmail: FROM_EMAIL,
+                subject: "Your ExpatEats Guide is Ready!",
+                emailType: "purchase",
+                status: "sent",
+                messageId: response[0]?.headers?.["x-message-id"] || null,
+            });
+
+            console.log(`✅ Purchase confirmation email sent to ${toEmail}`);
+            return { success: true };
+        } catch (error: any) {
+            console.error("Failed to send purchase confirmation email:", error);
+
+            // Log failed email send
+            await db.insert(emailLogs).values({
+                toEmail,
+                fromEmail: FROM_EMAIL,
+                subject: "Your ExpatEats Guide is Ready!",
+                emailType: "purchase",
+                status: "failed",
+                errorMessage: error.message || "Unknown error",
+            });
+
+            return {
+                success: false,
+                error: error.message || "Failed to send email",
+            };
+        }
+    }
 }

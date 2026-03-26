@@ -78,10 +78,18 @@ const Results = () => {
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
     const { toast } = useToast();
     const queryClient = useQueryClient();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user, isLoading } = useAuth();
     const [loginModalOpen, setLoginModalOpen] = useState(false);
 
-    const MAX_VISIBLE_RESULTS = 6;
+    const MAX_VISIBLE_RESULTS = 50;
+
+    // Debug logging for authentication
+    console.log('[Results] Auth Status:', {
+        isAuthenticated,
+        isLoading,
+        hasUser: !!user,
+        username: user?.username,
+    });
 
     // Function to get icon for a tag
     const getTagIcon = (tagId: string) => {
@@ -312,10 +320,21 @@ const Results = () => {
                     <>
                         {viewMode === "map" ? (
                             <div className="w-full">
-                                <MapView
-                                    places={isAuthenticated ? results : results.slice(0, MAX_VISIBLE_RESULTS)}
-                                    onPlaceClick={handlePlaceClick}
-                                />
+                                {(() => {
+                                    const placesToShow = isAuthenticated ? results : results.slice(0, MAX_VISIBLE_RESULTS);
+                                    console.log('[Results] Map View:', {
+                                        totalResults: results.length,
+                                        isAuthenticated,
+                                        placesToShow: placesToShow.length,
+                                        showingLimited: placesToShow.length !== results.length,
+                                    });
+                                    return (
+                                        <MapView
+                                            places={placesToShow}
+                                            onPlaceClick={handlePlaceClick}
+                                        />
+                                    );
+                                })()}
                             </div>
                         ) : (
                             <div className="relative">

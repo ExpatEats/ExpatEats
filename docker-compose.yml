@@ -41,6 +41,10 @@ services:
       - SESSION_SECRET=dev-secret-change-in-production-256-bits-minimum
       - SEED_DATA=true
       - BCRYPT_ROUNDS=12
+      - SENDGRID_API_KEY=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
+      - FROM_EMAIL=noreply@expateatsguide.com
+      - FRONTEND_URL=https://expateatsguide.com
+      - GEOAPIFY_API_KEY=3c1197c9a8584ee2bec672f71aa59125
     ports:
       - "3001:3001"
     volumes:
