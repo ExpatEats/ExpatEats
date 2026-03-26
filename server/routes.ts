@@ -13,9 +13,10 @@ import {
     users,
     posts,
     places,
+    payments,
 } from "@shared/schema";
 import { z } from "zod";
-import { eq, sql, gte, and } from "drizzle-orm";
+import { eq, sql, gte, and, desc } from "drizzle-orm";
 import { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth } from "./middleware/auth";
 import { AuthService } from "./services/authService";
 import { AuthenticatedRequest } from "./types/session";
@@ -703,6 +704,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
             console.error("Error fetching analytics:", error);
             res.status(500).json({ message: "Failed to fetch analytics" });
+        }
+    });
+
+    // Admin payment analytics endpoint
+    app.get("/api/admin/payment-analytics", requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const { period = 'all' } = req.query;
+
+            const analytics = await storage.getPaymentAnalytics(
+                period as 'week' | 'month' | 'year' | 'all'
+            );
+
+            res.json(analytics);
+        } catch (error) {
+            console.error("Error fetching payment analytics:", error);
+            res.status(500).json({ message: "Failed to fetch payment analytics" });
+        }
+    });
+
+    // Admin: Get all payments
+    app.get("/api/admin/payments", requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const { userId, status, limit = 50 } = req.query;
+
+            // Build query based on filters
+            let query = db.select().from(payments);
+
+            if (userId) {
+                query = query.where(eq(payments.userId, parseInt(userId as string)));
+            }
+
+            if (status) {
+                query = query.where(eq(payments.status, status as string));
+            }
+
+            const paymentsData = await query
+                .orderBy(desc(payments.createdAt))
+                .limit(parseInt(limit as string));
+
+            res.json(paymentsData);
+        } catch (error) {
+            console.error("Error fetching payments:", error);
+            res.status(500).json({ message: "Failed to fetch payments" });
         }
     });
 

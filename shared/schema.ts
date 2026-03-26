@@ -279,11 +279,49 @@ export const guidePurchases = pgTable("guide_purchases", {
         .references(() => guides.id)
         .notNull(),
     paymentProvider: text("payment_provider").notNull(), // 'stripe', 'paypal', 'manual'
+    stripePaymentIntentId: text("stripe_payment_intent_id").unique(), // Link to Stripe payment
+    purchaseStatus: text("purchase_status").default("pending"), // 'pending', 'completed', 'failed'
     purchasedAt: timestamp("purchased_at").defaultNow(),
 }, (table) => ({
     // Unique constraint to prevent duplicate purchases
     uniqueUserGuide: unique().on(table.userId, table.guideId),
 }));
+
+export const payments = pgTable("payments", {
+    id: serial("id").primaryKey(),
+
+    // Stripe identifiers
+    stripePaymentIntentId: text("stripe_payment_intent_id").unique().notNull(),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
+    stripeCustomerId: text("stripe_customer_id"),
+
+    // ExpatEats associations
+    userId: integer("user_id")
+        .references(() => users.id)
+        .notNull(),
+    guideId: integer("guide_id")
+        .references(() => guides.id)
+        .notNull(),
+    guidePurchaseId: integer("guide_purchase_id")
+        .references(() => guidePurchases.id),
+
+    // Payment details
+    amount: integer("amount").notNull(), // Amount in cents (e.g., 2500 for €25.00)
+    currency: text("currency").notNull().default("eur"),
+    status: text("status").notNull(), // 'pending', 'succeeded', 'failed', 'refunded'
+
+    // Metadata
+    paymentMethod: text("payment_method"), // 'card', 'ideal', etc.
+    receiptEmail: text("receipt_email"),
+    errorMessage: text("error_message"), // Store error if payment failed
+    refundReason: text("refund_reason"), // If manually refunded via Stripe dashboard
+
+    // Timestamps
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+    succeededAt: timestamp("succeeded_at"), // When payment succeeded
+    refundedAt: timestamp("refunded_at"), // If refunded
+});
 
 
 // Insert schemas
@@ -372,6 +410,12 @@ export const insertGuidePurchaseSchema = createInsertSchema(guidePurchases).omit
     purchasedAt: true,
 });
 
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
 
 // Types
 export type InsertCity = z.infer<typeof insertCitySchema>;
@@ -415,4 +459,7 @@ export type Guide = typeof guides.$inferSelect;
 
 export type InsertGuidePurchase = z.infer<typeof insertGuidePurchaseSchema>;
 export type GuidePurchase = typeof guidePurchases.$inferSelect;
+
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type Payment = typeof payments.$inferSelect;
 

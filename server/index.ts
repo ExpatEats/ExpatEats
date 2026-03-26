@@ -14,6 +14,13 @@ if (process.env.NODE_ENV === "production") {
     app.set('trust proxy', 1);
 }
 
+// Raw body parsing for Stripe webhooks (must come before express.json())
+// This ensures the webhook endpoint receives the raw body for signature verification
+app.use(
+    "/api/webhooks/stripe",
+    express.raw({ type: "application/json" })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
