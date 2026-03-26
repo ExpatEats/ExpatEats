@@ -78,7 +78,7 @@ const Results = () => {
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
     const { toast } = useToast();
     const queryClient = useQueryClient();
-    const { isAuthenticated, user, isLoading } = useAuth();
+    const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
     const [loginModalOpen, setLoginModalOpen] = useState(false);
 
     const MAX_VISIBLE_RESULTS = 50;
@@ -86,7 +86,7 @@ const Results = () => {
     // Debug logging for authentication
     console.log('[Results] Auth Status:', {
         isAuthenticated,
-        isLoading,
+        isAuthLoading,
         hasUser: !!user,
         username: user?.username,
     });
