@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Expat Eats – Find healthy food in Greater Lisbon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream:     #F6F0E7;
+  --cream-mid: #EDE4D5;
+  --bark:      #7C5C3B;
+  --bark-lt:   #A07850;
+  --bark-pale: #F2E9DA;
+  --soil:      #2C1F0F;
+  --mist:      #E3DACE;
+  --sage:      #4A6E42;
+  --sage-lt:   #E5EFE2;
+  --white:     #FDFAF6;
+  --t1:        #1A1208;
+  --t2:        #6B5A45;
+  --t3:        #A09080;
+  --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; background: var(--white); color: var(--t1); overflow-x: hidden; }
+.max { max-width: 1100px; margin: 0 auto; width: 100%; }
+
+/* REVEAL ANIMATIONS */
+.r { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+.r.d1 { transition-delay: .1s; }
+.r.d2 { transition-delay: .2s; }
+.r.d3 { transition-delay: .3s; }
+.r.in { opacity: 1; transform: none; }
+
+/* SHARED TYPOGRAPHY */
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--bark); display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.pip { width: 18px; height: 1px; background: currentColor; flex-shrink: 0; }
+.sh { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(30px, 4vw, 52px); font-weight: 300; line-height: 1.08; letter-spacing: -1px; color: var(--soil); }
+.sh em { font-style: italic; color: var(--bark); }
+.sp { font-size: 15px; font-weight: 300; color: var(--t2); line-height: 1.75; margin-top: 12px; }
+
+/* ─── ANNOUNCEMENT BAR ───────────────────────── */
+.ann-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  background: var(--soil); color: rgba(255,255,255,.85);
+  display: flex; align-items: center; justify-content: center;
+  height: 42px; padding: 0 16px;
+  font-size: 12.5px; font-weight: 300;
+  transition: height .4s var(--ease), opacity .3s;
+  overflow: hidden;
+}
+.ann-bar.gone { height: 0; opacity: 0; pointer-events: none; }
+.ann-inner { display: flex; align-items: center; gap: 10px; }
+.ann-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); animation: blink 2s ease-in-out infinite; flex-shrink: 0; }
+.ann-bar strong { color: #fff; font-weight: 500; }
+.ann-cta { color: var(--bark-lt); font-weight: 500; text-decoration: none; margin-left: 4px; border-bottom: 1px solid rgba(160,120,80,.4); padding-bottom: 1px; transition: color .2s; white-space: nowrap; }
+.ann-cta:hover { color: #fff; }
+.ann-close {
+  position: absolute; right: 16px; background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,.35); font-size: 18px; line-height: 1; padding: 4px 8px;
+  transition: color .2s; display: flex; align-items: center;
+}
+.ann-close:hover { color: rgba(255,255,255,.7); }
+
+/* ─── NAV ─────────────────────────────────────── */
+.nav {
+  position: fixed; top: 42px; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px; padding: 0 44px;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  overflow: visible;
+  transition: top .4s var(--ease), background .35s, border-color .35s, box-shadow .35s, height .35s;
+}
+.nav.scrolled {
+  background: rgba(253,250,246,0.97);
+  backdrop-filter: blur(20px);
+  border-bottom-color: rgba(124,92,59,0.1);
+  box-shadow: 0 2px 24px rgba(44,31,15,0.07);
+  height: 58px;
+}
+.ann-bar.gone ~ .nav,
+body.ann-gone .nav { top: 0; }
+
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--soil); letter-spacing: -.3px; text-decoration: none; flex-shrink: 0; }
+.nav-logo em { font-style: italic; color: var(--bark); }
+
+/* Desktop center links */
+.nav-center { display: flex; align-items: center; gap: 2px; }
+.nav-a { font-size: 13px; color: var(--t2); padding: 7px 13px; border-radius: 7px; text-decoration: none; background: none; border: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 400; transition: color .2s, background .2s; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+.nav-a:hover { color: var(--soil); background: rgba(124,92,59,0.08); }
+.nav-a.active { color: var(--soil); background: rgba(124,92,59,0.08); }
+.nav-chevron { font-size: 9px; transition: transform .22s; display: inline-block; }
+.nav-a.active .nav-chevron { transform: rotate(180deg); }
+.nav-add { color: var(--sage) !important; font-weight: 500 !important; }
+.nav-add:hover { background: rgba(74,110,66,.1) !important; color: var(--sage) !important; }
+
+/* Status badges */
+.dd-badge { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border-radius: 20px; padding: 2px 9px; flex-shrink: 0; border: 1px solid transparent; background: transparent; }
+.dd-badge.live { color: var(--sage); border-color: rgba(74,110,66,.28); }
+.dd-badge.soon-b { color: var(--bark-lt); border-color: rgba(160,120,80,.28); }
+
+/* ─── MEGA MENU ───────────────────────────────── */
+.mega-panel {
+  position: fixed; top: 106px; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--mist);
+  border-bottom: 1px solid rgba(124,92,59,.06);
+  box-shadow: 0 28px 60px rgba(44,31,15,.12), 0 8px 20px rgba(44,31,15,.05);
+  display: none;
+  opacity: 0; pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+  z-index: 199;
+}
+.mega-panel.open { display: block; opacity: 1; pointer-events: all; transform: translateY(0); }
+body.ann-gone .mega-panel { top: 64px; }
+.mega-inner {
+  display: flex; align-items: flex-start;
+  padding: 36px 44px 32px;
+  gap: 0;
+}
+.mega-col { flex: 1; min-width: 0; }
+.mega-col-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 14px; padding: 0 12px;
+}
+.mega-divider { width: 1px; background: var(--mist); margin: 0 20px; align-self: stretch; flex-shrink: 0; }
+.mega-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 12px; border-radius: 10px; text-decoration: none;
+  transition: background .18s; cursor: pointer; margin-bottom: 2px;
+  border: none; width: 100%; text-align: left; background: none; font-family: 'Outfit', sans-serif;
+}
+.mega-item:hover { background: var(--bark-pale); }
+.mega-item.dim { opacity: .52; cursor: default; }
+.mega-item.dim:hover { background: none; }
+.mega-item-feature { background: var(--cream); border: 1px solid var(--mist); }
+.mega-item-feature:hover { background: var(--bark-pale); border-color: rgba(124,92,59,.2); }
+.mega-ico {
+  width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.mega-item strong { display: block; font-size: 13px; font-weight: 500; color: var(--soil); margin-bottom: 2px; line-height: 1.3; }
+.mega-item span { font-size: 11.5px; color: var(--t3); font-weight: 300; line-height: 1.45; display: block; }
+.mega-item-badge { margin-top: 6px; display: flex; }
+.mega-item-badge .dd-badge { display: inline-flex; align-items: center; }
+.mega-col-promo {
+  background: var(--cream); border-radius: 14px; padding: 22px;
+  border: 1px solid var(--mist); height: 100%; box-sizing: border-box;
+}
+.mega-promo-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3); margin-bottom: 10px; }
+.mega-promo-city { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: var(--soil); line-height: 1.2; margin-bottom: 4px; }
+.mega-promo-city em { font-style: italic; color: var(--bark); }
+.mega-promo-sub { font-size: 11px; font-weight: 300; color: var(--t3); margin-bottom: 18px; }
+.mega-promo-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 18px; }
+.mega-promo-pill { font-size: 10px; font-weight: 500; letter-spacing: .5px; border-radius: 20px; padding: 3px 10px; }
+.mega-promo-pill.on { background: var(--sage-lt); color: var(--sage); }
+.mega-promo-pill.off { background: var(--bark-pale); color: var(--bark-lt); font-style: italic; }
+.mega-btn-sm {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+  background: var(--soil); color: var(--white); border: none;
+  border-radius: 7px; padding: 9px 16px; cursor: pointer; text-decoration: none;
+  transition: background .2s; white-space: nowrap;
+}
+.mega-btn-sm:hover { background: var(--bark); }
+
+/* Right side buttons */
+.nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.btn-ghost { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--t2); background: none; border: 1px solid var(--mist); border-radius: 7px; padding: 8px 16px; cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+.btn-ghost:hover { border-color: var(--bark); color: var(--bark); background: var(--bark-pale); }
+.btn-cta { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; color: var(--white); background: var(--bark); border: none; border-radius: 7px; padding: 9px 20px; cursor: pointer; transition: background .2s, transform .15s, box-shadow .2s; box-shadow: 0 2px 10px rgba(124,92,59,0.3); }
+.btn-cta:hover { background: var(--soil); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(44,31,15,0.25); }
+
+/* ─── HAMBURGER ──────────────────────────────── */
+.nav-hamburger {
+  display: none; background: none; border: 1px solid var(--mist); border-radius: 8px;
+  cursor: pointer; padding: 9px 10px; flex-direction: column; gap: 4.5px;
+  transition: border-color .2s, background .2s;
+}
+.nav-hamburger:hover { border-color: var(--bark); background: var(--bark-pale); }
+.nav-hamburger span { display: block; width: 20px; height: 1.5px; background: var(--soil); border-radius: 2px; transition: transform .3s var(--ease), opacity .25s; }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ─── MOBILE OVERLAY ─────────────────────────── */
+.nav-overlay {
+  position: fixed; inset: 0; z-index: 190;
+  background: var(--white);
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none; transform: translateX(100%);
+  transition: opacity .35s var(--ease), transform .35s var(--ease);
+  overflow-y: auto;
+}
+.nav-overlay.open { opacity: 1; pointer-events: all; transform: translateX(0); }
+.nav-overlay-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--mist);
+  position: sticky; top: 0; background: var(--white); z-index: 1;
+}
+.nav-overlay-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--soil); }
+.nav-overlay-logo em { font-style: italic; color: var(--bark); }
+.nav-overlay-close {
+  width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--mist);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--t2); cursor: pointer;
+  background: none; transition: border-color .2s, color .2s;
+}
+.nav-overlay-close:hover { border-color: var(--bark); color: var(--bark); }
+.nav-overlay-body { flex: 1; padding: 16px 24px 28px; display: flex; flex-direction: column; }
+.nov-section { margin-bottom: 28px; }
+.nov-label { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--t3); margin-bottom: 10px; padding: 0 4px; }
+.nov-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid rgba(227,218,206,.5); text-decoration: none; color: var(--soil); transition: color .2s; }
+.nov-item:last-child { border-bottom: none; }
+.nov-item:hover { color: var(--bark); }
+.nov-item-left { display: flex; align-items: center; gap: 12px; }
+.nov-ico { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.nov-name { font-size: 16px; font-weight: 400; }
+.nov-sub { font-size: 11px; color: var(--t3); margin-top: 1px; }
+.nov-badge { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; padding: 3px 7px; }
+.nov-badge.live { background: var(--sage-lt); color: var(--sage); }
+.nov-badge.soon-b { background: var(--bark-pale); color: var(--bark-lt); }
+.nov-arrow { font-size: 14px; color: var(--t3); }
+.nov-soon { opacity: .55; }
+.nav-overlay-footer { padding: 20px 24px; border-top: 1px solid var(--mist); display: flex; flex-direction: column; gap: 10px; }
+.nav-overlay-footer .btn-ghost,
+.nav-overlay-footer .btn-cta { width: 100%; padding: 14px; font-size: 15px; border-radius: 10px; text-align: center; }
+
+/* ─── HERO ─────────────────────────────────────── */
+.hero { background: var(--cream); padding: calc(42px + 64px + 24px) 44px 0; min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.hero-mark { position: absolute; bottom: 48px; right: -16px; font-family: 'Cormorant Garamond', serif; font-size: 28vw; font-weight: 300; color: rgba(124,92,59,0.042); line-height: 1; pointer-events: none; user-select: none; letter-spacing: -8px; }
+.hero-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: center; padding: 52px 0 68px; }
+.hero-h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 5.8vw, 80px); font-weight: 300; line-height: 1.04; letter-spacing: -2.5px; color: var(--soil); margin-bottom: 18px; }
+.hero-h1 em { font-style: italic; color: var(--bark); }
+.hero-p { font-size: 15px; font-weight: 300; line-height: 1.8; color: var(--t2); max-width: 400px; margin-bottom: 28px; }
+.honest { display: flex; align-items: flex-start; gap: 10px; background: var(--white); border: 1px solid var(--mist); border-left: 3px solid var(--bark); border-radius: 8px; padding: 13px 16px; max-width: 420px; font-size: 13px; font-weight: 300; color: var(--t2); line-height: 1.6; }
+.honest strong { font-weight: 500; color: var(--soil); }
+
+/* Search card */
+.search-card { background: var(--white); border-radius: 20px; padding: 28px 28px 24px; border: 1px solid var(--mist); box-shadow: 0 20px 60px rgba(44,31,15,.09), 0 4px 16px rgba(44,31,15,.05); }
+.sc-lbl { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--bark); margin-bottom: 14px; }
+.sbar { display: flex; align-items: center; border: 1.5px solid var(--mist); border-radius: 10px; background: var(--cream); overflow: hidden; margin-bottom: 12px; transition: border-color .2s; }
+.sbar:focus-within { border-color: var(--bark); }
+.sbar-icon { padding: 0 12px; color: var(--bark-lt); font-size: 17px; flex-shrink: 0; }
+.sbar-in { flex: 1; border: none; outline: none; background: transparent; font-family: 'Outfit', sans-serif; font-size: 14px; color: var(--t1); padding: 13px 0; min-width: 0; }
+.sbar-in::placeholder { color: var(--t3); }
+.sbar-city { background: var(--bark-pale); padding: 0 14px; font-size: 12px; font-weight: 500; color: var(--bark); display: flex; align-items: center; gap: 4px; border-left: 1px solid var(--mist); cursor: pointer; align-self: stretch; white-space: nowrap; flex-shrink: 0; }
+.chips-lbl { font-size: 11px; color: var(--t3); margin-bottom: 7px; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 18px; }
+.chip { font-size: 11px; border-radius: 20px; padding: 5px 12px; border: 1px solid var(--mist); color: var(--t2); background: transparent; cursor: pointer; transition: all .2s; user-select: none; }
+.chip.on { background: var(--soil); color: var(--white); border-color: var(--soil); }
+.chip:hover:not(.on) { border-color: var(--bark); color: var(--bark); }
+.sbar-go { width: 100%; background: var(--soil); color: var(--white); border: none; border-radius: 10px; padding: 14px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background .2s, transform .15s; }
+.sbar-go:hover { background: var(--bark); transform: translateY(-1px); }
+
+/* Hero stats bar */
+.hero-stats { background: var(--soil); }
+.hs { display: flex; padding: 0 44px; }
+.hs-item { flex: 1; display: flex; align-items: baseline; gap: 8px; padding: 20px 0; justify-content: center; border-right: 1px solid rgba(255,255,255,.07); }
+.hs-item:last-child { border-right: none; }
+.hs-n { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; color: var(--white); letter-spacing: -.5px; }
+.hs-l { font-size: 12px; color: rgba(255,255,255,.38); font-weight: 300; }
+
+/* ─── HOW IT WORKS ───────────────────────────── */
+.how { background: var(--white); padding: 88px 44px; }
+.how-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--mist); border-radius: 16px; overflow: hidden; margin-top: 44px; }
+.how-step { background: var(--white); padding: 36px 30px; transition: background .25s; }
+.how-step:hover { background: var(--cream); }
+.how-n { font-family: 'Cormorant Garamond', serif; font-size: 12px; color: var(--bark); font-weight: 400; margin-bottom: 16px; letter-spacing: 1px; }
+.how-h { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--soil); margin-bottom: 8px; }
+.how-p { font-size: 13px; font-weight: 300; color: var(--t2); line-height: 1.7; }
+
+/* ─── WHAT'S LIVE ────────────────────────────── */
+.live { background: var(--cream-mid); padding: 88px 44px; }
+.rm-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--mist); border-radius: 16px; overflow: hidden; margin-top: 44px; }
+.rm-card { background: var(--cream-mid); padding: 36px 30px; transition: background .25s; }
+.rm-card:hover { background: var(--cream); }
+.rm-status { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 20px; padding: 5px 11px; margin-bottom: 20px; border: 1px solid transparent; }
+.rm-status.live { background: transparent; color: var(--sage); border-color: rgba(74,110,66,.25); }
+.rm-status.soon { background: transparent; color: var(--bark-lt); border-color: rgba(160,120,80,.22); }
+.rm-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.rm-status.live .rm-dot { background: var(--sage); animation: blink 2s ease-in-out infinite; }
+.rm-status.soon .rm-dot { background: var(--bark-lt); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.rm-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+.rm-h { font-family: 'Cormorant Garamond', serif; font-size: 23px; font-weight: 400; color: var(--soil); margin-bottom: 8px; }
+.rm-p { font-size: 13px; font-weight: 300; color: var(--t2); line-height: 1.7; }
+.rm-a { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--bark); text-decoration: none; margin-top: 18px; border-bottom: 1px solid rgba(124,92,59,.3); padding-bottom: 1px; transition: gap .2s; }
+.rm-a:hover { gap: 9px; }
+.rm-dim { font-size: 12px; color: var(--t3); margin-top: 18px; display: block; }
+
+/* ─── RESULTS ────────────────────────────────── */
+.results { background: var(--cream); padding: 88px 44px; }
+.rs-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; margin-top: 44px; }
+.rs-left { position: sticky; top: 104px; }
+.filter-box { background: var(--white); border-radius: 12px; padding: 18px; border: 1px solid var(--mist); margin-top: 22px; }
+.fb-lbl { font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3); margin-bottom: 10px; }
+.fd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fd-chip { font-size: 12px; border-radius: 20px; padding: 5px 13px; border: 1px solid var(--mist); color: var(--t2); cursor: pointer; transition: all .2s; }
+.fd-chip.on { background: var(--soil); color: var(--white); border-color: var(--soil); }
+.fd-chip:hover:not(.on) { border-color: var(--bark); color: var(--bark); }
+.rs-cta { margin-top: 22px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.btn-bark { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; background: var(--bark); color: var(--white); border: none; border-radius: 8px; padding: 12px 22px; cursor: pointer; transition: background .2s, transform .15s; }
+.btn-bark:hover { background: var(--soil); transform: translateY(-1px); }
+.tlink { font-size: 13px; color: var(--t2); text-decoration: none; border-bottom: 1px solid var(--mist); padding-bottom: 1px; transition: color .2s, border-color .2s; }
+.tlink:hover { color: var(--bark); border-color: var(--bark); }
+.rcards { display: flex; flex-direction: column; gap: 10px; }
+.rc { background: var(--white); border-radius: 12px; padding: 18px 20px; display: flex; align-items: center; gap: 14px; border: 1px solid transparent; transition: border-color .2s, transform .2s, box-shadow .2s; cursor: pointer; }
+.rc:hover { border-color: rgba(124,92,59,.2); transform: translateX(4px); box-shadow: 0 6px 20px rgba(44,31,15,.06); }
+.rc.pin { border-color: rgba(124,92,59,.2); box-shadow: 0 6px 20px rgba(44,31,15,.06); }
+.rc-ico { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.rc-b { flex: 1; min-width: 0; }
+.rc-name { font-size: 14px; font-weight: 500; color: var(--soil); margin-bottom: 2px; }
+.rc-meta { font-size: 11px; color: var(--t3); margin-bottom: 7px; }
+.rc-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.tag { font-size: 10px; font-weight: 500; border-radius: 4px; padding: 2px 7px; background: var(--bark-pale); color: var(--bark); }
+.tag.g { background: var(--sage-lt); color: var(--sage); }
+.rc-v { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; color: var(--sage); flex-shrink: 0; white-space: nowrap; }
+.vdot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); }
+
+/* ─── MAP ────────────────────────────────────── */
+.map-sec { background: var(--soil); padding: 88px 44px; }
+.map-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.map-copy .eyebrow { color: rgba(255,255,255,.3); }
+.map-copy .sh { color: var(--white); }
+.map-copy .sh em { color: var(--bark-lt); }
+.map-copy .sp { color: rgba(255,255,255,.45); }
+.map-cities { display: flex; gap: 7px; flex-wrap: wrap; margin: 20px 0 28px; }
+.city-pill { font-size: 12px; border-radius: 20px; padding: 5px 13px; border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.5); }
+.city-pill.on { border-color: var(--bark-lt); color: var(--bark-lt); background: rgba(124,92,59,.14); }
+.city-pill.soon { color: rgba(255,255,255,.22); font-style: italic; border-color: rgba(255,255,255,.06); }
+.btn-map { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; background: var(--bark); color: var(--white); border: none; border-radius: 8px; padding: 12px 22px; cursor: pointer; transition: background .2s, transform .15s; }
+.btn-map:hover { background: var(--bark-lt); transform: translateY(-1px); }
+.map-frame { background: #261C10; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; border: 1px solid rgba(255,255,255,.07); position: relative; }
+.map-badge { position: absolute; bottom: -10px; right: -10px; background: var(--white); border-radius: 10px; padding: 12px 16px; box-shadow: 0 12px 40px rgba(0,0,0,.2); }
+.mb-n { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--soil); }
+.mb-l { font-size: 10px; color: var(--t3); }
+
+/* ─── MISSION STRIP ──────────────────────────── */
+.mission { background: var(--bark-pale); padding: 52px 44px; border-top: 1px solid var(--mist); border-bottom: 1px solid var(--mist); }
+.mission-inner { display: flex; align-items: center; gap: 48px; }
+.mission-q { font-family: 'Cormorant Garamond', serif; font-size: clamp(18px, 2.2vw, 26px); font-style: italic; font-weight: 300; color: var(--soil); line-height: 1.45; flex: 1; letter-spacing: -.3px; }
+.mission-q em { font-style: normal; font-weight: 400; color: var(--bark); }
+.mission-line { width: 1px; height: 60px; background: var(--mist); flex-shrink: 0; }
+.mission-by { font-size: 13px; font-weight: 300; color: var(--t2); line-height: 1.7; max-width: 280px; flex-shrink: 0; }
+
+/* ─── FOUNDING ───────────────────────────────── */
+.founding { background: var(--white); padding: 88px 44px; border-top: 1px solid var(--mist); }
+.founding-inner { max-width: 560px; margin: 0 auto; text-align: center; }
+.f-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--bark); background: var(--bark-pale); border-radius: 20px; padding: 5px 14px; margin-bottom: 22px; }
+.f-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--bark); animation: blink 2s ease-in-out infinite; }
+.f-h { font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4.5vw, 56px); font-weight: 300; line-height: 1.06; letter-spacing: -1.5px; color: var(--soil); margin-bottom: 14px; }
+.f-h em { font-style: italic; color: var(--bark); }
+.f-sub { font-size: 15px; font-weight: 300; color: var(--t2); line-height: 1.75; margin-bottom: 22px; }
+.honest-note { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 1px solid var(--mist); border-left: 3px solid var(--bark); border-radius: 8px; padding: 13px 16px; text-align: left; font-size: 13px; font-weight: 300; color: var(--t2); line-height: 1.6; margin-bottom: 24px; }
+.honest-note strong { font-weight: 500; color: var(--soil); }
+.email-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.email-in { flex: 1; font-family: 'Outfit', sans-serif; font-size: 14px; border: 1.5px solid var(--mist); border-radius: 8px; padding: 12px 16px; outline: none; color: var(--t1); background: var(--white); transition: border-color .2s; min-width: 0; }
+.email-in:focus { border-color: var(--bark); }
+.email-in::placeholder { color: var(--t3); }
+.btn-found { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; background: var(--soil); color: var(--white); border: none; border-radius: 8px; padding: 12px 22px; cursor: pointer; transition: background .2s; white-space: nowrap; flex-shrink: 0; }
+.btn-found:hover { background: var(--bark); }
+.f-fine { font-size: 11px; color: var(--t3); margin-bottom: 22px; }
+.f-perks { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.perk { font-size: 11px; background: var(--cream); border: 1px solid var(--mist); border-radius: 20px; padding: 5px 12px; color: var(--t2); }
+
+/* ─── INLINE CTA (after How It Works) ───────── */
+.how-cta { margin-top: 40px; text-align: center; }
+.btn-outline-bark {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+  color: var(--bark); text-decoration: none;
+  border: 1.5px solid rgba(124,92,59,.4); border-radius: 9px;
+  padding: 13px 30px; transition: background .2s, color .2s, border-color .2s, transform .15s;
+}
+.btn-outline-bark:hover { background: var(--bark); color: var(--white); border-color: var(--bark); transform: translateY(-1px); }
+
+/* ─── MAP APP BADGES ─────────────────────────── */
+.map-app-badges { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 26px; }
+.map-app-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 12px; font-weight: 500; letter-spacing: .1px;
+  cursor: default;
+}
+.map-app-badge.waze { background: rgba(115,196,236,0.13); color: #8ED5F0; border: 1px solid rgba(115,196,236,0.22); }
+.map-app-badge.gmaps { background: rgba(234,67,53,0.12); color: #F48C80; border: 1px solid rgba(234,67,53,0.2); }
+.map-app-badge svg { flex-shrink: 0; }
+
+/* ─── TESTI CAROUSEL ─────────────────────────── */
+/* ─── TESTI CTA ──────────────────────────────── */
+.testi-cta { margin-top: 36px; display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+
+/* ─── COOKIE BANNER ─────────────────────────── */
+.cookie-banner {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(120px);
+  z-index: 500; width: calc(100% - 48px); max-width: 520px;
+  background: var(--white); border-radius: 20px;
+  border: 1.5px solid var(--mist);
+  box-shadow: 0 24px 64px rgba(44,31,15,.18), 0 6px 20px rgba(44,31,15,.08);
+  padding: 20px 20px 20px 18px;
+  display: flex; align-items: flex-start; gap: 16px;
+  opacity: 0; pointer-events: none;
+  transition: transform .55s cubic-bezier(0.16,1,0.3,1), opacity .4s ease;
+}
+.cookie-banner.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1; pointer-events: all;
+}
+.cookie-body { flex: 1; min-width: 0; }
+.cookie-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 600; color: var(--soil);
+  margin-bottom: 4px; line-height: 1.2;
+}
+.cookie-title em { font-style: italic; color: var(--bark); }
+.cookie-text {
+  font-size: 12px; font-weight: 300; color: var(--t2); line-height: 1.6;
+  margin-bottom: 14px;
+}
+.cookie-text a { color: var(--bark); text-decoration: none; border-bottom: 1px solid rgba(124,92,59,.3); }
+.cookie-text a:hover { color: var(--soil); }
+.cookie-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.cookie-accept {
+  font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 500;
+  background: var(--soil); color: var(--white); border: none;
+  border-radius: 8px; padding: 9px 18px; cursor: pointer;
+  transition: background .2s, transform .15s;
+  white-space: nowrap;
+}
+.cookie-accept:hover { background: var(--bark); transform: translateY(-1px); }
+.cookie-decline {
+  font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 400;
+  background: none; color: var(--t2);
+  border: 1px solid var(--mist); border-radius: 8px; padding: 9px 14px;
+  cursor: pointer; transition: border-color .2s, color .2s;
+  white-space: nowrap;
+}
+.cookie-decline:hover { border-color: var(--bark); color: var(--bark); }
+
+/* ─── TESTIMONIALS ──────────────────────────── */
+.testi { background: var(--cream); padding: 88px 44px; border-top: 1px solid var(--mist); }
+
+/* Carousel */
+.tc-wrap { position: relative; margin-top: 44px; }
+.tc-track { border-radius: 20px; position: relative; }
+.tc-slide {
+  display: none;
+  padding: 56px 64px;
+  border-radius: 20px;
+  animation: tcIn .45s var(--ease);
+}
+@keyframes tcIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.tc-slide.active { display: block; }
+.tc-slide.lt { background: var(--white); border: 1px solid var(--mist); }
+.tc-slide.dk { background: var(--soil); }
+
+.tc-q {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 2.4vw, 30px);
+  font-weight: 300; font-style: italic; line-height: 1.5;
+  color: var(--soil); margin-bottom: 36px;
+}
+.tc-q strong { font-style: normal; font-weight: 600; color: var(--bark); }
+.tc-slide.dk .tc-q { color: rgba(255,255,255,.88); }
+.tc-slide.dk .tc-q strong { color: var(--bark-lt); }
+
+.tc-person { display: flex; align-items: center; gap: 14px; border-top: 1px solid var(--mist); padding-top: 24px; }
+.tc-slide.dk .tc-person { border-top-color: rgba(255,255,255,.1); }
+.tc-flag {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 2px solid var(--mist);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 23px; flex-shrink: 0;
+}
+.tc-slide.dk .tc-flag { border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.06); }
+.tc-name { font-size: 14px; font-weight: 500; color: var(--soil); line-height: 1.3; }
+.tc-slide.dk .tc-name { color: var(--white); }
+.tc-loc { font-size: 12px; font-weight: 300; color: var(--t3); margin-top: 2px; }
+.tc-slide.dk .tc-loc { color: rgba(255,255,255,.38); }
+
+/* Nav row */
+.tc-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 22px; }
+.tc-arrow {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1.5px solid var(--mist); background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t2); font-size: 20px; line-height: 1;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.tc-arrow:hover { border-color: var(--bark); color: var(--bark); background: var(--bark-pale); }
+.tc-dots { display: flex; gap: 8px; align-items: center; }
+.tc-dot {
+  height: 7px; width: 7px; border-radius: 4px;
+  background: var(--mist); cursor: pointer;
+  transition: background .3s, width .3s;
+}
+.tc-dot.on { background: var(--bark); width: 24px; }
+
+.testi-quote-bar {
+  margin-top: 40px; background: var(--bark-pale); border-radius: 12px;
+  padding: 22px 28px; display: flex; align-items: center; gap: 20px;
+  border: 1px solid rgba(124,92,59,.15);
+}
+.tqb-mark {
+  font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300;
+  color: var(--bark); line-height: 1; flex-shrink: 0; margin-top: -12px; opacity: .4;
+}
+.tqb-text {
+  font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300;
+  font-style: italic; color: var(--soil); line-height: 1.5; flex: 1;
+}
+.tqb-text em { font-style: normal; font-weight: 500; color: var(--bark); }
+.tqb-by { font-size: 11px; font-weight: 300; color: var(--t3); margin-top: 6px; }
+
+/* ─── ABOUT ──────────────────────────────────── */
+.about { background: var(--white); padding: 88px 44px; border-top: 1px solid var(--mist); }
+.about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+.about-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--bark); background: var(--bark-pale); border-radius: 20px; padding: 5px 14px; margin-bottom: 20px; }
+.about-h { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 3.5vw, 48px); font-weight: 300; line-height: 1.1; letter-spacing: -1px; color: var(--soil); margin-bottom: 16px; }
+.about-h em { font-style: italic; color: var(--bark); }
+.about-body p { font-size: 15px; font-weight: 300; color: var(--t2); line-height: 1.8; margin-bottom: 14px; }
+.about-body p:last-child { margin-bottom: 0; }
+.about-card { background: var(--cream); border-radius: 20px; padding: 36px; border: 1px solid var(--mist); }
+.about-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+.astat { text-align: center; }
+.astat-n { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; color: var(--soil); letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+.astat-n em { font-style: italic; color: var(--bark); }
+.astat-l { font-size: 12px; font-weight: 300; color: var(--t3); }
+.about-card-quote { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; font-weight: 300; color: var(--t2); line-height: 1.6; border-top: 1px solid var(--mist); padding-top: 22px; }
+.about-card-by { font-size: 11px; font-weight: 300; color: var(--t3); margin-top: 8px; }
+
+/* ─── AMBASSADORS ─────────────────────────────── */
+.ambass { background: var(--cream-mid); padding: 88px 44px; border-top: 1px solid var(--mist); }
+.ambass-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 72px; align-items: center; margin-top: 44px; }
+.ambass-steps { display: flex; flex-direction: column; gap: 0; }
+.ambass-step { display: flex; gap: 18px; padding: 22px 0; border-bottom: 1px solid var(--mist); }
+.ambass-step:last-child { border-bottom: none; }
+.ambass-n { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--bark); letter-spacing: 1px; flex-shrink: 0; padding-top: 2px; }
+.ambass-info strong { display: block; font-size: 15px; font-weight: 500; color: var(--soil); margin-bottom: 4px; }
+.ambass-info p { font-size: 13px; font-weight: 300; color: var(--t2); line-height: 1.7; }
+.ambass-cta-box { background: var(--white); border-radius: 16px; padding: 32px; border: 1px solid var(--mist); }
+.ambass-cta-box .eyebrow { margin-bottom: 16px; }
+.ambass-cta-box .sh { font-size: clamp(24px, 2.8vw, 36px); margin-bottom: 12px; }
+.ambass-cta-box .sp { margin-bottom: 22px; }
+.ambass-perks { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.ambass-perk { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; font-weight: 300; color: var(--t2); }
+.ambass-perk::before { content: '✓'; color: var(--sage); font-weight: 600; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+
+/* ─── FAQ ─────────────────────────────────────── */
+.faq { background: var(--white); padding: 88px 44px; border-top: 1px solid var(--mist); }
+.faq-inner { max-width: 720px; margin: 0 auto; }
+.faq-list { margin-top: 44px; }
+.faq-item { border-bottom: 1px solid var(--mist); }
+.faq-q {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; background: none; border: none; text-align: left;
+  padding: 20px 0; cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 400; color: var(--soil);
+  transition: color .2s;
+}
+.faq-q:hover { color: var(--bark); }
+.faq-chevron { font-size: 18px; color: var(--bark); flex-shrink: 0; transition: transform .28s cubic-bezier(0.16,1,0.3,1); }
+.faq-item.open .faq-chevron { transform: rotate(45deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .4s cubic-bezier(0.16,1,0.3,1); }
+.faq-item.open .faq-a { max-height: 300px; }
+.faq-a-inner { font-size: 14px; font-weight: 300; color: var(--t2); line-height: 1.8; padding-bottom: 20px; }
+.faq-a-inner a { color: var(--bark); text-decoration: none; border-bottom: 1px solid rgba(124,92,59,.3); }
+
+@media (max-width: 900px) {
+  .about { padding: 72px 24px; }
+  .about-inner { grid-template-columns: 1fr; gap: 40px; }
+  .ambass { padding: 72px 24px; }
+  .ambass-grid { grid-template-columns: 1fr; gap: 40px; }
+  .faq { padding: 72px 24px; }
+}
+@media (max-width: 560px) {
+  .about, .ambass, .faq { padding: 60px 20px; }
+  .about-stat-grid { gap: 16px; }
+  .astat-n { font-size: 30px; }
+}
+
+/* ─── FOOTER ─────────────────────────────────── */
+.footer { background: #160F06; padding: 60px 44px 32px; }
+.fg { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 44px; margin-bottom: 44px; }
+.f-logo { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--white); margin-bottom: 7px; }
+.f-logo em { font-style: italic; color: var(--bark-lt); }
+.f-tag { font-size: 13px; font-weight: 300; color: rgba(255,255,255,.28); line-height: 1.65; max-width: 200px; margin-bottom: 18px; }
+.f-socials { display: flex; gap: 6px; }
+.f-soc { width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: rgba(255,255,255,.3); cursor: pointer; transition: border-color .2s, color .2s; }
+.f-soc:hover { border-color: var(--bark-lt); color: var(--bark-lt); }
+.f-col h5 { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.18); margin-bottom: 14px; }
+.f-col a { display: block; font-size: 13px; font-weight: 300; color: rgba(255,255,255,.38); text-decoration: none; margin-bottom: 9px; transition: color .2s; }
+.f-col a:hover { color: rgba(255,255,255,.72); }
+.f-col a.dim { color: rgba(255,255,255,.16); font-style: italic; }
+.f-bot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,.05); padding-top: 22px; flex-wrap: wrap; gap: 12px; }
+.f-copy { font-size: 11px; color: rgba(255,255,255,.16); font-weight: 300; }
+.f-legal { display: flex; gap: 16px; }
+.f-legal a { font-size: 11px; color: rgba(255,255,255,.16); text-decoration: none; transition: color .2s; }
+.f-legal a:hover { color: rgba(255,255,255,.42); }
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE – TABLET  (≤ 900px)
+════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Announcement bar smaller on mobile */
+  .ann-bar { font-size: 11.5px; height: 38px; }
+  .ann-bar.gone { height: 0; }
+
+  /* Nav */
+  .nav { padding: 0 20px; top: 38px; height: 56px; }
+  .nav.scrolled { height: 52px; }
+  .ann-bar.gone ~ .nav,
+  body.ann-gone .nav { top: 0; }
+  .nav-center, .nav-right { display: none; }
+  .nav-hamburger { display: flex; }
+
+  /* Hero – account for ann(38) + nav(56) */
+  .hero { padding: calc(38px + 56px + 20px) 24px 0; min-height: auto; }
+  .hero-body { grid-template-columns: 1fr; gap: 36px; padding: 36px 0 48px; }
+  .hero-p { max-width: 100%; }
+  .honest { max-width: 100%; }
+  .hero-mark { display: none; }
+
+  /* Stats: 2-col grid */
+  .hs { padding: 0; display: grid; grid-template-columns: 1fr 1fr; }
+  .hs-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.07); padding: 18px 12px; justify-content: center; }
+  .hs-item:nth-child(odd) { border-right: 1px solid rgba(255,255,255,.07); }
+  .hs-item:nth-child(3), .hs-item:nth-child(4) { border-bottom: none; }
+
+  .how { padding: 72px 24px; }
+  .how-steps { grid-template-columns: 1fr; }
+
+  .live { padding: 72px 24px; }
+  .rm-grid { grid-template-columns: 1fr; }
+
+  .results { padding: 72px 24px; }
+  .rs-layout { grid-template-columns: 1fr; gap: 36px; }
+  .rs-left { position: static; }
+
+  .map-sec { padding: 72px 24px; }
+  .map-inner { grid-template-columns: 1fr; gap: 44px; }
+  /* Map badge: keep inside frame on mobile */
+  .map-badge { bottom: 8px; right: 8px; position: absolute; }
+
+  .mission { padding: 44px 24px; }
+  .mission-inner { flex-direction: column; gap: 28px; align-items: flex-start; }
+  .mission-line { display: none; }
+  .mission-by { max-width: 100%; }
+
+  .founding { padding: 72px 24px; }
+
+  .testi { padding: 72px 24px; }
+  .tc-slide { padding: 36px 28px; }
+
+  /* Cookie banner: avoid horizontal scroll */
+  .cookie-banner {
+    bottom: 16px;
+    left: 12px; right: 12px;
+    width: auto;
+    transform: translateY(120px);
+    max-width: none;
+  }
+  .cookie-banner.show { transform: translateY(0); }
+
+  .testi-quote-bar { flex-direction: column; gap: 8px; padding: 18px 20px; }
+  .tqb-mark { font-size: 48px; }
+
+  .footer { padding: 52px 24px 28px; }
+  .fg { grid-template-columns: 1fr 1fr; gap: 32px; }
+
+  /* Improve touch targets */
+  .nav-a, .mega-item, .nov-item { min-height: 44px; }
+  .btn-ghost, .btn-cta { min-height: 44px; }
+}
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE – MOBILE  (≤ 560px)
+════════════════════════════════════════════════ */
+@media (max-width: 560px) {
+  /* Announcement bar */
+  .ann-bar { font-size: 10.5px; height: 36px; }
+  .ann-inner { font-size: 10.5px; gap: 6px; }
+  .ann-cta { display: none; }
+
+  /* Nav */
+  .nav { padding: 0 16px; top: 36px; height: 52px; }
+  body.ann-gone .nav, .ann-bar.gone ~ .nav { top: 0; }
+
+  /* Hero */
+  .hero { padding: calc(36px + 52px + 16px) 20px 0; }
+  .hero-body { gap: 24px; padding: 24px 0 36px; }
+  .hero-h1 { font-size: clamp(34px, 10vw, 52px); letter-spacing: -1.5px; margin-bottom: 14px; }
+  .hero-p { font-size: 14px; margin-bottom: 20px; }
+  .honest { padding: 11px 13px; font-size: 12px; }
+
+  /* Search card */
+  .search-card { padding: 18px 16px 16px; border-radius: 14px; }
+  .sbar { border-radius: 9px; }
+  .sbar-city { font-size: 11px; padding: 0 10px; }
+  .sbar-in { font-size: 13px; }
+  .sbar-go { padding: 13px; font-size: 14px; border-radius: 9px; min-height: 48px; }
+  .chip { font-size: 11px; padding: 5px 10px; }
+
+  /* Stats */
+  .hs-item { padding: 14px 8px; }
+  .hs-n { font-size: 24px; }
+  .hs-l { font-size: 10px; }
+
+  /* Section padding */
+  .how, .live, .results, .map-sec, .founding, .testi { padding: 56px 20px; }
+  .mission { padding: 36px 20px; }
+
+  /* Typography */
+  .sh { font-size: clamp(26px, 8vw, 38px); }
+  .sp { font-size: 14px; }
+
+  /* Testimonials */
+  .tc-slide { padding: 28px 20px; }
+  .tc-q { font-size: clamp(17px, 4.5vw, 22px); }
+  .testi-quote-bar { padding: 16px 18px; }
+  .tqb-text { font-size: 15px; }
+  .tqb-mark { font-size: 40px; margin-top: -8px; }
+
+  /* Cards */
+  .how-steps { border-radius: 12px; }
+  .how-step { padding: 24px 20px; }
+  .rm-grid { border-radius: 12px; }
+  .rm-card { padding: 24px 20px; }
+  .rc { padding: 14px 16px; gap: 11px; }
+  .rc-ico { width: 42px; height: 42px; font-size: 18px; }
+  .rc:hover { transform: none; }
+
+  /* Map badge: keep inside frame */
+  .map-badge { bottom: 8px; right: 8px; padding: 10px 14px; }
+  .mb-n { font-size: 20px; }
+  .mission-q { font-size: 16px; }
+
+  /* Founding */
+  .email-row { flex-direction: column; }
+  .btn-found { width: 100%; padding: 15px; font-size: 15px; min-height: 52px; }
+  .f-perks { gap: 5px; }
+  .perk { font-size: 10px; }
+
+  /* Cookie banner */
+  .cookie-banner { bottom: 10px; left: 10px; right: 10px; padding: 16px 14px; gap: 12px; }
+  .cookie-title { font-size: 15px; }
+  .cookie-text { font-size: 11.5px; margin-bottom: 12px; }
+  .cookie-btns { flex-direction: column; }
+  .cookie-accept, .cookie-decline { width: 100%; text-align: center; padding: 12px; min-height: 44px; }
+
+  /* Footer */
+  .footer { padding: 44px 20px 24px; }
+  .fg { grid-template-columns: 1fr; gap: 28px; }
+  .f-tag { max-width: 100%; }
+  .f-bot { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+  /* About / Ambassador / FAQ */
+  .about, .ambass, .faq { padding: 56px 20px; }
+  .about-stat-grid { gap: 16px; }
+  .astat-n { font-size: 30px; }
+  .ambass-cta-box { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── COOKIE BANNER ───────────────────── -->
+<div class="cookie-banner" id="cookieBanner" role="dialog" aria-label="Cookie consent">
+  <div class="cookie-body">
+    <div class="cookie-title">We use <em>healthy</em> cookies 🍪</div>
+    <p class="cookie-text">The digital kind – low in sugar, high in insight. We use them to understand how expats discover healthy food, so we can make the guide better for everyone after you. No ads, no data selling, no funny business. <a href="#">Learn more</a>.</p>
+    <div class="cookie-btns">
+      <button class="cookie-accept" onclick="acceptCookies()">Accept all</button>
+      <button class="cookie-decline" onclick="declineCookies()">Essentials only</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ANNOUNCEMENT BAR ──────────────────── -->
+<div class="ann-bar" id="annBar">
+  <div class="ann-inner">
+    <div class="ann-dot"></div>
+    <span><strong>Food guide live</strong> in Greater Lisbon – 180+ verified listings</span>
+    <a class="ann-cta" href="#">Start exploring →</a>
+  </div>
+  <button class="ann-close" onclick="dismissAnn()" aria-label="Dismiss">×</button>
+</div>
+
+<!-- ─── NAV ─────────────────────────────── -->
+<nav class="nav" id="nav">
+  <a class="nav-logo" href="#">Expat<em>Eats</em></a>
+
+  <!-- Desktop center -->
+  <div class="nav-center">
+    <button class="nav-a mega-trigger" data-mega="megaFood">Find My Food <span class="nav-chevron">▾</span></button>
+    <button class="nav-a mega-trigger" data-mega="megaServices">Services <span class="nav-chevron">▾</span></button>
+    <a class="nav-a" href="#events">Events <span style="font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:var(--bark-pale);color:var(--bark-lt);border-radius:4px;padding:2px 5px;vertical-align:middle;">Soon</span></a>
+    <a class="nav-a" href="#resources">Living Well</a>
+    <a class="nav-a" href="#community">Community</a>
+    <a class="nav-a nav-add" href="#food-guide">+ Add Location</a>
+  </div>
+
+  <!-- Desktop right -->
+  <div class="nav-right">
+    <button class="btn-ghost">Log in</button>
+  </div>
+
+  <!-- Hamburger (mobile) -->
+  <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- ─── MEGA: FIND MY FOOD ─── -->
+  <div class="mega-panel" id="megaFood">
+    <div class="mega-inner max">
+      <div class="mega-col">
+        <div class="mega-col-label">Live now</div>
+        <a class="mega-item" href="#food-guide">
+          <div class="mega-ico" style="background:#E5EFE2;">🛒</div>
+          <div><strong>Food Discovery</strong><span>180+ organic grocers, markets &amp; health stores across Greater Lisbon</span></div>
+        </a>
+        <a class="mega-item" href="#">
+          <div class="mega-ico" style="background:#F2E9DA;">💊</div>
+          <div><strong>Supplement Finder</strong><span>Find your supplements in Portugal – health stores, pharmacies &amp; trusted online sources</span></div>
+        </a>
+      </div>
+      <div class="mega-divider"></div>
+      <div class="mega-col">
+        <div class="mega-col-label">Coming soon</div>
+        <button class="mega-item dim">
+          <div class="mega-ico" style="background:#EDE4D5;">🍽️</div>
+          <div><strong>Restaurant Guide</strong><span>Curated cafés, wine bars &amp; eateries matched to your dietary values</span></div>
+        </button>
+      </div>
+      <div class="mega-divider"></div>
+      <div class="mega-col" style="max-width:220px; flex: 0 0 220px;">
+        <div class="mega-col-promo">
+          <div class="mega-promo-eyebrow">📍 Live now</div>
+          <div class="mega-promo-city"><em>Greater</em><br/>Lisbon</div>
+          <div class="mega-promo-sub">Porto &amp; Algarve expanding next</div>
+          <div class="mega-promo-pills">
+            <span class="mega-promo-pill on">● Greater Lisbon</span>
+            <span class="mega-promo-pill off">Porto</span>
+            <span class="mega-promo-pill off">Algarve</span>
+          </div>
+          <a class="mega-btn-sm" href="#about">Learn more →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── MEGA: SERVICES ─── -->
+  <div class="mega-panel" id="megaServices">
+    <div class="mega-inner max">
+      <div class="mega-col">
+        <div class="mega-col-label">Personal services</div>
+        <a class="mega-item" href="#">
+          <div class="mega-ico" style="background:#E5EFE2;">🥗</div>
+          <div><strong>Personalized Meal Plans</strong><span>Customized to your dietary needs, lifestyle &amp; locally available ingredients</span></div>
+        </a>
+        <a class="mega-item" href="#">
+          <div class="mega-ico" style="background:#EDE4D5;">🛒</div>
+          <div><strong>Stock Your Pantry</strong><span>A guided essentials list to stock your kitchen with healthy, sustainable local food</span></div>
+        </a>
+        <a class="mega-item" href="#">
+          <div class="mega-ico" style="background:#F2E9DA;">🏪</div>
+          <div><strong>Grocery &amp; Shopping Tour</strong><span>Guided tours of local markets &amp; stores – shop confidently from day one</span></div>
+        </a>
+      </div>
+      <div class="mega-divider"></div>
+      <div class="mega-col">
+        <div class="mega-col-label">Arrival services</div>
+        <a class="mega-item" href="#">
+          <div class="mega-ico" style="background:#E5EFE2;">📦</div>
+          <div><strong>Arrival Packages</strong><span>High-touch support designed to help you settle into daily life in Portugal with ease</span></div>
+        </a>
+        <a class="mega-item" href="#">
+          <div class="mega-ico" style="background:#F6F0E7;">⭐</div>
+          <div><strong>VIP Experience</strong><span>White-glove arrival, curated pantry setup &amp; one-year community membership</span></div>
+        </a>
+        <a class="mega-item" href="#">
+          <div class="mega-ico" style="background:#EDE4D5;">📖</div>
+          <div><strong>Moving to Portugal Guide</strong><span>Food, lifestyle &amp; everyday essentials to know before you make the move</span></div>
+        </a>
+      </div>
+      <div class="mega-divider"></div>
+      <div class="mega-col" style="max-width:240px; flex: 0 0 240px;">
+        <div class="mega-col-label">Expert help</div>
+        <a class="mega-item mega-item-feature" href="#">
+          <div class="mega-ico" style="background:#F2E9DA; font-size:22px;">💬</div>
+          <div>
+            <strong>Personal Consultation</strong>
+            <span>Can't find exactly what you need? Get personalized support from Michaele, our nutrition expert based in Lisbon.</span>
+            <div style="margin-top:10px;"><span style="font-size:11.5px;font-weight:500;color:var(--bark);">Book a consultation →</span></div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+<!-- ─── MOBILE OVERLAY ────────────────────── -->
+<div class="nav-overlay" id="navOverlay">
+  <div class="nav-overlay-head">
+    <div class="nav-overlay-logo">Expat<em>Eats</em></div>
+    <button class="nav-overlay-close" onclick="closeOverlay()">×</button>
+  </div>
+  <div class="nav-overlay-body">
+
+    <div class="nov-section">
+      <div class="nov-label">Find My Food</div>
+      <a class="nov-item" href="#food-guide" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#E5EFE2;">🛒</div><div><div class="nov-name">Food Discovery</div><div class="nov-sub">Grocers, markets &amp; health stores</div></div></div>
+        <span class="nov-badge live">Live</span>
+      </a>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F2E9DA;">💊</div><div><div class="nov-name">Supplement Finder</div><div class="nov-sub">Stores, pharmacies &amp; online sources</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <div class="nov-item nov-soon">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#EDE4D5;">🍽️</div><div><div class="nov-name">Restaurant Guide</div><div class="nov-sub">Cafés, wine bars &amp; eateries</div></div></div>
+        <span class="nov-badge soon-b">Soon</span>
+      </div>
+    </div>
+
+    <div class="nov-section">
+      <div class="nov-label">Services</div>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#E5EFE2;">🥗</div><div><div class="nov-name">Personalized Meal Plans</div><div class="nov-sub">Tailored to your diet &amp; local ingredients</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#EDE4D5;">🛒</div><div><div class="nov-name">Stock Your Pantry</div><div class="nov-sub">Guided healthy shopping list</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F2E9DA;">🏪</div><div><div class="nov-name">Grocery &amp; Shopping Tour</div><div class="nov-sub">Guided tours of local markets &amp; stores</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#E5EFE2;">📦</div><div><div class="nov-name">Arrival Packages</div><div class="nov-sub">High-touch support for new arrivals</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F6F0E7;">⭐</div><div><div class="nov-name">VIP Experience</div><div class="nov-sub">White-glove arrival &amp; 1-year membership</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#EDE4D5;">📖</div><div><div class="nov-name">Moving to Portugal Guide</div><div class="nov-sub">Prepare before you move</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F2E9DA;">💬</div><div><div class="nov-name">Personal Consultation</div><div class="nov-sub">With Michaele, nutrition expert in Lisbon</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+    </div>
+
+    <div class="nov-section">
+      <div class="nov-label">More</div>
+      <div class="nov-item nov-soon">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F6F0E7;">🎉</div><div><div class="nov-name">Events</div><div class="nov-sub">Coming soon</div></div></div>
+        <span class="nov-badge soon-b">Soon</span>
+      </div>
+      <a class="nov-item" href="#resources" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F6F0E7;">📚</div><div><div class="nov-name">Living Well</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#community" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#E5EFE2;">🤝</div><div><div class="nov-name">Community</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#about" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F6F0E7;">✦</div><div><div class="nov-name">About</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+      <a class="nov-item" href="#faq" onclick="closeOverlay()">
+        <div class="nov-item-left"><div class="nov-ico" style="background:#F6F0E7;">❓</div><div><div class="nov-name">FAQ</div></div></div>
+        <span class="nov-arrow">›</span>
+      </a>
+    </div>
+
+  </div>
+  <div class="nav-overlay-footer">
+    <button class="btn-ghost" onclick="closeOverlay()">Log in</button>
+  </div>
+</div>
+
+<!-- ─── HERO ─────────────────────────────── -->
+<section class="hero">
+  <div class="hero-mark">eat</div>
+  <div class="hero-body max">
+    <div>
+      <div class="eyebrow r"><div class="pip"></div>Greater Lisbon · Live now</div>
+      <h1 class="hero-h1 r d1">You moved here.<br/>Don't settle for<br/><em>a different<br/>version of you.</em></h1>
+      <p class="hero-p r d2">We did the confusing label-reading, the disappointing detours, and the Google-Translate grocery runs – so your healthy life picks up exactly where it left off.</p>
+      <div class="honest r d2">
+        <span style="font-size:15px;flex-shrink:0;margin-top:1px;">🌱</span>
+        <span><strong>We're just getting started – and that's a feature.</strong> The food guide is live in Greater Lisbon. Restaurants and sustainable living shaped by people like you are coming next.</span>
+      </div>
+    </div>
+    <div class="r d2">
+      <div class="search-card">
+        <div class="sc-lbl">Find your next favourite spot</div>
+        <div class="sbar">
+          <div class="sbar-icon">⌕</div>
+          <input class="sbar-in" type="text" placeholder="Organic grocers, supplements, markets..."/>
+          <div class="sbar-city">Greater Lisbon ▾</div>
+        </div>
+        <div class="chips-lbl">Filter by what matters to you</div>
+        <div class="chips">
+          <span class="chip on">Organic</span>
+          <span class="chip on">Gluten-free</span>
+          <span class="chip">Dairy-free</span>
+          <span class="chip">Vegan</span>
+          <span class="chip">Kid-friendly</span>
+          <span class="chip">Zero waste</span>
+          <span class="chip">Farm-raised</span>
+          <span class="chip">Low-tox</span>
+        </div>
+        <button class="sbar-go">Search listings →</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hs max">
+      <div class="hs-item"><div class="hs-n">180+</div><div class="hs-l">curated listings</div></div>
+      <div class="hs-item"><div class="hs-n">2</div><div class="hs-l">cities live now</div></div>
+      <div class="hs-item"><div class="hs-n">12+</div><div class="hs-l">filter categories</div></div>
+      <div class="hs-item"><div class="hs-n">100%</div><div class="hs-l">ambassador verified</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ─────────────────────── -->
+<section class="how">
+  <div class="max">
+    <div class="eyebrow r"><div class="pip"></div>How it works</div>
+    <h2 class="sh r d1">From landed to sorted<br/><em>in an afternoon.</em></h2>
+    <div class="how-steps r d2">
+      <div class="how-step">
+        <div class="how-n">01 – Search</div>
+        <div class="how-h">Tell us what matters to you</div>
+        <p class="how-p">Choose Greater Lisbon, then filter by what you won't compromise on – organic, vegan, gluten-free, zero-waste, low-tox, and more. No settling.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-n">02 – Discover</div>
+        <div class="how-h">Real spots, real people</div>
+        <p class="how-p">Browse as a list or jump straight to the map. Every listing was put there by someone who actually shops there. Businesses can't pay to appear – ever.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-n">03 – Shop &amp; Share</div>
+        <div class="how-h">Pay it forward</div>
+        <p class="how-p">Save your go-to spots, leave notes, and add the hidden gems you discover. Every entry you add makes it better for the next expat who arrives with your exact values.</p>
+      </div>
+    </div>
+    <div class="how-cta r d3">
+      <a class="btn-outline-bark" href="#">Start exploring – it's free →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHAT'S LIVE ──────────────────────── -->
+<section class="live" id="services">
+  <div class="max">
+    <div class="eyebrow r"><div class="pip"></div>What's available</div>
+    <h2 class="sh r d1">We launched with<br/><em>what matters most.</em></h2>
+    <p class="sp r d2" style="max-width:440px;margin-bottom:0;">One guide live, two more on the way. Here's exactly where things stand – no vague "coming soon" without a plan behind it.</p>
+    <div class="rm-grid r d2">
+      <div class="rm-card">
+        <div class="rm-status live"><div class="rm-dot"></div>Live now</div>
+        <span class="rm-icon">🛒</span>
+        <div class="rm-h">Food Discovery</div>
+        <p class="rm-p">Organic grocers, farmers' markets, and health food stores across Greater Lisbon – filtered precisely by your values. 180+ verified listings and growing.</p>
+        <a class="rm-a" href="#">Explore the guide →</a>
+      </div>
+      <div class="rm-card">
+        <div class="rm-status live"><div class="rm-dot"></div>Live now</div>
+        <span class="rm-icon">💊</span>
+        <div class="rm-h">Supplement Finder</div>
+        <p class="rm-p">Find exactly where to buy your supplements in Portugal – pharmacies, health stores, and trusted online sources. No more guessing what's available or where to look.</p>
+        <a class="rm-a" href="#">Find supplements →</a>
+      </div>
+      <div class="rm-card">
+        <div class="rm-status soon"><div class="rm-dot"></div>Coming soon</div>
+        <span class="rm-icon">🍽️</span>
+        <div class="rm-h">Restaurant Guide</div>
+        <p class="rm-p">Not just "has a salad." Real restaurants, cafés, and wine bars that source carefully and cook with intention – matched to your dietary needs and values.</p>
+        <span class="rm-dim">→ Notify me when live</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── RESULTS PREVIEW ──────────────────── -->
+<section class="results" id="food-guide">
+  <div class="max">
+    <div class="eyebrow r"><div class="pip"></div>Featured in Greater Lisbon</div>
+    <div class="rs-layout">
+      <div class="rs-left">
+        <h2 class="sh r d1">No algorithms.<br/><em>Every listing<br/>is earned.</em></h2>
+        <p class="sp r d2" style="max-width:340px;">Every listing is added by someone who actually lives here, shops there, and trusts it enough to put their name on it. Businesses can't pay to appear. That's the only way in.</p>
+        <div class="filter-box r d2">
+          <div class="fb-lbl">Try filtering</div>
+          <div class="fd-chips">
+            <span class="fd-chip on">Organic</span>
+            <span class="fd-chip on">Gluten-free</span>
+            <span class="fd-chip">Dairy-free</span>
+            <span class="fd-chip">Kid-friendly</span>
+            <span class="fd-chip">Zero waste</span>
+            <span class="fd-chip">Vegan</span>
+          </div>
+        </div>
+        <div class="rs-cta r d3">
+          <button class="btn-bark">See all listings →</button>
+          <a class="tlink" href="#">Open map view</a>
+        </div>
+      </div>
+      <div class="rcards">
+        <div class="rc pin r"><div class="rc-ico" style="background:#F5EFE6;">🌿</div><div class="rc-b"><div class="rc-name">Celeiro Cascais</div><div class="rc-meta">Health food store · Greater Lisbon</div><div class="rc-tags"><span class="tag">Organic</span><span class="tag">Gluten-free</span><span class="tag">Supplements</span></div></div><div class="rc-v"><div class="vdot"></div>Verified</div></div>
+        <div class="rc r d1"><div class="rc-ico" style="background:#EFF5EF;">🧺</div><div class="rc-b"><div class="rc-name">Mercado de Cascais</div><div class="rc-meta">Local market · Greater Lisbon</div><div class="rc-tags"><span class="tag g">Farm-raised</span><span class="tag g">Zero waste</span><span class="tag">Seasonal</span></div></div><div class="rc-v"><div class="vdot"></div>Verified</div></div>
+        <div class="rc r d2"><div class="rc-ico" style="background:#EEF2F8;">☕</div><div class="rc-b"><div class="rc-name">Pão &amp; Saúde</div><div class="rc-meta">Bakery &amp; café · Greater Lisbon</div><div class="rc-tags"><span class="tag">Gluten-free</span><span class="tag g">Vegan options</span></div></div><div class="rc-v"><div class="vdot"></div>Verified</div></div>
+        <div class="rc r d3"><div class="rc-ico" style="background:#FDF0E8;">🥩</div><div class="rc-b"><div class="rc-name">Talho Bio Cascais</div><div class="rc-meta">Butcher · Greater Lisbon</div><div class="rc-tags"><span class="tag g">Grass-fed</span><span class="tag g">Hormone-free</span></div></div><div class="rc-v"><div class="vdot"></div>Verified</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MAP ──────────────────────────────── -->
+<section class="map-sec" id="map">
+  <div class="max">
+    <div class="map-inner">
+      <div class="map-copy">
+        <div class="eyebrow r"><div class="pip" style="background:rgba(255,255,255,.25)"></div>Interactive map guide</div>
+        <h2 class="sh r d1">Find it here.<br/><em>Get there instantly.</em></h2>
+        <p class="sp r d2">Every verified listing on an interactive map. One tap to open it in Waze or Google Maps – no address copying, no screenshot chaos, no detours.</p>
+        <div class="map-cities r d2">
+          <span class="city-pill on">● Greater Lisbon</span>
+          <span class="city-pill soon">Porto – soon</span>
+          <span class="city-pill soon">Algarve – soon</span>
+        </div>
+        <div class="map-app-badges r d2">
+          <span class="map-app-badge waze">
+            <!-- Waze: recognisable rounded ghost face with speech-bubble tail -->
+            <svg width="18" height="18" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 2C10.3 2 4 8.3 4 16c0 4.7 2.3 8.9 5.8 11.6L9 30.5l3.8-1.4c1.7.5 3.4.9 5.2.9 7.7 0 14-6.3 14-14S25.7 2 18 2Z" fill="#33CCFF"/>
+              <!-- antenna bump -->
+              <circle cx="24" cy="4" r="2.5" fill="#33CCFF"/>
+              <!-- eyes white -->
+              <ellipse cx="13.5" cy="15" rx="2.8" ry="3" fill="white"/>
+              <ellipse cx="22.5" cy="15" rx="2.8" ry="3" fill="white"/>
+              <!-- pupils -->
+              <circle cx="14.2" cy="15.5" r="1.4" fill="#1A1A2E"/>
+              <circle cx="23.2" cy="15.5" r="1.4" fill="#1A1A2E"/>
+              <!-- eye glints -->
+              <circle cx="14.8" cy="14.6" r=".5" fill="white"/>
+              <circle cx="23.8" cy="14.6" r=".5" fill="white"/>
+              <!-- smile -->
+              <path d="M13 20.5 Q18 24.5 23 20.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            </svg>
+            Opens in Waze
+          </span>
+          <span class="map-app-badge gmaps">
+            <!-- Google Maps: classic location pin, red with white dot -->
+            <svg width="18" height="18" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Pin outer -->
+              <path d="M18 2C11.4 2 6 7.4 6 14c0 8.7 12 22 12 22S30 22.7 30 14C30 7.4 24.6 2 18 2Z" fill="#EA4335"/>
+              <!-- Pin inner highlight -->
+              <path d="M18 4C12.5 4 8 8.5 8 14c0 5 5 12 10 18C23 26 28 19 28 14 28 8.5 23.5 4 18 4Z" fill="#F56C5A"/>
+              <!-- White circle inside -->
+              <circle cx="18" cy="14" r="5.5" fill="white"/>
+              <!-- Google blue dot -->
+              <circle cx="18" cy="14" r="3" fill="#4285F4"/>
+              <!-- Tail shadow -->
+              <ellipse cx="18" cy="34" rx="3" ry="1.2" fill="rgba(0,0,0,.15)"/>
+            </svg>
+            Opens in Google Maps
+          </span>
+        </div>
+        <button class="btn-map r d3">Open the map guide →</button>
+      </div>
+      <div style="position:relative;" class="r d2">
+        <div class="map-frame">
+          <svg width="100%" height="100%" viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg">
+            <rect width="480" height="360" fill="#261C10"/>
+            <path d="M0,118 Q100,90 200,128 T400,108 T480,114" stroke="#3D2E1A" stroke-width="5" fill="none"/>
+            <path d="M0,238 Q120,218 240,248 T480,232" stroke="#3D2E1A" stroke-width="5" fill="none"/>
+            <path d="M138,0 Q146,90 150,180 T156,360" stroke="#3D2E1A" stroke-width="3" fill="none"/>
+            <path d="M278,0 Q284,90 288,180 T292,360" stroke="#3D2E1A" stroke-width="3" fill="none"/>
+            <rect x="56" y="56" width="62" height="46" rx="5" fill="#3A2A18" opacity=".9"/>
+            <rect x="178" y="36" width="82" height="58" rx="5" fill="#3A2A18" opacity=".9"/>
+            <rect x="308" y="128" width="72" height="54" rx="5" fill="#3A2A18" opacity=".9"/>
+            <rect x="38" y="252" width="84" height="60" rx="5" fill="#3A2A18" opacity=".9"/>
+            <rect x="318" y="252" width="68" height="48" rx="5" fill="#3A2A18" opacity=".9"/>
+            <rect x="188" y="168" width="76" height="52" rx="5" fill="#3A2A18" opacity=".9"/>
+            <circle cx="200" cy="124" r="13" fill="#7C5C3B" stroke="#F5EFE4" stroke-width="2.5"/><circle cx="200" cy="124" r="5" fill="#F5EFE4"/>
+            <circle cx="268" cy="194" r="11" fill="#A07850" stroke="#F5EFE4" stroke-width="2"/><circle cx="268" cy="194" r="4" fill="#F5EFE4"/>
+            <circle cx="153" cy="176" r="11" fill="#7C5C3B" stroke="#F5EFE4" stroke-width="2"/><circle cx="153" cy="176" r="4" fill="#F5EFE4"/>
+            <circle cx="333" cy="106" r="9" fill="#C4A882" stroke="#F5EFE4" stroke-width="2"/><circle cx="333" cy="106" r="3" fill="#F5EFE4"/>
+            <circle cx="86" cy="260" r="11" fill="#A07850" stroke="#F5EFE4" stroke-width="2"/><circle cx="86" cy="260" r="4" fill="#F5EFE4"/>
+            <circle cx="356" cy="270" r="9" fill="#7C5C3B" stroke="#F5EFE4" stroke-width="2"/><circle cx="356" cy="270" r="3" fill="#F5EFE4"/>
+            <rect x="174" y="82" width="136" height="36" rx="7" fill="#F6F0E7"/>
+            <text x="188" y="100" font-family="Outfit,sans-serif" font-size="11" font-weight="500" fill="#2C1F0F">Celeiro Cascais</text>
+            <text x="188" y="112" font-family="Outfit,sans-serif" font-size="9" fill="#9B7855">Health food · ✓ Verified</text>
+          </svg>
+        </div>
+        <div class="map-badge"><div class="mb-n">180+</div><div class="mb-l">verified locations</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MISSION STRIP ────────────────────── -->
+<section class="mission">
+  <div class="max">
+    <div class="mission-inner r">
+      <div class="mission-q">"Moving country doesn't mean starting over on your health. It means finding the right map. <em>That's exactly what we built.</em>"</div>
+      <div class="mission-line"></div>
+      <div class="mission-by">Built by a health-conscious expat living in Portugal – for people navigating exactly the same messy, confusing, beautiful transition.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ─────────────────────── -->
+<section class="testi">
+  <div class="max">
+    <div class="eyebrow r"><div class="pip"></div>Real expats, real results</div>
+    <h2 class="sh r d1">They moved.<br/><em>They didn't settle.</em></h2>
+    <p class="sp r d2" style="max-width:420px;margin-bottom:0;">From day-one arrivals to long-timers still refining their routine – this is what finding your footing actually feels like.</p>
+
+    <div class="tc-wrap r d2">
+      <div class="tc-track">
+
+        <!-- Slide 1 – light -->
+        <div class="tc-slide lt active">
+          <div class="tc-q">"I moved to Cascais six months ago and spent <strong>weeks</strong> trying to find a good organic grocer. Found Celeiro in five minutes with this guide. Wish I had it on day one."</div>
+          <div class="tc-person">
+            <div class="tc-flag" style="background:#F2E9DA;">🇩🇪</div>
+            <div>
+              <div class="tc-name">Mara K.</div>
+              <div class="tc-loc">Berlin → Lisbon · 6 months</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 2 – dark -->
+        <div class="tc-slide dk">
+          <div class="tc-q">"Finally – a guide made by people who actually <strong>live</strong> this lifestyle, not a generic tourist list. The gluten-free filter alone saved me so much confusion at the supermarket."</div>
+          <div class="tc-person">
+            <div class="tc-flag">🇺🇸</div>
+            <div>
+              <div class="tc-name">James &amp; Priya L.</div>
+              <div class="tc-loc">San Francisco → Lisbon · 1 year</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 3 – light -->
+        <div class="tc-slide lt">
+          <div class="tc-q">"As a vegan, I was terrified of moving here. Expat Eats showed me there's actually a <strong>vibrant community</strong> of like-minded people and shops. Total game changer."</div>
+          <div class="tc-person">
+            <div class="tc-flag" style="background:#E5EFE2;">🇬🇧</div>
+            <div>
+              <div class="tc-name">Sophie T.</div>
+              <div class="tc-loc">London → Lisbon · 3 months</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="tc-nav">
+        <button class="tc-arrow" id="tcPrev">‹</button>
+        <div class="tc-dots">
+          <div class="tc-dot on" onclick="tcGo(0)"></div>
+          <div class="tc-dot"    onclick="tcGo(1)"></div>
+          <div class="tc-dot"    onclick="tcGo(2)"></div>
+        </div>
+        <button class="tc-arrow" id="tcNext">›</button>
+      </div>
+    </div>
+
+    <div class="testi-quote-bar r d3">
+      <div class="tqb-mark">"</div>
+      <div>
+        <div class="tqb-text">The Facebook group questions stopped on day one. I didn't even know I could feel this relieved <em>about a grocery run.</em></div>
+        <div class="tqb-by">– Léa M., Amsterdam → Lisbon · Founding member</div>
+      </div>
+    </div>
+
+    <div class="testi-cta r d3">
+      <a class="btn-outline-bark" href="#about">Read our story →</a>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ─── ABOUT ────────────────────────────── -->
+<section class="about" id="about">
+  <div class="max">
+    <div class="about-inner">
+      <div class="about-body r">
+        <div class="about-tag">✦ Our story</div>
+        <h2 class="about-h">Built because<br/><em>we needed it<br/>and it didn't exist.</em></h2>
+        <p>Expat Eats started with one frustrating afternoon in a Portuguese supermarket – staring at labels, unable to figure out if anything was actually organic, wondering how anyone does this without Google Translate and three hours to spare.</p>
+        <p>We're health-conscious expats who made the move to Portugal and spent months learning what we wish someone had just told us on day one. So we built the guide we needed – starting with Greater Lisbon, and growing one verified listing at a time.</p>
+        <p>No algorithms. No paid placements. No "just eat what's local" advice that ignores the fact you have real dietary needs. Just an honest, human-curated map for people who care about what they put in their bodies – wherever they call home.</p>
+      </div>
+      <div class="r d1">
+        <div class="about-card">
+          <div class="about-stat-grid">
+            <div class="astat"><div class="astat-n">180<em>+</em></div><div class="astat-l">verified listings</div></div>
+            <div class="astat"><div class="astat-n">2</div><div class="astat-l">cities live now</div></div>
+            <div class="astat"><div class="astat-n">12<em>+</em></div><div class="astat-l">dietary filters</div></div>
+            <div class="astat"><div class="astat-n">0</div><div class="astat-l">businesses pay to appear</div></div>
+          </div>
+          <div class="about-card-quote">"We are not asking people to change their values – we are removing the friction that makes living them feel impossible in a new place."</div>
+          <div class="about-card-by">– Founder, Expat Eats · Living in Cascais since 2023</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ───────────────────────────────── -->
+<section class="faq" id="faq">
+  <div class="max">
+    <div class="faq-inner">
+      <div class="eyebrow r"><div class="pip"></div>Questions &amp; answers</div>
+      <h2 class="sh r d1">The things everyone<br/><em>wants to know</em></h2>
+      <div class="faq-list r d2">
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Is it free to use? <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">Browsing the guide is free. Creating an account to save favourites, add listings, or contribute as an ambassador is also free during our early access period. We plan to introduce a premium tier with advanced features – founding members lock in the lowest price it'll ever be.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            How are listings verified? <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">Every listing is added by a community ambassador – an expat who actually lives in the city, shops at the location regularly, and can vouch for it. We don't accept self-submissions from businesses, and there are no paid placements. Ambassadors can update or remove listings when things change.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Can I add a place I've discovered? <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">Yes – that's the whole idea. Create a free account and apply to be an ambassador. Once approved, you can add and manage listings in your city. The guide grows because people like you care enough to contribute.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Which cities are covered? <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">Greater Lisbon are live now with 180+ verified listings. Porto and the Algarve are next – we're activating ambassadors in those regions now. If you live somewhere we haven't covered yet and want to help us get there faster, <a href="#">reach out</a>.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What does "organic" or "gluten-free" actually mean in your filters? <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">Our filters reflect what ambassadors have verified in person – meaning the shop stocks a meaningful range of those products, not just one shelf. We don't make health claims or certify businesses. If something changes, ambassadors update the listing. We trust people over algorithms.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Does it work with Waze and Google Maps? <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">Yes. Every listing on the map opens directly in Waze or Google Maps with one tap – no address copying, no screenshot chaos. It works on any device, in any browser, without downloading an app.</div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ───────────────────────────── -->
+<footer class="footer">
+  <div class="max">
+    <div class="fg">
+      <div>
+        <div class="f-logo">Expat<em>Eats</em></div>
+        <div class="f-tag">Making healthy, sustainable living simple for expats – starting in Portugal.</div>
+        <div class="f-socials">
+          <div class="f-soc">ig</div><div class="f-soc">yt</div><div class="f-soc">fb</div><div class="f-soc">wa</div>
+        </div>
+      </div>
+      <div class="f-col">
+        <h5>Discover</h5>
+        <a href="#">Food Guide</a>
+        <a href="#" class="dim">Restaurants – soon</a>
+        <a href="#" class="dim">Sustainable Living – soon</a>
+      </div>
+      <div class="f-col">
+        <h5>Cities</h5>
+        
+        <a href="#">Lisbon</a>
+        <a href="#" class="dim">Porto – soon</a>
+        <a href="#" class="dim">Algarve – soon</a>
+      </div>
+      <div class="f-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="#">Ambassadors</a>
+        <a href="#">For Businesses</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="f-bot">
+      <div class="f-copy">© 2025 Expat Eats · admin@expateatsguide.com</div>
+      <div class="f-legal"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── Cookie banner ── */
+  (function() {
+    const banner = document.getElementById('cookieBanner');
+    // Show if no choice has been stored
+    if (!localStorage.getItem('ee_cookie_choice')) {
+      setTimeout(() => banner.classList.add('show'), 1200);
+    }
+  })();
+  function acceptCookies() {
+    localStorage.setItem('ee_cookie_choice', 'accepted');
+    hideCookieBanner();
+  }
+  function declineCookies() {
+    localStorage.setItem('ee_cookie_choice', 'declined');
+    hideCookieBanner();
+  }
+  function hideCookieBanner() {
+    const b = document.getElementById('cookieBanner');
+    b.style.transition = 'transform .45s cubic-bezier(0.16,1,0.3,1), opacity .35s ease';
+    // Use translateY only (works for both centered and left/right positioned)
+    const isMobile = window.innerWidth <= 900;
+    b.style.transform = isMobile ? 'translateY(120%)' : 'translateX(-50%) translateY(120%)';
+    b.style.opacity = '0';
+    setTimeout(() => b.remove(), 500);
+  }
+
+  /* ── Scrolled nav ── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', scrollY > 40);
+  }, { passive: true });
+
+  /* ── Reveal on scroll ── */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.r').forEach(el => obs.observe(el));
+
+  /* ── Chip toggles ── */
+  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+  document.querySelectorAll('.fd-chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+
+  /* ── Announcement bar dismiss ── */
+  function dismissAnn() {
+    const bar = document.getElementById('annBar');
+    bar.classList.add('gone');
+    document.body.classList.add('ann-gone');
+    // Update hero padding smoothly
+    document.querySelector('.hero').style.paddingTop = '';
+    document.querySelector('.hero').style.transition = 'padding-top .4s cubic-bezier(0.16,1,0.3,1)';
+  }
+
+  /* ── Mega menu ── */
+  const megaTriggers = document.querySelectorAll('.mega-trigger');
+  const megaPanels   = document.querySelectorAll('.mega-panel');
+  let megaLeaveTimer = null;
+  let currentMega   = null;
+
+  function openMega(id) {
+    clearTimeout(megaLeaveTimer);
+    if (currentMega === id) return;
+    megaPanels.forEach(p => { p.classList.remove('open'); p.style.top = ''; });
+    megaTriggers.forEach(t => t.classList.remove('active'));
+    const panel = document.getElementById(id);
+    const trigger = document.querySelector(`[data-mega="${id}"]`);
+    if (panel) {
+      const navRect = nav.getBoundingClientRect();
+      panel.style.top = navRect.bottom + 'px';
+      panel.classList.add('open');
+    }
+    if (trigger) { trigger.classList.add('active'); }
+    currentMega = id;
+  }
+
+  function closeMega() {
+    megaLeaveTimer = setTimeout(() => {
+      megaPanels.forEach(p => p.classList.remove('open'));
+      megaTriggers.forEach(t => t.classList.remove('active'));
+      currentMega = null;
+    }, 140);
+  }
+
+  megaTriggers.forEach(trigger => {
+    trigger.addEventListener('mouseenter', () => openMega(trigger.dataset.mega));
+    trigger.addEventListener('mouseleave', closeMega);
+    trigger.addEventListener('click', () => {
+      if (trigger.classList.contains('active')) { closeMega(); currentMega = null; }
+      else openMega(trigger.dataset.mega);
+    });
+  });
+
+  megaPanels.forEach(panel => {
+    panel.addEventListener('mouseenter', () => clearTimeout(megaLeaveTimer));
+    panel.addEventListener('mouseleave', closeMega);
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.mega-trigger') && !e.target.closest('.mega-panel')) {
+      megaPanels.forEach(p => p.classList.remove('open'));
+      megaTriggers.forEach(t => t.classList.remove('active'));
+      currentMega = null;
+    }
+  });
+
+  /* ── Mobile overlay ── */
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('navOverlay');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = !overlay.classList.contains('open');
+    overlay.classList.toggle('open', isOpen);
+    hamburger.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  function closeOverlay() {
+    overlay.classList.remove('open');
+    hamburger.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) closeOverlay();
+  });
+
+  /* ── Testimonial carousel ── */
+  let tcIdx = 0;
+  const tcSlides = document.querySelectorAll('.tc-slide');
+  const tcDotEls = document.querySelectorAll('.tc-dot');
+
+  function tcGo(n) {
+    tcSlides[tcIdx].classList.remove('active');
+    tcDotEls[tcIdx].classList.remove('on');
+    tcIdx = (n + tcSlides.length) % tcSlides.length;
+    tcSlides[tcIdx].classList.add('active');
+    tcDotEls[tcIdx].classList.add('on');
+  }
+
+  document.getElementById('tcPrev').addEventListener('click', () => tcGo(tcIdx - 1));
+  document.getElementById('tcNext').addEventListener('click', () => tcGo(tcIdx + 1));
+
+  let tcTimer = setInterval(() => tcGo(tcIdx + 1), 5000);
+  document.querySelector('.tc-wrap')?.addEventListener('mouseenter', () => clearInterval(tcTimer));
+  document.querySelector('.tc-wrap')?.addEventListener('mouseleave', () => {
+    tcTimer = setInterval(() => tcGo(tcIdx + 1), 5000);
+  });
+
+  /* ── FAQ accordion ── */
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    // close all
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  /* ── Search bar: show "coming soon" on click ── */
+  document.querySelector('.sbar-in').addEventListener('focus', function() {
+    this.placeholder = '🔍 Full search launching soon – browse listings above ↓';
+    this.blur();
+  });
+  document.querySelector('.sbar-go').addEventListener('click', function(e) {
+    e.preventDefault();
+    this.textContent = '✓ Launching soon – join the list below';
+    this.style.background = 'var(--sage)';
+    setTimeout(() => {
+      this.textContent = 'Search listings →';
+      this.style.background = '';
+    }, 2800);
+    document.getElementById('founding') && document.getElementById('founding').scrollIntoView({behavior:'smooth'});
+  });
+
+  /* ── Smooth scroll for nav anchor links ── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>

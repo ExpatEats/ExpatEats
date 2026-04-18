@@ -26,6 +26,7 @@ import Store from "./pages/Store";
 import Favorites from "./pages/Favorites";
 import Purchases from "./pages/Purchases";
 import GuideViewer from "./pages/GuideViewer";
+import PurchaseSuccess from "./pages/PurchaseSuccess";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/not-found";
 import PersonalizedMealPlans from "./pages/PersonalizedMealPlans";
@@ -117,6 +118,9 @@ function Router() {
                 </Route>
                 <Route path="/purchases">
                     <RequireAuth component={Purchases} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/guides/purchase-success">
+                    <RequireAuth component={PurchaseSuccess} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/guides/:slug">
                     <RequireAuth component={GuideViewer} redirectTo="/unauthorized" />

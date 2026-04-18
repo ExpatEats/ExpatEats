@@ -1,44 +1,107 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ShoppingCart, Check, Loader2, BookOpen } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "wouter";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface Guide {
+    id: number;
+    slug: string;
+    name: string;
+    description: string;
+    price: number;
+    currency: string;
+    isPurchased: boolean;
+    previewImage: string;
+    createdAt: string;
+}
+
+interface GuidesResponse {
+    guides: Guide[];
+    isAuthenticated: boolean;
+}
 
 export default function Resources() {
     const [activeTab, setActiveTab] = useState("lifestyle");
+    const [guides, setGuides] = useState<Guide[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [purchasingGuideId, setPurchasingGuideId] = useState<number | null>(null);
+    const { isAuthenticated } = useAuth();
+    const [, setLocation] = useLocation();
 
-    const lifestyleGuides = [
-        {
-            id: 1,
-            title: "Beauty Guide",
-            description: "Non-toxic, organic beauty and personal care products available in Portugal.",
-            buttonText: "Explore",
-        },
-        {
-            id: 2,
-            title: "Cleaning Guide",
-            description: "Non-toxic cleaning products and safer home solutions for everyday use.",
-            buttonText: "Explore",
-        },
-        {
-            id: 3,
-            title: "Housewares and Homegoods Guide",
-            description: "Non-toxic home essentials including cookware, furniture, and water filtration.",
-            buttonText: "Explore",
-        },
-        {
-            id: 4,
-            title: "Clothing Guide",
-            description: "Sustainable and organic clothing brands focused on quality and longevity.",
-            buttonText: "Explore",
-        },
-        {
-            id: 5,
-            title: "Wellness Guide",
-            description: "Wellness services, practitioners, and supportive products in Portugal.",
-            buttonText: "Explore",
-        },
-    ];
+    useEffect(() => {
+        fetchGuides();
+    }, []);
+
+    const fetchGuides = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch("/api/guides/available", {
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch guides");
+            }
+
+            const data: GuidesResponse = await response.json();
+            setGuides(data.guides);
+        } catch (err) {
+            console.error("Error fetching guides:", err);
+            setError("Failed to load guides. Please try again later.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePurchase = async (guideId: number) => {
+        if (!isAuthenticated) {
+            setLocation("/");
+            return;
+        }
+
+        try {
+            setPurchasingGuideId(guideId);
+
+            // Get CSRF token
+            const csrfResponse = await fetch("/api/csrf-token", {
+                credentials: "include",
+            });
+            const { token: csrfToken } = await csrfResponse.json();
+
+            // Create checkout session
+            const response = await fetch(`/api/guides/${guideId}/purchase`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": csrfToken,
+                },
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to initiate purchase");
+            }
+
+            const { checkoutUrl } = await response.json();
+
+            // Redirect to Stripe Checkout
+            window.location.href = checkoutUrl;
+        } catch (err: any) {
+            console.error("Error purchasing guide:", err);
+            alert(err.message || "Failed to start checkout. Please try again.");
+            setPurchasingGuideId(null);
+        }
+    };
+
+    const handleViewGuide = (slug: string) => {
+        setLocation(`/guides/${slug}`);
+    };
 
     const apps = [
         {
@@ -146,31 +209,110 @@ export default function Resources() {
                 <TabsContent value="lifestyle" className="space-y-6">
                     <div className="text-center mb-6">
                         <p className="text-xl text-gray-600">
-                            Downloadable guides focused on wellness and sustainable living in Portugal.
+                            Downloadable PDF guides focused on wellness and sustainable living in Portugal.
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {lifestyleGuides.map((guide) => (
-                            <Card
-                                key={guide.id}
-                                className="h-full hover:shadow-lg transition-shadow cursor-pointer group"
-                            >
-                                <CardHeader>
-                                    <CardTitle className="text-xl">
-                                        {guide.title}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-gray-600">
-                                        {guide.description}
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
+
+                    {loading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[1, 2, 3].map((i) => (
+                                <Card key={i} className="h-full">
+                                    <Skeleton className="h-48 w-full rounded-t-lg" />
+                                    <CardHeader>
+                                        <Skeleton className="h-6 w-3/4 mb-2" />
+                                        <Skeleton className="h-4 w-full mb-1" />
+                                        <Skeleton className="h-4 w-2/3" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Skeleton className="h-10 w-full" />
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : error ? (
+                        <div className="text-center text-red-600 py-8">
+                            <p>{error}</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {guides.map((guide) => (
+                                <Card
+                                    key={guide.id}
+                                    className="h-full hover:shadow-lg transition-shadow flex flex-col"
+                                >
+                                    {/* Preview Image */}
+                                    <div className="w-full h-48 bg-gray-100 rounded-t-lg overflow-hidden">
+                                        <img
+                                            src={guide.previewImage}
+                                            alt={guide.name}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                // Fallback if image fails to load
+                                                e.currentTarget.style.display = 'none';
+                                            }}
+                                        />
+                                    </div>
+
+                                    <CardHeader className="flex-grow">
+                                        <CardTitle className="text-xl text-[#94AF9F]">
+                                            {guide.name}
+                                        </CardTitle>
+                                        <p className="text-sm text-gray-600 mt-2">
+                                            {guide.description}
+                                        </p>
+                                        <div className="mt-3">
+                                            <span className="text-2xl font-bold text-[#E07A5F]">
+                                                €{guide.price.toFixed(2)}
+                                            </span>
+                                            <span className="text-sm text-gray-500 ml-2">
+                                                Digital PDF
+                                            </span>
+                                        </div>
+                                    </CardHeader>
+
+                                    <CardContent>
+                                        {guide.isPurchased ? (
+                                            <div className="space-y-2">
+                                                <Button
+                                                    onClick={() => handleViewGuide(guide.slug)}
+                                                    className="w-full bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
+                                                >
+                                                    <BookOpen className="mr-2 h-4 w-4" />
+                                                    View Guide
+                                                </Button>
+                                                <div className="flex items-center justify-center text-sm text-green-600">
+                                                    <Check className="h-4 w-4 mr-1" />
+                                                    Purchased
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <Button
+                                                onClick={() => handlePurchase(guide.id)}
+                                                disabled={purchasingGuideId === guide.id || !isAuthenticated}
+                                                className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white disabled:opacity-50"
+                                            >
+                                                {purchasingGuideId === guide.id ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Processing...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ShoppingCart className="mr-2 h-4 w-4" />
+                                                        {isAuthenticated ? `Purchase - €${guide.price.toFixed(2)}` : 'Login to Purchase'}
+                                                    </>
+                                                )}
+                                            </Button>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="text-center mt-6">
                         <p className="text-sm text-gray-500">
-                            Carefully curated guides to help you choose safer products and services. Some guides are currently in development so check back soon.
+                            Carefully curated guides to help you choose safer products and services. All purchases are secure and instant.
                         </p>
                     </div>
                 </TabsContent>
