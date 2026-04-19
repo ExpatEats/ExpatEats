@@ -57,11 +57,11 @@ const Header = () => {
                 {/* Left side - Logo */}
                 <div className="flex items-center flex-1">
                     <Link href="/">
-                        <div className="font-montserrat text-2xl tracking-wide">
-                            <span className="font-light text-[#94AF9F]">
+                        <div className="font-cormorant text-2xl tracking-wide">
+                            <span className="font-light text-bark">
                                 Expat
                             </span>
-                            <span className="font-light text-[#DDB892]">
+                            <span className="font-light text-bark-lt">
                                 Eats
                             </span>
                         </div>
@@ -69,34 +69,34 @@ const Header = () => {
                 </div>
 
                 {/* Center - Navigation */}
-                <nav className="hidden md:flex space-x-5 flex-shrink-0">
+                <nav className="hidden md:flex space-x-5 flex-shrink-0 font-outfit">
                     <div
-                        className={`py-2 transition ${isActive("/") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/") ? "active-tab" : "text-t2 hover:text-primary"}`}
                     >
                         <Link href="/">FIND MY FOOD</Link>
                     </div>
                     <div
-                        className={`py-2 transition ${isActive("/services") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/services") ? "active-tab" : "text-t2 hover:text-primary"}`}
                     >
                         <Link href="/services">SERVICES</Link>
                     </div>
                     <div
-                        className={`py-2 transition ${isActive("/events") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/events") ? "active-tab" : "text-t2 hover:text-primary"}`}
                     >
                         <Link href="/events">EVENTS</Link>
                     </div>
                     <div
-                        className={`py-2 transition ${isActive("/resources") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/resources") ? "active-tab" : "text-t2 hover:text-primary"}`}
                     >
                         <Link href="/resources">RESOURCES</Link>
                     </div>
                     <div
-                        className={`py-2 transition ${isActive("/community") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/community") ? "active-tab" : "text-t2 hover:text-primary"}`}
                     >
                         <Link href="/community">COMMUNITY</Link>
                     </div>
                     <div
-                        className={`py-2 transition ${isActive("/add-location") ? "active-tab" : "text-gray-800 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/add-location") ? "active-tab" : "text-t2 hover:text-primary"}`}
                     >
                         <Link href="/add-location">ADD LOCATION</Link>
                     </div>
@@ -147,10 +147,9 @@ const Header = () => {
                             </DropdownMenu>
                         ) : (
                             <Button
-                                variant="outline"
+                                variant="default"
                                 size="sm"
                                 onClick={() => setLoginModalOpen(true)}
-                                className="bg-[#6D9075] text-white border-[#6D9075] hover:bg-[#6D9075]/90"
                             >
                                 Login
                             </Button>
@@ -169,18 +168,18 @@ const Header = () => {
                         </SheetTrigger>
                         <SheetContent className="w-[300px] sm:w-[400px]">
                             <div className="flex items-center space-x-2 mb-6">
-                                <div className="font-montserrat text-xl tracking-wide">
-                                    <span className="font-light text-[#94AF9F]">
+                                <div className="font-cormorant text-xl tracking-wide">
+                                    <span className="font-light text-bark">
                                         Expat
                                     </span>
-                                    <span className="font-light text-[#DDB892]">
+                                    <span className="font-light text-bark-lt">
                                         Eats
                                     </span>
                                 </div>
                             </div>
-                            <nav className="flex flex-col space-y-4 mt-8">
+                            <nav className="flex flex-col space-y-4 mt-8 font-outfit">
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/">
@@ -188,31 +187,31 @@ const Header = () => {
                                     </Link>
                                 </div>
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/services") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/services") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/services">SERVICES</Link>
                                 </div>
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/events") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/events") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/events">EVENTS</Link>
                                 </div>
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/resources") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/resources") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/resources">RESOURCES</Link>
                                 </div>
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/community") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/community") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/community">COMMUNITY</Link>
                                 </div>
                                 <div
-                                    className={`py-2 px-4 rounded-md transition ${isActive("/add-location") ? "bg-primary/10 text-primary font-semibold" : "text-gray-800 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/add-location") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/add-location">
@@ -224,7 +223,7 @@ const Header = () => {
                                 <div className="mt-6 space-y-3">
                                     {isAuthenticated ? (
                                         <>
-                                            <Button className="w-full bg-[#6D9075] hover:bg-opacity-90 text-white rounded-full font-medium flex items-center justify-center gap-2">
+                                            <Button className="w-full rounded-full font-medium flex items-center justify-center gap-2">
                                                 <UserCircle className="h-5 w-5" />
                                                 {user?.name?.split(" ")[0] || user?.username || "My Profile"}
                                             </Button>
@@ -284,7 +283,7 @@ const Header = () => {
                                         </>
                                     ) : (
                                         <Button
-                                            className="w-full bg-[#6D9075] hover:bg-opacity-90 text-white rounded-full font-medium"
+                                            className="w-full rounded-full font-medium"
                                             onClick={() => {
                                                 setIsSheetOpen(false);
                                                 setLoginModalOpen(true);
