@@ -295,10 +295,10 @@ const Search = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
                 <div className="flex flex-col items-center mb-4 sm:flex-row sm:justify-between sm:items-center">
-                    <h1 className="font-montserrat text-3xl font-bold">
+                    <h1 className="font-cormorant text-3xl font-medium text-soil">
                         Find Local Food Sources
                     </h1>
-                    <div className="inline-flex items-center bg-[#6D9075] text-white px-3 py-1 rounded-full text-sm font-semibold mt-2 sm:mt-0">
+                    <div className="inline-flex items-center bg-sage text-white px-3 py-1 rounded-full text-sm font-outfit font-semibold mt-2 sm:mt-0">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-4 w-4 mr-1"
@@ -329,11 +329,11 @@ const Search = () => {
                         <Input
                             type="text"
                             placeholder="Search by name, description or location..."
-                            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300"
+                            className="w-full pl-10 pr-4 py-3 rounded-lg border border-input font-outfit"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <SearchIcon className="absolute left-3 top-3.5 text-gray-400" />
+                        <SearchIcon className="absolute left-3 top-3.5 text-t3" />
 
                         <Button
                             variant="outline"
@@ -347,8 +347,8 @@ const Search = () => {
 
                     {/* Filters panel */}
                     {showFilters && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="font-semibold mb-3">
+                        <div className="mt-4 p-4 bg-cream-mid rounded-lg">
+                            <h3 className="font-outfit font-semibold mb-3 text-soil">
                                 Filter by Location Type
                             </h3>
                             <div className="flex flex-wrap gap-2 mb-4">
@@ -372,7 +372,7 @@ const Search = () => {
                                 ))}
                             </div>
 
-                            <h3 className="font-semibold mb-3">
+                            <h3 className="font-outfit font-semibold mb-3 text-soil">
                                 Your Dietary Preferences
                             </h3>
                             <div className="flex flex-wrap gap-2 mb-4">
@@ -380,7 +380,7 @@ const Search = () => {
                                     <Badge
                                         key={pref}
                                         variant="secondary"
-                                        className="bg-primary/10 text-primary"
+                                        className="bg-primary/10 text-primary font-outfit"
                                     >
                                         {pref
                                             .split("-")
@@ -395,7 +395,7 @@ const Search = () => {
                                     </Badge>
                                 ))}
                                 {savedPreferences.length === 0 && (
-                                    <p className="text-gray-500 text-sm">
+                                    <p className="text-t3 font-outfit text-sm">
                                         No preferences saved.{" "}
                                         <Link
                                             to="/"
@@ -421,7 +421,7 @@ const Search = () => {
                 </div>
 
                 {/* Results count */}
-                <p className="text-gray-600 mb-6">
+                <p className="text-t2 font-outfit mb-6">
                     {filteredSources.length}{" "}
                     {filteredSources.length === 1 ? "place" : "places"} found in
                     Lisbon
@@ -667,10 +667,10 @@ const Search = () => {
                                         <CardContent className="md:w-2/3 p-6">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <h2 className="text-xl font-bold font-montserrat mb-1">
+                                                    <h2 className="text-xl font-cormorant font-medium mb-1 text-soil">
                                                         {source.name}
                                                     </h2>
-                                                    <div className="flex items-center text-gray-500 mb-3">
+                                                    <div className="flex items-center text-t3 font-outfit mb-3">
                                                         <Badge className="mr-2 flex items-center gap-1">
                                                             {getCategoryIcon(
                                                                 source.category,
@@ -732,7 +732,7 @@ const Search = () => {
                                                 )}
                                             </div>
 
-                                            <p className="text-gray-600 mb-4">
+                                            <p className="text-t2 font-outfit mb-4">
                                                 {source.description}
                                             </p>
 
@@ -788,8 +788,8 @@ const Search = () => {
                                 </Card>
                             ))
                         ) : (
-                            <div className="text-center py-10 bg-gray-50 rounded-lg">
-                                <p className="text-gray-600 mb-4">
+                            <div className="text-center py-10 bg-cream-mid rounded-lg">
+                                <p className="text-t2 font-outfit mb-4">
                                     No food sources match your criteria.
                                 </p>
                                 <Button onClick={clearFilters}>

@@ -38,29 +38,29 @@ const Home: React.FC = () => {
                     <div className="max-w-3xl mx-auto text-center">
                         <div className="mb-6">
                             <Link href="/contact">
-                                <Button className="bg-[#E07A5F] hover:bg-opacity-90 text-white font-light py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105">
+                                <Button className="bg-bark-lt hover:bg-bark text-white font-light py-3 px-8 rounded-full text-lg shadow-lg transition-elegant transform hover:scale-105">
                                     I want someone to figure this all out for me
                                 </Button>
                             </Link>
                         </div>
 
-                        <h1 className="font-montserrat text-4xl md:text-5xl lg:text-6xl font-light tracking-wide mb-4 text-neutral-dark">
+                        <h1 className="font-cormorant text-4xl md:text-5xl lg:text-6xl font-light tracking-wide mb-4 text-soil">
                             Your Guide to Sustainable Living Abroad
                         </h1>
-                        <p className="text-lg md:text-xl mb-8 text-neutral-dark">
+                        <p className="text-lg md:text-xl mb-8 text-t1 font-outfit">
                             Register to access our comprehensive guides to
                             sustainable shopping in the Lisbon area and join our
                             community of expats.
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Link href="/discover">
-                                <Button className="bg-[#5A8D3B] hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105 w-full sm:w-auto">
+                                <Button className="bg-sage hover:bg-sage/90 text-white font-outfit font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-elegant transform hover:scale-105 w-full sm:w-auto">
                                     <Camera className="mr-2" />
                                     Visual Search
                                 </Button>
                             </Link>
                             <Link href="/community">
-                                <Button className="bg-[#F5A623] hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105 w-full sm:w-auto">
+                                <Button className="bg-bark-lt hover:bg-bark text-white font-outfit font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-elegant transform hover:scale-105 w-full sm:w-auto">
                                     <Users className="mr-2" />
                                     Join Community
                                 </Button>
@@ -75,31 +75,31 @@ const Home: React.FC = () => {
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col md:flex-row items-center gap-8">
                         <div className="md:w-1/2">
-                            <h2 className="font-montserrat text-3xl font-bold mb-4 text-neutral-dark">
+                            <h2 className="font-cormorant text-3xl font-medium mb-4 text-soil">
                                 Search With Your Eyes, Not Just Words
                             </h2>
-                            <p className="mb-4 text-neutral-dark">
+                            <p className="mb-4 text-t1 font-outfit">
                                 Upload an image of food you're craving, and
                                 we'll find the closest match in your area. No
                                 more struggling to describe that special dish
                                 from home.
                             </p>
-                            <ul className="space-y-2 mb-6">
+                            <ul className="space-y-2 mb-6 font-outfit">
                                 <li className="flex items-start">
-                                    <Check className="text-[#5A8D3B] mr-2 h-5 w-5" />
+                                    <Check className="text-sage mr-2 h-5 w-5" />
                                     <span>
                                         Find international ingredients by image
                                     </span>
                                 </li>
                                 <li className="flex items-start">
-                                    <Check className="text-[#5A8D3B] mr-2 h-5 w-5" />
+                                    <Check className="text-sage mr-2 h-5 w-5" />
                                     <span>
                                         Discover restaurants serving your
                                         favorite dishes
                                     </span>
                                 </li>
                                 <li className="flex items-start">
-                                    <Check className="text-[#5A8D3B] mr-2 h-5 w-5" />
+                                    <Check className="text-sage mr-2 h-5 w-5" />
                                     <span>
                                         Connect with others who share your food
                                         interests
@@ -107,7 +107,7 @@ const Home: React.FC = () => {
                                 </li>
                             </ul>
                             <Link href="/discover">
-                                <Button className="bg-[#5A8D3B] hover:bg-opacity-90 text-white py-2 px-6 rounded-full font-medium flex items-center">
+                                <Button className="bg-sage hover:bg-sage/90 text-white py-2 px-6 rounded-full font-outfit font-medium flex items-center transition-elegant">
                                     <Camera className="mr-2 h-4 w-4" />
                                     Upload Food Image
                                 </Button>
@@ -144,9 +144,9 @@ const Home: React.FC = () => {
             </section>
 
             {/* Featured Categories */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-medium mb-8 text-center text-soil">
                         Find What You're Looking For
                     </h2>
 
@@ -178,10 +178,10 @@ const Home: React.FC = () => {
                             />
                         </div>
                         <div className="md:w-1/2">
-                            <h2 className="font-montserrat text-3xl font-bold mb-4 text-neutral-dark">
+                            <h2 className="font-cormorant text-3xl font-medium mb-4 text-soil">
                                 Join Our Community
                             </h2>
-                            <p className="mb-6 text-neutral-dark">
+                            <p className="mb-6 text-t1 font-outfit">
                                 Register to access our comprehensive guides to
                                 sustainable shopping in the Lisbon area and join
                                 our community of expats.
@@ -189,14 +189,14 @@ const Home: React.FC = () => {
 
                             <div className="space-y-4 mb-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
-                                        <Users className="text-[#5A8D3B] h-5 w-5" />
+                                    <div className="bg-sage/10 p-3 rounded-full">
+                                        <Users className="text-sage h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg">
+                                        <h3 className="font-outfit font-semibold text-lg text-soil">
                                             Join Food Meetups
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Connect with others who share your
                                             culinary interests
                                         </p>
@@ -204,10 +204,10 @@ const Home: React.FC = () => {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
+                                    <div className="bg-sage/10 p-3 rounded-full">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="text-[#5A8D3B] h-5 w-5"
+                                            className="text-sage h-5 w-5"
                                             viewBox="0 0 24 24"
                                             fill="none"
                                             stroke="currentColor"
@@ -219,10 +219,10 @@ const Home: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg">
+                                        <h3 className="font-outfit font-semibold text-lg text-soil">
                                             Share Tips & Recipes
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Exchange cooking advice and favorite
                                             recipes
                                         </p>
@@ -230,10 +230,10 @@ const Home: React.FC = () => {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
+                                    <div className="bg-sage/10 p-3 rounded-full">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="text-[#5A8D3B] h-5 w-5"
+                                            className="text-sage h-5 w-5"
                                             viewBox="0 0 24 24"
                                             fill="none"
                                             stroke="currentColor"
@@ -250,10 +250,10 @@ const Home: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg">
+                                        <h3 className="font-outfit font-semibold text-lg text-soil">
                                             Contribute Locations
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Add your discoveries to help other
                                             expats
                                         </p>
@@ -262,7 +262,7 @@ const Home: React.FC = () => {
                             </div>
 
                             <Link href="/community">
-                                <Button className="bg-[#F5A623] hover:bg-opacity-90 text-white py-2 px-6 rounded-full font-medium flex items-center">
+                                <Button className="bg-bark-lt hover:bg-bark text-white py-2 px-6 rounded-full font-outfit font-medium flex items-center transition-elegant">
                                     <Users className="mr-2 h-4 w-4" />
                                     Join Community
                                 </Button>
@@ -275,7 +275,7 @@ const Home: React.FC = () => {
             {/* Testimonials */}
             <section className="py-12 bg-white">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-medium mb-8 text-center text-soil">
                         What Our Community Says
                     </h2>
 
@@ -291,25 +291,25 @@ const Home: React.FC = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-[#5A8D3B] text-white">
+            <section className="py-16 bg-sage text-white">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="font-montserrat text-3xl font-bold mb-4">
+                    <h2 className="font-cormorant text-3xl font-medium mb-4">
                         Ready to Find Your Favorite Foods?
                     </h2>
-                    <p className="text-lg mb-8 max-w-2xl mx-auto">
+                    <p className="text-lg mb-8 max-w-2xl mx-auto font-outfit">
                         Join thousands of expats who have discovered local
                         sources for their favorite foods from back home.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Link href="/discover">
-                            <Button className="bg-white text-[#5A8D3B] hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg shadow-lg transition w-full sm:w-auto">
+                            <Button className="bg-white text-sage hover:bg-cream font-outfit font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-elegant w-full sm:w-auto">
                                 Get Started Free
                             </Button>
                         </Link>
                         <Link href="/nutrition">
                             <Button
                                 variant="outline"
-                                className="border-2 border-white hover:bg-white hover:bg-opacity-10 text-white font-bold py-3 px-8 rounded-full text-lg transition w-full sm:w-auto"
+                                className="border-2 border-white hover:bg-white hover:bg-white/10 text-white font-outfit font-bold py-3 px-8 rounded-full text-lg transition-elegant w-full sm:w-auto"
                             >
                                 Learn More
                             </Button>
