@@ -84,7 +84,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ eventTitle }) => {
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
                     <div className="flex items-center gap-4">
-                        <Mail className="h-5 w-5 text-gray-500" />
+                        <Mail className="h-5 w-5 text-t3" />
                         <Input
                             placeholder="friend@example.com"
                             type="email"
@@ -95,7 +95,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ eventTitle }) => {
                     </div>
                     <Separator />
                     <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-t3 font-outfit">
                             Or share via:
                         </span>
                         <div className="flex gap-2">
@@ -209,7 +209,7 @@ const EventCard: React.FC<{ event: any }> = ({ event }) => {
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
-                <div className="absolute top-3 right-3 bg-[#6D9075] text-white px-3 py-1 rounded-full text-xs font-medium">
+                <div className="absolute top-3 right-3 bg-sage text-white px-3 py-1 rounded-full text-xs font-outfit font-medium">
                     {event.category}
                 </div>
             </div>
@@ -219,24 +219,24 @@ const EventCard: React.FC<{ event: any }> = ({ event }) => {
             </CardHeader>
 
             <CardContent className="space-y-4 pb-3">
-                <p className="text-gray-600 line-clamp-2">
+                <p className="text-t2 font-outfit line-clamp-2">
                     {event.description}
                 </p>
 
-                <div className="flex flex-col space-y-2 text-sm">
-                    <div className="flex items-center text-gray-600">
+                <div className="flex flex-col space-y-2 text-sm font-outfit">
+                    <div className="flex items-center text-t2">
                         <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>{formattedDate}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-t2">
                         <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>{formattedTime}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-t2">
                         <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span className="line-clamp-1">{event.location}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-t2">
                         <Users className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>
                             {event.organizerName} · {event.organizerRole}
@@ -265,45 +265,45 @@ const Events = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-5xl mx-auto">
                 <div className="mb-8 text-center">
-                    <h1 className="font-montserrat text-3xl font-bold">
+                    <h1 className="font-cormorant text-3xl font-medium text-soil">
                         Community Events
                     </h1>
-                    <p className="text-gray-600 mt-2">
+                    <p className="text-t2 font-outfit mt-2">
                         Discover food, wellness, and lifestyle events for expats (and locals) in Lisbon and beyond in Portugal.
                     </p>
                 </div>
 
                 {/* Intro Section */}
-                <div className="mb-8 bg-[#F7F4EF] rounded-lg p-6">
-                    <p className="text-gray-700 text-base leading-relaxed">
+                <div className="mb-8 bg-cream-mid rounded-lg p-6">
+                    <p className="text-t1 font-outfit text-base leading-relaxed">
                         From nutrition talks and cooking classes to wellness workshops, hikes, and community meet-ups—this is where wellness-minded expats come together to learn, connect, and feel at home.
                     </p>
                 </div>
 
                 {/* Types of Events Section */}
                 <div className="mb-8 bg-white rounded-lg border p-6">
-                    <h2 className="text-xl font-semibold mb-4">
+                    <h2 className="text-xl font-outfit font-semibold mb-4 text-soil">
                         Types of Events You Can Explore
                     </h2>
-                    <ul className="space-y-2 text-gray-700">
+                    <ul className="space-y-2 text-t1 font-outfit">
                         <li className="flex items-start">
-                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span className="text-bark-lt mr-2 mt-1">•</span>
                             <span>Nutrition, cooking, and food education workshops</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span className="text-bark-lt mr-2 mt-1">•</span>
                             <span>Wellness and self-care events</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span className="text-bark-lt mr-2 mt-1">•</span>
                             <span>Guided hikes, movement, and outdoor meetups</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span className="text-bark-lt mr-2 mt-1">•</span>
                             <span>Sustainable, non-toxic living, and lifestyle talks</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="text-[#E07A5F] mr-2 mt-1">•</span>
+                            <span className="text-bark-lt mr-2 mt-1">•</span>
                             <span>Community gatherings hosted by local practitioners and businesses</span>
                         </li>
                     </ul>
@@ -312,55 +312,55 @@ const Events = () => {
                 {/* Loading State */}
                 {isLoading && (
                     <div className="flex justify-center items-center py-16">
-                        <Loader2 className="h-12 w-12 animate-spin text-[#6D9075]" />
+                        <Loader2 className="h-12 w-12 animate-spin text-sage" />
                     </div>
                 )}
 
                 {/* Error State */}
                 {error && (
                     <div className="text-center py-16">
-                        <p className="text-red-600 mb-4">
+                        <p className="text-red-600 font-outfit mb-4">
                             Failed to load events. Please try again later.
                         </p>
                     </div>
                 )}
 
                 {/* Submit Event Section - Always show */}
-                <div className="mb-6 bg-gradient-to-r from-[#94AF9F]/10 to-[#E07A5F]/10 rounded-lg p-6 border border-[#94AF9F]/20">
-                    <h2 className="text-xl font-semibold mb-2">
+                <div className="mb-6 bg-gradient-to-r from-sage/10 to-bark-pale rounded-lg p-6 border border-sage/20">
+                    <h2 className="text-xl font-outfit font-semibold mb-2 text-soil">
                         Submit An Event
                     </h2>
-                    <p className="text-gray-600 mb-1">
+                    <p className="text-t2 font-outfit mb-1">
                         Hosting a food or wellness-focused event in Portugal?
                     </p>
-                    <p className="text-gray-700 mb-4">
+                    <p className="text-t1 font-outfit mb-4">
                         Share it with the Expat Eats community. Submitting an event is a great way to connect with health-conscious expats and promote meaningful, aligned experiences.
                     </p>
                     <SubmissionForm
                         type="event"
                         buttonText="Submit An Event"
-                        buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                        buttonClassName="bg-bark-lt hover:bg-bark text-white"
                     />
                 </div>
 
                 {/* Upcoming Events Header */}
                 <div className="mb-6">
-                    <h2 className="text-2xl font-semibold">
+                    <h2 className="text-2xl font-cormorant font-medium text-soil">
                         Upcoming Events
                     </h2>
                 </div>
 
                 {/* Empty State */}
                 {!isLoading && !error && events.length === 0 && (
-                    <div className="text-center py-16 bg-gray-50 rounded-lg">
-                        <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-700 text-lg mb-6">
+                    <div className="text-center py-16 bg-cream-mid rounded-lg">
+                        <Calendar className="h-16 w-16 text-t3 mx-auto mb-4" />
+                        <p className="text-t1 font-outfit text-lg mb-6">
                             Be the first to add an event and help shape the Expat Eats community.
                         </p>
                         <SubmissionForm
                             type="event"
                             buttonText="Submit First Event"
-                            buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white px-6 py-3"
+                            buttonClassName="bg-bark-lt hover:bg-bark text-white px-6 py-3"
                         />
                     </div>
                 )}
@@ -376,7 +376,7 @@ const Events = () => {
 
                 {/* Footer note about featured listings */}
                 <div className="mt-12 text-center">
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-t3 font-outfit">
                         Event organizers may apply for featured listing and promoted events.
                     </p>
                 </div>

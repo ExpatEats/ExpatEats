@@ -172,10 +172,10 @@ export default function Resources() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
             <div className="text-center mb-8">
-                <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-medium mb-3 text-soil">
                     Resources
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xl text-t2 font-outfit max-w-2xl mx-auto">
                     Curated guides, apps, and videos to support healthy, sustainable living in Portugal.
                 </p>
             </div>
@@ -185,22 +185,22 @@ export default function Resources() {
                 onValueChange={setActiveTab}
                 className="w-full"
             >
-                <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-100 p-2 rounded-lg gap-2">
+                <TabsList className="grid w-full grid-cols-3 mb-8 bg-cream-mid p-2 rounded-lg gap-2">
                     <TabsTrigger
                         value="lifestyle"
-                        className="text-sm font-medium bg-[#E07A5F] text-white data-[state=active]:bg-[#E07A5F] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-md"
+                        className="text-sm font-outfit font-medium bg-bark-lt text-white data-[state=active]:bg-bark data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
                     >
                         Lifestyle Guides
                     </TabsTrigger>
                     <TabsTrigger
                         value="apps"
-                        className="text-sm font-medium bg-[#E07A5F] text-white data-[state=active]:bg-[#E07A5F] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-md"
+                        className="text-sm font-outfit font-medium bg-bark-lt text-white data-[state=active]:bg-bark data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
                     >
                         Apps
                     </TabsTrigger>
                     <TabsTrigger
                         value="videos"
-                        className="text-sm font-medium bg-[#E07A5F] text-white data-[state=active]:bg-[#E07A5F] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-md"
+                        className="text-sm font-outfit font-medium bg-bark-lt text-white data-[state=active]:bg-bark data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
                     >
                         Videos
                     </TabsTrigger>
@@ -208,7 +208,7 @@ export default function Resources() {
 
                 <TabsContent value="lifestyle" className="space-y-6">
                     <div className="text-center mb-6">
-                        <p className="text-xl text-gray-600">
+                        <p className="text-xl text-t2 font-outfit">
                             Downloadable PDF guides focused on wellness and sustainable living in Portugal.
                         </p>
                     </div>
@@ -254,17 +254,17 @@ export default function Resources() {
                                     </div>
 
                                     <CardHeader className="flex-grow">
-                                        <CardTitle className="text-xl text-[#94AF9F]">
+                                        <CardTitle className="text-xl text-sage">
                                             {guide.name}
                                         </CardTitle>
-                                        <p className="text-sm text-gray-600 mt-2">
+                                        <p className="text-sm text-t2 font-outfit mt-2">
                                             {guide.description}
                                         </p>
                                         <div className="mt-3">
-                                            <span className="text-2xl font-bold text-[#E07A5F]">
+                                            <span className="text-2xl font-cormorant font-medium text-bark">
                                                 €{guide.price.toFixed(2)}
                                             </span>
-                                            <span className="text-sm text-gray-500 ml-2">
+                                            <span className="text-sm text-t3 font-outfit ml-2">
                                                 Digital PDF
                                             </span>
                                         </div>
@@ -275,12 +275,12 @@ export default function Resources() {
                                             <div className="space-y-2">
                                                 <Button
                                                     onClick={() => handleViewGuide(guide.slug)}
-                                                    className="w-full bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
+                                                    className="w-full bg-sage hover:bg-sage/90 text-white"
                                                 >
                                                     <BookOpen className="mr-2 h-4 w-4" />
                                                     View Guide
                                                 </Button>
-                                                <div className="flex items-center justify-center text-sm text-green-600">
+                                                <div className="flex items-center justify-center text-sm text-green-600 font-outfit">
                                                     <Check className="h-4 w-4 mr-1" />
                                                     Purchased
                                                 </div>
@@ -289,7 +289,7 @@ export default function Resources() {
                                             <Button
                                                 onClick={() => handlePurchase(guide.id)}
                                                 disabled={purchasingGuideId === guide.id || !isAuthenticated}
-                                                className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white disabled:opacity-50"
+                                                className="w-full bg-bark-lt hover:bg-bark text-white disabled:opacity-50"
                                             >
                                                 {purchasingGuideId === guide.id ? (
                                                     <>
@@ -311,7 +311,7 @@ export default function Resources() {
                     )}
 
                     <div className="text-center mt-6">
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-t3 font-outfit">
                             Carefully curated guides to help you choose safer products and services. All purchases are secure and instant.
                         </p>
                     </div>
@@ -319,7 +319,7 @@ export default function Resources() {
 
                 <TabsContent value="apps" className="space-y-6">
                     <div className="text-center mb-6">
-                        <p className="text-xl text-gray-600">
+                        <p className="text-xl text-t2 font-outfit">
                             Helpful apps for grocery shopping, wellness, and daily life in Portugal.
                         </p>
                     </div>
@@ -335,10 +335,10 @@ export default function Resources() {
                                             {app.icon}
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-xl font-semibold mb-2">
+                                            <h3 className="text-xl font-outfit font-semibold mb-2 text-soil">
                                                 {app.name}
                                             </h3>
-                                            <p className="text-gray-600 mb-4">
+                                            <p className="text-t2 font-outfit mb-4">
                                                 {app.description}
                                             </p>
                                             <a
@@ -346,7 +346,7 @@ export default function Resources() {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                             >
-                                                <Button className="bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white">
+                                                <Button className="bg-sage hover:bg-sage/90 text-white">
                                                     <ExternalLink className="mr-2 h-4 w-4" />
                                                     Visit Website
                                                 </Button>
@@ -361,7 +361,7 @@ export default function Resources() {
 
                 <TabsContent value="videos" className="space-y-6">
                     <div className="text-center mb-6">
-                        <p className="text-xl text-gray-600">
+                        <p className="text-xl text-t2 font-outfit">
                             Short tutorials and walkthroughs covering food, shopping, and wellness basics in Portugal.
                         </p>
                     </div>
@@ -369,7 +369,7 @@ export default function Resources() {
                         {videos.map((video) => (
                             <Card key={video.id} className="h-full">
                                 <CardContent className="p-6">
-                                    <div className="aspect-video bg-gray-100 rounded-lg mb-4 overflow-hidden">
+                                    <div className="aspect-video bg-cream-mid rounded-lg mb-4 overflow-hidden">
                                         <iframe
                                             src={video.videoUrl}
                                             title={video.title}
@@ -379,10 +379,10 @@ export default function Resources() {
                                             allowFullScreen
                                         ></iframe>
                                     </div>
-                                    <h3 className="text-xl font-semibold mb-2">
+                                    <h3 className="text-xl font-outfit font-semibold mb-2 text-soil">
                                         {video.title}
                                     </h3>
-                                    <p className="text-gray-600 text-sm">
+                                    <p className="text-t2 font-outfit text-sm">
                                         {video.description}
                                     </p>
                                 </CardContent>
@@ -393,15 +393,15 @@ export default function Resources() {
             </Tabs>
 
             <div className="mt-12 text-center">
-                <div className="bg-[#94AF9F]/10 rounded-lg p-8">
-                    <h3 className="text-2xl font-semibold mb-4">
+                <div className="bg-sage/10 rounded-lg p-8">
+                    <h3 className="text-2xl font-cormorant font-medium mb-4 text-soil">
                         Need More Resources?
                     </h3>
-                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    <p className="text-t2 font-outfit mb-6 max-w-2xl mx-auto">
                         Can't find what you're looking for? Contact us for
                         personalized guidance on sustainable living in Portugal.
                     </p>
-                    <Button className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white px-8 py-3">
+                    <Button className="bg-bark-lt hover:bg-bark text-white px-8 py-3">
                         <ExternalLink className="mr-2 h-4 w-4" />
                         Get Personal Help
                     </Button>
@@ -409,7 +409,7 @@ export default function Resources() {
             </div>
 
             <div className="mt-8 text-center">
-                <p className="text-gray-600">
+                <p className="text-t2 font-outfit">
                     A growing library of trusted resources for expats focused on food, wellness, and sustainable living across Portugal.
                 </p>
             </div>
