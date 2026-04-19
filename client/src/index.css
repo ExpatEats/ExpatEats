@@ -45,35 +45,6 @@ body {
 }
 
 :root {
-    /* Michaele Kruger website color palette */
-    --background: 42 33% 97%;
-    --foreground: 30 14% 8%;
-    --muted: 40 23% 96%;
-    --muted-foreground: 30 5% 45%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 30 14% 8%;
-    --card: 0 0% 100%;
-    --card-foreground: 30 14% 8%;
-    --border: 33 15% 90%;
-    --input: 33 15% 90%;
-    --primary: 146 17% 63%; /* Sage green - #94AF9F */
-    --primary-foreground: 60 9% 98%;
-    --secondary: 35 55% 72%; /* Warm beige - #DDB892 */
-    --secondary-foreground: 24 10% 10%;
-    --accent: 19 56% 64%; /* Terracotta - #E07A5F */
-    --accent-foreground: 60 9% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 60 9% 98%;
-    --ring: 30 14% 8%;
-    --radius: 0.5rem;
-
-    /* Chart colors */
-    --chart-1: 146 17% 63%; /* Sage green - #94AF9F */
-    --chart-2: 35 55% 72%; /* Warm beige - #DDB892 */
-    --chart-3: 19 56% 64%; /* Terracotta - #E07A5F */
-    --chart-4: 220 70% 50%;
-    --chart-5: 280 60% 50%;
-
     /* New Design System - Earth Tones Palette */
     --cream: 43 38% 93%;        /* #F6F0E7 - warm cream background */
     --cream-mid: 42 33% 89%;    /* #EDE4D5 - alternate background */
@@ -88,29 +59,35 @@ body {
     --t1: 40 67% 8%;            /* #1A1208 - text primary */
     --t2: 32 20% 35%;           /* #6B5A45 - text secondary */
     --t3: 30 11% 56%;           /* #A09080 - text tertiary/muted */
-}
 
-.dark {
-    /* Michaele Kruger website dark mode palette */
-    --background: 150 12% 15%;
-    --foreground: 20 30% 95%;
-    --muted: 150 10% 20%;
-    --muted-foreground: 20 20% 80%;
-    --popover: 150 12% 15%;
-    --popover-foreground: 20 30% 95%;
-    --card: 150 12% 15%;
-    --card-foreground: 20 30% 95%;
-    --border: 150 15% 25%;
-    --input: 150 15% 25%;
-    --primary: 146 25% 75%; /* Lighter sage green */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 35 65% 82%; /* Lighter warm beige */
-    --secondary-foreground: 0 0% 98%;
-    --accent: 19 70% 74%; /* Lighter terracotta */
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --ring: 20 30% 95%;
+    /* Semantic tokens mapped to new design system */
+    --background: var(--cream);
+    --foreground: var(--t1);
+    --muted: var(--cream-mid);
+    --muted-foreground: var(--t2);
+    --popover: var(--white);
+    --popover-foreground: var(--t1);
+    --card: var(--white);
+    --card-foreground: var(--t1);
+    --border: var(--mist);
+    --input: var(--mist);
+    --primary: var(--bark);           /* Primary brand = bark brown */
+    --primary-foreground: var(--white);
+    --secondary: var(--bark-pale);     /* Secondary = light brown */
+    --secondary-foreground: var(--soil);
+    --accent: var(--sage);             /* Accent = sage green */
+    --accent-foreground: var(--white);
+    --destructive: 0 84% 60%;
+    --destructive-foreground: var(--white);
+    --ring: var(--bark);
+    --radius: 0.75rem;                 /* Increased from 0.5rem for elegance */
+
+    /* Chart colors mapped to new palette */
+    --chart-1: var(--sage);
+    --chart-2: var(--bark);
+    --chart-3: var(--bark-lt);
+    --chart-4: var(--soil);
+    --chart-5: var(--t2);
 }
 
 @layer base {
@@ -119,7 +96,7 @@ body {
     }
 
     body {
-        @apply bg-background text-foreground font-montserrat antialiased;
+        @apply bg-background text-foreground font-outfit antialiased;
     }
 
     h1,
@@ -128,7 +105,7 @@ body {
     h4,
     h5,
     h6 {
-        @apply font-montserrat font-light tracking-wide;
+        @apply font-cormorant font-light tracking-wide;
     }
 }
 
