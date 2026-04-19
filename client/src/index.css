@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -71,6 +73,21 @@ body {
     --chart-3: 19 56% 64%; /* Terracotta - #E07A5F */
     --chart-4: 220 70% 50%;
     --chart-5: 280 60% 50%;
+
+    /* New Design System - Earth Tones Palette */
+    --cream: 43 38% 93%;        /* #F6F0E7 - warm cream background */
+    --cream-mid: 42 33% 89%;    /* #EDE4D5 - alternate background */
+    --bark: 30 37% 37%;         /* #7C5C3B - primary brand brown */
+    --bark-lt: 30 37% 47%;      /* #A07850 - lighter brown */
+    --bark-pale: 37 43% 92%;    /* #F2E9DA - very light brown */
+    --soil: 32 50% 12%;         /* #2C1F0F - dark brown, headers */
+    --mist: 35 18% 85%;         /* #E3DACE - borders, dividers */
+    --sage: 109 24% 35%;        /* #4A6E42 - green accents */
+    --sage-lt: 102 34% 90%;     /* #E5EFE2 - light green */
+    --white: 48 56% 98%;        /* #FDFAF6 - warm white */
+    --t1: 40 67% 8%;            /* #1A1208 - text primary */
+    --t2: 32 20% 35%;           /* #6B5A45 - text secondary */
+    --t3: 30 11% 56%;           /* #A09080 - text tertiary/muted */
 }
 
 .dark {
@@ -124,11 +141,25 @@ body {
         font-family: "Open Sans", sans-serif;
     }
 
+    /* New Design System Fonts */
+    .font-cormorant {
+        font-family: "Cormorant Garamond", serif;
+    }
+
+    .font-outfit {
+        font-family: "Outfit", sans-serif;
+    }
+
     .active-tab {
         @apply border-b-2 border-primary text-primary font-semibold;
     }
 
     .card-shadow {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Custom easing for elegant transitions */
+    .transition-elegant {
+        transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
     }
 }
