@@ -188,19 +188,19 @@ export default function Resources() {
                 <TabsList className="grid w-full grid-cols-3 mb-8 bg-cream-mid p-2 rounded-lg gap-2">
                     <TabsTrigger
                         value="lifestyle"
-                        className="text-sm font-outfit font-medium bg-bark-lt text-white data-[state=active]:bg-bark data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
+                        className="text-sm font-outfit font-medium text-t2 data-[state=active]:bg-bark-lt data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
                     >
                         Lifestyle Guides
                     </TabsTrigger>
                     <TabsTrigger
                         value="apps"
-                        className="text-sm font-outfit font-medium bg-bark-lt text-white data-[state=active]:bg-bark data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
+                        className="text-sm font-outfit font-medium text-t2 data-[state=active]:bg-bark-lt data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
                     >
                         Apps
                     </TabsTrigger>
                     <TabsTrigger
                         value="videos"
-                        className="text-sm font-outfit font-medium bg-bark-lt text-white data-[state=active]:bg-bark data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
+                        className="text-sm font-outfit font-medium text-t2 data-[state=active]:bg-bark-lt data-[state=active]:text-white data-[state=active]:shadow-sm transition-elegant rounded-md"
                     >
                         Videos
                     </TabsTrigger>

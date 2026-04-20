@@ -52,16 +52,16 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-white shadow-sm sticky top-0 z-50 w-full">
+        <header className="bg-bark shadow-sm sticky top-0 z-50 w-full">
             <div className="w-full max-w-full px-4 py-3 flex items-center">
                 {/* Left side - Logo */}
                 <div className="flex items-center flex-1">
                     <Link href="/">
                         <div className="font-cormorant text-2xl tracking-wide">
-                            <span className="font-light text-bark">
+                            <span className="font-light text-cream">
                                 Expat
                             </span>
-                            <span className="font-light text-bark-lt">
+                            <span className="font-light text-white">
                                 Eats
                             </span>
                         </div>
@@ -71,32 +71,32 @@ const Header = () => {
                 {/* Center - Navigation */}
                 <nav className="hidden md:flex space-x-5 flex-shrink-0 font-outfit">
                     <div
-                        className={`py-2 transition-elegant ${isActive("/") ? "active-tab" : "text-t2 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
                         <Link href="/">FIND MY FOOD</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/services") ? "active-tab" : "text-t2 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/services") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
                         <Link href="/services">SERVICES</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/events") ? "active-tab" : "text-t2 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/events") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
                         <Link href="/events">EVENTS</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/resources") ? "active-tab" : "text-t2 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/resources") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
                         <Link href="/resources">RESOURCES</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/community") ? "active-tab" : "text-t2 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/community") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
                         <Link href="/community">COMMUNITY</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/add-location") ? "active-tab" : "text-t2 hover:text-primary"}`}
+                        className={`py-2 transition-elegant ${isActive("/add-location") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
                         <Link href="/add-location">ADD LOCATION</Link>
                     </div>
@@ -111,7 +111,7 @@ const Header = () => {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="ghost"
-                                        className="flex items-center space-x-2"
+                                        className="flex items-center space-x-2 text-cream hover:text-white hover:bg-bark-lt"
                                         disabled={isLoading}
                                     >
                                         <UserCircle className="h-5 w-5" />
@@ -149,6 +149,7 @@ const Header = () => {
                             <Button
                                 variant="default"
                                 size="sm"
+                                className="bg-bark-lt hover:bg-bark-pale text-white"
                                 onClick={() => setLoginModalOpen(true)}
                             >
                                 Login
@@ -161,7 +162,7 @@ const Header = () => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="lg:hidden"
+                                className="lg:hidden text-cream hover:text-white hover:bg-bark-lt"
                             >
                                 <Menu className="h-6 w-6" />
                             </Button>

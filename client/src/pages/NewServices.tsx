@@ -109,7 +109,7 @@ export default function NewServices() {
                         expert based in Lisbon.
                     </p>
                     <Link href="/contact">
-                        <Button className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white px-8 py-3">
+                        <Button className="bg-bark-lt hover:bg-bark-lt/90 text-white px-8 py-3">
                             Get Personal Consultation
                         </Button>
                     </Link>

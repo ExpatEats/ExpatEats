@@ -411,7 +411,7 @@ export default function FindMyFood() {
                                 handleFindFood();
                             }}
                             disabled={!isFormValid()}
-                            className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-bark-lt hover:bg-bark-lt/90 text-white py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Search className="mr-2 h-5 w-5" />
                             Find My Food
