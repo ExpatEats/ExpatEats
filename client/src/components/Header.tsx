@@ -52,7 +52,7 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-bark shadow-sm sticky top-0 z-50 w-full">
+        <header className="bg-soil shadow-sm sticky top-0 z-50 w-full">
             <div className="w-full max-w-full px-4 py-3 flex items-center">
                 {/* Left side - Logo */}
                 <div className="flex items-center flex-1">
