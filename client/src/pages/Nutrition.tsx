@@ -29,10 +29,10 @@ const Nutrition: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-5xl mx-auto">
                 <div className="text-center mb-10">
-                    <h1 className="font-montserrat text-3xl font-bold mb-4">
+                    <h1 className="font-cormorant text-3xl font-medium mb-4 text-soil">
                         Nutrition & Meal Planning
                     </h1>
-                    <p className="text-lg max-w-3xl mx-auto">
+                    <p className="text-lg font-outfit text-t1 max-w-3xl mx-auto">
                         Get personalized nutrition advice and meal plans that
                         incorporate local ingredients while accommodating your
                         dietary preferences and needs.
@@ -52,8 +52,8 @@ const Nutrition: React.FC = () => {
 
                         <CardHeader>
                             <div className="flex items-center gap-4 mb-2">
-                                <div className="bg-[#F5A623] bg-opacity-10 p-3 rounded-full">
-                                    <Calendar className="text-[#F5A623] h-5 w-5" />
+                                <div className="bg-bark-lt/10 p-3 rounded-full">
+                                    <Calendar className="text-bark-lt h-5 w-5" />
                                 </div>
                                 <CardTitle className="text-xl">
                                     Personalized Meal Planning
@@ -62,15 +62,15 @@ const Nutrition: React.FC = () => {
                         </CardHeader>
 
                         <CardContent>
-                            <p className="mb-4">
+                            <p className="mb-4 font-outfit text-t1">
                                 Get customized meal plans that incorporate local
                                 ingredients while meeting your dietary needs and
                                 preferences.
                             </p>
 
-                            <ul className="space-y-2 mb-6">
+                            <ul className="space-y-2 mb-6 font-outfit">
                                 <li className="flex items-start">
-                                    <div className="text-[#F5A623] mr-2 pt-0.5">
+                                    <div className="text-bark-lt mr-2 pt-0.5">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             className="h-5 w-5"
@@ -90,7 +90,7 @@ const Nutrition: React.FC = () => {
                                     </span>
                                 </li>
                                 <li className="flex items-start">
-                                    <div className="text-[#F5A623] mr-2 pt-0.5">
+                                    <div className="text-bark-lt mr-2 pt-0.5">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             className="h-5 w-5"
@@ -110,7 +110,7 @@ const Nutrition: React.FC = () => {
                                     </span>
                                 </li>
                                 <li className="flex items-start">
-                                    <div className="text-[#F5A623] mr-2 pt-0.5">
+                                    <div className="text-bark-lt mr-2 pt-0.5">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             className="h-5 w-5"
@@ -132,7 +132,7 @@ const Nutrition: React.FC = () => {
                             </ul>
 
                             <Button
-                                className="w-full bg-[#F5A623] hover:bg-[#F5A623]/90 text-white rounded-full font-medium"
+                                className="w-full bg-bark-lt hover:bg-bark-lt/90 text-white rounded-full font-medium"
                                 onClick={handleGenerateMealPlan}
                             >
                                 Generate Meal Plan
@@ -152,8 +152,8 @@ const Nutrition: React.FC = () => {
 
                         <CardHeader>
                             <div className="flex items-center gap-4 mb-2">
-                                <div className="bg-[#D64545] bg-opacity-10 p-3 rounded-full">
-                                    <UserCheck className="text-[#D64545] h-5 w-5" />
+                                <div className="bg-red-600 bg-opacity-10 p-3 rounded-full">
+                                    <UserCheck className="text-red-600 h-5 w-5" />
                                 </div>
                                 <CardTitle className="text-xl">
                                     Nutrition Consultation
@@ -174,7 +174,7 @@ const Nutrition: React.FC = () => {
                 </div>
 
                 <div className="mb-12">
-                    <h2 className="font-montserrat text-2xl font-bold mb-6 text-center">
+                    <h2 className="font-cormorant text-2xl font-bold mb-6 text-center">
                         Our Nutrition Services
                     </h2>
 
@@ -194,14 +194,14 @@ const Nutrition: React.FC = () => {
                                 <Card>
                                     <CardContent className="pt-6">
                                         <div className="flex items-center gap-3 mb-4">
-                                            <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
-                                                <Salad className="text-[#5A8D3B] h-5 w-5" />
+                                            <div className="bg-sage bg-opacity-10 p-3 rounded-full">
+                                                <Salad className="text-sage h-5 w-5" />
                                             </div>
                                             <h3 className="font-semibold text-lg">
                                                 Dietary Assessment
                                             </h3>
                                         </div>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Comprehensive analysis of your
                                             current eating habits, nutritional
                                             needs, and health goals, with
@@ -214,14 +214,14 @@ const Nutrition: React.FC = () => {
                                 <Card>
                                     <CardContent className="pt-6">
                                         <div className="flex items-center gap-3 mb-4">
-                                            <div className="bg-[#F5A623] bg-opacity-10 p-3 rounded-full">
-                                                <ShoppingBag className="text-[#F5A623] h-5 w-5" />
+                                            <div className="bg-bark-lt bg-opacity-10 p-3 rounded-full">
+                                                <ShoppingBag className="text-bark-lt h-5 w-5" />
                                             </div>
                                             <h3 className="font-semibold text-lg">
                                                 Grocery Shopping Tours
                                             </h3>
                                         </div>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Guided tours of local markets and
                                             stores to help you identify healthy
                                             options and find international
@@ -233,14 +233,14 @@ const Nutrition: React.FC = () => {
                                 <Card>
                                     <CardContent className="pt-6">
                                         <div className="flex items-center gap-3 mb-4">
-                                            <div className="bg-[#D64545] bg-opacity-10 p-3 rounded-full">
-                                                <Heart className="text-[#D64545] h-5 w-5" />
+                                            <div className="bg-red-600 bg-opacity-10 p-3 rounded-full">
+                                                <Heart className="text-red-600 h-5 w-5" />
                                             </div>
                                             <h3 className="font-semibold text-lg">
                                                 Holistic Wellness
                                             </h3>
                                         </div>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Beyond nutrition, we address
                                             lifestyle factors like stress
                                             management and sleep, which affect
@@ -253,7 +253,7 @@ const Nutrition: React.FC = () => {
 
                             <div className="mt-8 text-center">
                                 <Button
-                                    className="bg-[#5A8D3B] hover:bg-[#5A8D3B]/90 rounded-full"
+                                    className="bg-sage hover:bg-sage/90 rounded-full"
                                     onClick={() => {
                                         document
                                             .getElementById(
@@ -272,7 +272,7 @@ const Nutrition: React.FC = () => {
                         <TabsContent value="approach">
                             <Card>
                                 <CardContent className="pt-6">
-                                    <h3 className="font-montserrat text-xl font-semibold mb-4">
+                                    <h3 className="font-cormorant text-xl font-semibold mb-4">
                                         Our Holistic Nutrition Approach
                                     </h3>
 
@@ -288,14 +288,14 @@ const Nutrition: React.FC = () => {
                                     <div className="space-y-6 mt-6">
                                         <div>
                                             <h4 className="font-semibold mb-2 flex items-center">
-                                                <div className="bg-[#5A8D3B] bg-opacity-10 p-2 rounded-full mr-2">
-                                                    <span className="text-[#5A8D3B]">
+                                                <div className="bg-sage bg-opacity-10 p-2 rounded-full mr-2">
+                                                    <span className="text-sage">
                                                         1
                                                     </span>
                                                 </div>
                                                 Culturally Adaptive Nutrition
                                             </h4>
-                                            <p className="text-gray-600 pl-10">
+                                            <p className="text-t2 font-outfit pl-10">
                                                 We help you maintain your
                                                 cultural food traditions while
                                                 incorporating healthy local
@@ -306,15 +306,15 @@ const Nutrition: React.FC = () => {
 
                                         <div>
                                             <h4 className="font-semibold mb-2 flex items-center">
-                                                <div className="bg-[#5A8D3B] bg-opacity-10 p-2 rounded-full mr-2">
-                                                    <span className="text-[#5A8D3B]">
+                                                <div className="bg-sage bg-opacity-10 p-2 rounded-full mr-2">
+                                                    <span className="text-sage">
                                                         2
                                                     </span>
                                                 </div>
                                                 Ingredient Substitution
                                                 Expertise
                                             </h4>
-                                            <p className="text-gray-600 pl-10">
+                                            <p className="text-t2 font-outfit pl-10">
                                                 Our nutritionists are skilled at
                                                 helping you find suitable local
                                                 alternatives when ingredients
@@ -324,14 +324,14 @@ const Nutrition: React.FC = () => {
 
                                         <div>
                                             <h4 className="font-semibold mb-2 flex items-center">
-                                                <div className="bg-[#5A8D3B] bg-opacity-10 p-2 rounded-full mr-2">
-                                                    <span className="text-[#5A8D3B]">
+                                                <div className="bg-sage bg-opacity-10 p-2 rounded-full mr-2">
+                                                    <span className="text-sage">
                                                         3
                                                     </span>
                                                 </div>
                                                 Stress-Reduction Focus
                                             </h4>
-                                            <p className="text-gray-600 pl-10">
+                                            <p className="text-t2 font-outfit pl-10">
                                                 We recognize that relocation
                                                 stress can impact eating habits,
                                                 and provide strategies to
@@ -342,14 +342,14 @@ const Nutrition: React.FC = () => {
 
                                         <div>
                                             <h4 className="font-semibold mb-2 flex items-center">
-                                                <div className="bg-[#5A8D3B] bg-opacity-10 p-2 rounded-full mr-2">
-                                                    <span className="text-[#5A8D3B]">
+                                                <div className="bg-sage bg-opacity-10 p-2 rounded-full mr-2">
+                                                    <span className="text-sage">
                                                         4
                                                     </span>
                                                 </div>
                                                 Community Connection
                                             </h4>
-                                            <p className="text-gray-600 pl-10">
+                                            <p className="text-t2 font-outfit pl-10">
                                                 We believe in the power of
                                                 community for sustainable
                                                 healthy habits, and connect you
@@ -364,7 +364,7 @@ const Nutrition: React.FC = () => {
 
                         <TabsContent value="testimonials">
                             <div className="grid md:grid-cols-2 gap-6">
-                                <Card className="bg-[#F9F5F0]">
+                                <Card className="bg-cream-mid">
                                     <CardContent className="pt-6">
                                         <p className="italic mb-4">
                                             "The nutritionist helped me adapt my
@@ -382,7 +382,7 @@ const Nutrition: React.FC = () => {
                                                 <h4 className="font-medium">
                                                     Marco D.
                                                 </h4>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-t2 font-outfit">
                                                     Italian in Portugal
                                                 </p>
                                             </div>
@@ -390,7 +390,7 @@ const Nutrition: React.FC = () => {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-[#F9F5F0]">
+                                <Card className="bg-cream-mid">
                                     <CardContent className="pt-6">
                                         <p className="italic mb-4">
                                             "The meal planning service was
@@ -409,7 +409,7 @@ const Nutrition: React.FC = () => {
                                                 <h4 className="font-medium">
                                                     Sophia K.
                                                 </h4>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-t2 font-outfit">
                                                     American in Germany
                                                 </p>
                                             </div>
@@ -426,10 +426,10 @@ const Nutrition: React.FC = () => {
                     className="bg-white rounded-xl card-shadow p-8"
                 >
                     <div className="text-center mb-8">
-                        <h2 className="font-montserrat text-2xl font-bold mb-3">
+                        <h2 className="font-cormorant text-2xl font-bold mb-3">
                             Get Personalized Nutrition Support
                         </h2>
-                        <p className="text-gray-600 max-w-3xl mx-auto">
+                        <p className="text-t2 font-outfit max-w-3xl mx-auto">
                             Our team of certified nutritionists specializes in
                             helping expatriates maintain healthy eating habits
                             while embracing local food cultures.
@@ -444,10 +444,10 @@ const Nutrition: React.FC = () => {
 
                             <div className="space-y-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
+                                    <div className="bg-sage bg-opacity-10 p-3 rounded-full">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="text-[#5A8D3B] h-5 w-5"
+                                            className="text-sage h-5 w-5"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -464,7 +464,7 @@ const Nutrition: React.FC = () => {
                                         <h4 className="font-medium">
                                             Submit Your Request
                                         </h4>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Fill out our consultation form with
                                             your details and nutrition goals.
                                         </p>
@@ -472,14 +472,14 @@ const Nutrition: React.FC = () => {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
-                                        <Clock className="text-[#5A8D3B] h-5 w-5" />
+                                    <div className="bg-sage bg-opacity-10 p-3 rounded-full">
+                                        <Clock className="text-sage h-5 w-5" />
                                     </div>
                                     <div>
                                         <h4 className="font-medium">
                                             Schedule a Session
                                         </h4>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             We'll contact you within 24 hours to
                                             arrange your consultation.
                                         </p>
@@ -487,14 +487,14 @@ const Nutrition: React.FC = () => {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
-                                        <UserCheck className="text-[#5A8D3B] h-5 w-5" />
+                                    <div className="bg-sage bg-opacity-10 p-3 rounded-full">
+                                        <UserCheck className="text-sage h-5 w-5" />
                                     </div>
                                     <div>
                                         <h4 className="font-medium">
                                             Meet Your Nutritionist
                                         </h4>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Have a one-on-one session in person
                                             or via video call.
                                         </p>
@@ -502,14 +502,14 @@ const Nutrition: React.FC = () => {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#5A8D3B] bg-opacity-10 p-3 rounded-full">
-                                        <Salad className="text-[#5A8D3B] h-5 w-5" />
+                                    <div className="bg-sage bg-opacity-10 p-3 rounded-full">
+                                        <Salad className="text-sage h-5 w-5" />
                                     </div>
                                     <div>
                                         <h4 className="font-medium">
                                             Receive Your Plan
                                         </h4>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Get a customized nutrition plan
                                             tailored to your needs and location.
                                         </p>
@@ -523,7 +523,7 @@ const Nutrition: React.FC = () => {
                                 <h3 className="font-semibold text-lg mb-3">
                                     Our Nutritionists
                                 </h3>
-                                <p className="text-gray-600 mb-4">
+                                <p className="text-t2 font-outfit mb-4">
                                     Our team includes certified nutritionists
                                     with experience working with expatriate
                                     communities in multiple countries. Many are
@@ -531,7 +531,7 @@ const Nutrition: React.FC = () => {
                                     challenges of maintaining healthy eating
                                     habits abroad.
                                 </p>
-                                <Button className="bg-[#5A8D3B] hover:bg-[#5A8D3B]/90 rounded-full">
+                                <Button className="bg-sage hover:bg-sage/90 rounded-full">
                                     Meet Our Team
                                 </Button>
                             </div>

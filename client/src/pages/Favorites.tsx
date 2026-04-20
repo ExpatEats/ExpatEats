@@ -52,28 +52,28 @@ interface Place {
 const getTagIcon = (tagId: string) => {
     const iconMap: Record<string, JSX.Element> = {
         // Grocery tags
-        "gluten-free": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
-        "dairy-free": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
-        "nut-free": <Apple className="h-4 w-4 text-[#E07A5F]" />,
-        "vegan": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
-        "organic": <Apple className="h-4 w-4 text-[#94AF9F]" />,
-        "local-farms": <Truck className="h-4 w-4 text-[#94AF9F]" />,
-        "fresh-vegetables": <Carrot className="h-4 w-4 text-[#E07A5F]" />,
-        "farm-raised-meat": <Egg className="h-4 w-4 text-[#E07A5F]" />,
-        "no-processed": <Package2 className="h-4 w-4 text-[#94AF9F]" />,
-        "kid-friendly": <Baby className="h-4 w-4 text-[#E07A5F]" />,
-        "bulk-buying": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
-        "zero-waste": <Leaf className="h-4 w-4 text-[#E07A5F]" />,
+        "gluten-free": <Wheat className="h-4 w-4 text-bark-lt" />,
+        "dairy-free": <Cherry className="h-4 w-4 text-bark-lt" />,
+        "nut-free": <Apple className="h-4 w-4 text-bark-lt" />,
+        "vegan": <Leaf className="h-4 w-4 text-sage" />,
+        "organic": <Apple className="h-4 w-4 text-sage" />,
+        "local-farms": <Truck className="h-4 w-4 text-sage" />,
+        "fresh-vegetables": <Carrot className="h-4 w-4 text-bark-lt" />,
+        "farm-raised-meat": <Egg className="h-4 w-4 text-bark-lt" />,
+        "no-processed": <Package2 className="h-4 w-4 text-sage" />,
+        "kid-friendly": <Baby className="h-4 w-4 text-bark-lt" />,
+        "bulk-buying": <ShoppingBag className="h-4 w-4 text-sage" />,
+        "zero-waste": <Leaf className="h-4 w-4 text-bark-lt" />,
         
         // Supplement tags
-        "supplements": <Package2 className="h-4 w-4 text-[#E07A5F]" />,
-        "vitamins": <Apple className="h-4 w-4 text-[#E07A5F]" />,
-        "sports-nutrition": <Truck className="h-4 w-4 text-[#94AF9F]" />,
-        "omega-3": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
-        "herbal-remedies": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
-        "practitioner-grade": <Search className="h-4 w-4 text-[#E07A5F]" />,
-        "hypoallergenic": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
-        "online": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+        "supplements": <Package2 className="h-4 w-4 text-bark-lt" />,
+        "vitamins": <Apple className="h-4 w-4 text-bark-lt" />,
+        "sports-nutrition": <Truck className="h-4 w-4 text-sage" />,
+        "omega-3": <Cherry className="h-4 w-4 text-bark-lt" />,
+        "herbal-remedies": <Leaf className="h-4 w-4 text-sage" />,
+        "practitioner-grade": <Search className="h-4 w-4 text-bark-lt" />,
+        "hypoallergenic": <Wheat className="h-4 w-4 text-bark-lt" />,
+        "online": <ShoppingBag className="h-4 w-4 text-sage" />,
     };
     
     return iconMap[tagId] || null;
@@ -153,12 +153,12 @@ export default function Favorites() {
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-6xl mx-auto text-center">
                     <h1 className="text-2xl font-bold mb-4">Unable to Load Favorites</h1>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-t2 font-outfit mb-4">
                         Please log in to view your favorite stores.
                     </p>
                     <Button
                         onClick={() => setLocation("/")}
-                        className="bg-[#E07A5F] hover:bg-[#d06851] text-white"
+                        className="bg-bark-lt hover:bg-[#d06851] text-white"
                     >
                         Go to Login
                     </Button>
@@ -174,10 +174,10 @@ export default function Favorites() {
                 {/* Page Title */}
                 <div className="mb-8 text-center">
                     <div className="flex items-center justify-center gap-3 mb-4">
-                        <Heart className="h-8 w-8 text-[#E07A5F] fill-current" />
-                        <h1 className="text-3xl font-bold text-gray-900">My Favorites</h1>
+                        <Heart className="h-8 w-8 text-bark-lt fill-current" />
+                        <h1 className="text-3xl font-bold text-soil font-outfit">My Favorites</h1>
                     </div>
-                    <p className="text-gray-600">
+                    <p className="text-t2 font-outfit">
                         {favoriteStores.length === 0 
                             ? "You haven't saved any stores yet" 
                             : `${favoriteStores.length} saved ${favoriteStores.length === 1 ? 'store' : 'stores'}`
@@ -188,16 +188,16 @@ export default function Favorites() {
                 {/* Favorites List */}
                 {favoriteStores.length === 0 ? (
                     <div className="text-center py-12">
-                        <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                        <Heart className="h-16 w-16 text-t3 mx-auto mb-4" />
+                        <h2 className="text-2xl font-semibold text-soil font-outfit mb-4">
                             No Favorites Yet
                         </h2>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-t2 font-outfit mb-6">
                             Explore stores and add them to your favorites by clicking the heart icon on store detail pages.
                         </p>
                         <Button
                             onClick={() => setLocation("/")}
-                            className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                            className="bg-bark-lt hover:bg-bark-lt/90 text-white"
                         >
                             Find Stores
                         </Button>
@@ -213,10 +213,10 @@ export default function Favorites() {
                                 <CardHeader>
                                     <div className="flex justify-between items-start">
                                         <div className="flex-1">
-                                            <CardTitle className="text-lg font-semibold text-gray-900">
+                                            <CardTitle className="text-lg font-semibold text-soil font-outfit">
                                                 {place.name}
                                             </CardTitle>
-                                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                                            <div className="flex items-center text-sm text-t3 font-outfit mt-1">
                                                 <MapPin className="h-4 w-4 mr-1" />
                                                 {place.city}
                                             </div>
@@ -236,25 +236,25 @@ export default function Favorites() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                                    <p className="text-t2 font-outfit text-sm mb-4 line-clamp-3">
                                         {place.description}
                                     </p>
 
                                     <div className="space-y-3">
                                         <div>
-                                            <p className="text-sm font-medium text-gray-700">
+                                            <p className="text-sm font-medium text-t1 font-outfit">
                                                 Category
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-t2 font-outfit">
                                                 {place.category}
                                             </p>
                                         </div>
 
                                         <div>
-                                            <p className="text-sm font-medium text-gray-700">
+                                            <p className="text-sm font-medium text-t1 font-outfit">
                                                 Address
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-t2 font-outfit">
                                                 {place.address}
                                             </p>
                                         </div>
@@ -263,7 +263,7 @@ export default function Favorites() {
                                             const tags = getTagsFromPlace(place as PlaceType);
                                             return tags.length > 0 && (
                                             <div>
-                                                <p className="text-sm font-medium text-gray-700 mb-2">
+                                                <p className="text-sm font-medium text-t1 font-outfit mb-2">
                                                     Features
                                                 </p>
                                                 <div className="flex flex-wrap gap-1.5">
@@ -276,7 +276,7 @@ export default function Favorites() {
                                                                     <Badge
                                                                         key={index}
                                                                         variant="secondary"
-                                                                        className="text-xs bg-[#94AF9F]/10 text-[#94AF9F] hover:bg-[#94AF9F]/20 flex items-center gap-1"
+                                                                        className="text-xs bg-sage/10 text-sage hover:bg-sage/20 flex items-center gap-1"
                                                                     >
                                                                         {tagIcon}
                                                                         {tag
@@ -302,7 +302,7 @@ export default function Favorites() {
                                         })()}
 
                                         <div className="pt-2">
-                                            <p className="text-sm text-[#E07A5F] font-medium text-center">
+                                            <p className="text-sm text-bark-lt font-medium text-center">
                                                 Click to view details →
                                             </p>
                                         </div>
