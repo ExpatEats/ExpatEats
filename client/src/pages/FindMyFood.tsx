@@ -279,7 +279,7 @@ export default function FindMyFood() {
                                     {locations.map((location) => (
                                     <div
                                         key={location.id}
-                                        className="border border-mist rounded-lg p-4 hover:border-[#E07A5F]/50 transition-colors"
+                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors"
                                     >
                                         <div className="flex items-center space-x-3">
                                             <Checkbox
@@ -321,7 +321,7 @@ export default function FindMyFood() {
                                 {guideTypes.map((guide) => (
                                     <div
                                         key={guide.id}
-                                        className="border border-mist rounded-lg p-4 hover:border-[#E07A5F]/50 transition-colors"
+                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors"
                                     >
                                         <div className="flex items-start space-x-3">
                                             <Checkbox
@@ -368,7 +368,7 @@ export default function FindMyFood() {
                                 {getDietaryPreferences().map((preference) => (
                                     <div
                                         key={preference.id}
-                                        className="border border-mist rounded-lg p-3 hover:border-[#E07A5F]/50 transition-colors"
+                                        className="border border-mist rounded-lg p-3 hover:border-sage/50 transition-colors"
                                     >
                                         <div className="flex items-start space-x-2">
                                             <Checkbox
