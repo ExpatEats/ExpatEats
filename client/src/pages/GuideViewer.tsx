@@ -102,7 +102,7 @@ export default function GuideViewer() {
           <CardContent className="pt-6 pb-6 px-12">
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="h-12 w-12 animate-spin text-[#94AF9F]" />
-              <p className="text-gray-600">Loading guide...</p>
+              <p className="text-t2 font-outfit">Loading guide...</p>
             </div>
           </CardContent>
         </Card>
@@ -146,7 +146,7 @@ export default function GuideViewer() {
                     {!hasAccess && (
                       <Button
                         onClick={() => setLocation("/services")}
-                        className="bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
+                        className="bg-sage hover:bg-sage/90 text-white"
                       >
                         Browse Services
                       </Button>
@@ -169,7 +169,7 @@ export default function GuideViewer() {
           <Button
             onClick={() => setLocation("/purchases")}
             variant="ghost"
-            className="text-gray-600 hover:text-gray-900"
+            className="text-t2 font-outfit hover:text-gray-900"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to My Guides

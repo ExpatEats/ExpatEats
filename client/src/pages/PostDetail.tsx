@@ -360,7 +360,7 @@ const PostDetail: React.FC = () => {
                 <div className="container mx-auto px-4 py-8">
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-red-600">Invalid Post</h1>
-                        <p className="text-gray-600 mb-4">The post you're looking for doesn't exist.</p>
+                        <p className="text-t2 font-outfit mb-4">The post you're looking for doesn't exist.</p>
                         <Button onClick={() => setLocation("/community")}>
                             Back to Community
                         </Button>
@@ -395,7 +395,7 @@ const PostDetail: React.FC = () => {
                 <div className="container mx-auto px-4 py-8">
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-red-600">Error Loading Post</h1>
-                        <p className="text-gray-600 mb-4">Failed to load the post. Please try again.</p>
+                        <p className="text-t2 font-outfit mb-4">Failed to load the post. Please try again.</p>
                         <Button onClick={() => setLocation("/community")}>
                             Back to Community
                         </Button>
@@ -453,7 +453,7 @@ const PostDetail: React.FC = () => {
                                                 </Badge>
                                             )}
                                         </div>
-                                        <div className="text-sm text-gray-500 flex items-center">
+                                        <div className="text-sm text-t3 font-outfit flex items-center">
                                             <Calendar className="h-3 w-3 mr-1" />
                                             {formatTimeAgo(post.createdAt)}
                                         </div>
@@ -498,7 +498,7 @@ const PostDetail: React.FC = () => {
                                         className={`flex items-center space-x-2 text-sm transition-colors ${
                                             post.isLikedByUser
                                                 ? "text-red-600 hover:text-red-700"
-                                                : "text-gray-500 hover:text-red-600"
+                                                : "text-t3 font-outfit hover:text-red-600"
                                         }`}
                                     >
                                         <Heart
@@ -508,7 +508,7 @@ const PostDetail: React.FC = () => {
                                         />
                                         <span>{post.likesCount}</span>
                                     </button>
-                                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                    <div className="flex items-center space-x-2 text-sm text-t3 font-outfit">
                                         <MessageSquare className="h-5 w-5" />
                                         <span>{comments.length} comments</span>
                                     </div>
@@ -538,7 +538,7 @@ const PostDetail: React.FC = () => {
                                         rows={3}
                                         className={commentError ? "border-red-500" : ""}
                                     />
-                                    <div className="flex justify-between text-sm text-gray-500 mt-1">
+                                    <div className="flex justify-between text-sm text-t3 font-outfit mt-1">
                                         {commentError ? (
                                             <span className="text-red-600">{commentError}</span>
                                         ) : (
@@ -571,7 +571,7 @@ const PostDetail: React.FC = () => {
                                     <div className="text-center py-8">
                                         <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                                         <h3 className="text-lg font-medium text-gray-900 mb-2">No comments yet</h3>
-                                        <p className="text-gray-500">Be the first to share your thoughts!</p>
+                                        <p className="text-t3 font-outfit">Be the first to share your thoughts!</p>
                                     </div>
                                 ) : (
                                     comments.map((comment) => (
@@ -598,7 +598,7 @@ const PostDetail: React.FC = () => {
                                                                     City Ambassador
                                                                 </Badge>
                                                             )}
-                                                            <span className="text-sm text-gray-500">
+                                                            <span className="text-sm text-t3 font-outfit">
                                                                 {formatTimeAgo(comment.createdAt)}
                                                             </span>
                                                         </div>
