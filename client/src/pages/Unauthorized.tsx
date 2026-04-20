@@ -19,11 +19,11 @@ const Unauthorized = () => {
     }, [isAuthenticated, setLocation]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-cream-mid px-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center pb-4">
-                    <div className="mx-auto w-16 h-16 bg-[#E07A5F]/10 rounded-full flex items-center justify-center mb-4">
-                        <Lock className="h-8 w-8 text-[#E07A5F]" />
+                    <div className="mx-auto w-16 h-16 bg-bark-lt/10 rounded-full flex items-center justify-center mb-4">
+                        <Lock className="h-8 w-8 text-bark-lt" />
                     </div>
                     <CardTitle className="text-2xl font-bold">Login Required</CardTitle>
                     <CardDescription className="text-base mt-2">
@@ -33,7 +33,7 @@ const Unauthorized = () => {
                 <CardContent className="space-y-3 pt-2">
                     <Button
                         onClick={() => setLoginModalOpen(true)}
-                        className="w-full bg-[#6D9075] hover:bg-[#6D9075]/90 text-white"
+                        className="w-full bg-sage hover:bg-sage/90 text-white"
                         size="lg"
                     >
                         <LogIn className="h-5 w-5 mr-2" />
@@ -42,7 +42,7 @@ const Unauthorized = () => {
                     <Button
                         onClick={() => setLocation("/register")}
                         variant="outline"
-                        className="w-full border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                        className="w-full border-bark-lt text-bark-lt hover:bg-bark-lt hover:text-white"
                         size="lg"
                     >
                         <UserPlus className="h-5 w-5 mr-2" />

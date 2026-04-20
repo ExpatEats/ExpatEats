@@ -7,7 +7,7 @@ export default function Terms() {
     return (
         <div className="container py-8 max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold mb-6">Terms and Conditions</h1>
-            <p className="text-gray-600 mb-8">Last updated: May 20, 2025</p>
+            <p className="text-t2 font-outfit mb-8">Last updated: May 20, 2025</p>
 
             <div className="prose prose-slate max-w-none">
                 <h2 className="text-xl font-semibold">1. Introduction</h2>
