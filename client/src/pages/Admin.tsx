@@ -700,7 +700,7 @@ export default function Admin() {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E07A5F] mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Loading...</p>
+                    <p className="mt-2 text-t2 font-outfit">Loading...</p>
                 </div>
             </div>
         );
@@ -717,17 +717,17 @@ export default function Admin() {
                     {/* Header */}
                     <div className="mb-8 flex items-center justify-between">
                         <div>
-                            <h1 className="font-montserrat text-3xl font-bold mb-2">
+                            <h1 className="font-cormorant text-3xl font-bold mb-2">
                                 Admin Panel
                             </h1>
-                            <p className="text-gray-600">
+                            <p className="text-t2 font-outfit">
                                 Manage food sources, cities, and review submissions.
                             </p>
                         </div>
                         <Button
                             onClick={handleLogout}
                             variant="outline"
-                            className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                            className="border-[#E07A5F] text-bark-lt hover:bg-bark-lt hover:text-white"
                         >
                             <LogOut className="h-4 w-4 mr-2" />
                             Logout
@@ -762,7 +762,7 @@ export default function Admin() {
                                                     <section.icon className="h-4 w-4" />
                                                     {section.name}
                                                 </div>
-                                                <div className="text-sm text-gray-500 mt-1">
+                                                <div className="text-sm text-t3 font-outfit mt-1">
                                                     {section.description}
                                                 </div>
                                             </button>
@@ -805,7 +805,7 @@ export default function Admin() {
                                         <CardContent>
                                             {analyticsLoading ? (
                                                 <div className="flex items-center justify-center py-12">
-                                                    <Loader2 className="h-8 w-8 animate-spin text-[#E07A5F]" />
+                                                    <Loader2 className="h-8 w-8 animate-spin text-bark-lt" />
                                                 </div>
                                             ) : analyticsError ? (
                                                 <div className="text-center py-8 text-red-500">
@@ -1318,7 +1318,7 @@ export default function Admin() {
                                 <Card className="w-full">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-[#E07A5F]" />
+                        <Clock className="h-5 w-5 text-bark-lt" />
                         Pending Location Reviews
                         {pendingPlaces.length > 0 && (
                             <Badge variant="destructive" className="ml-2">
@@ -1333,7 +1333,7 @@ export default function Admin() {
                 </CardHeader>
                 <CardContent>
                     {pendingPlaces.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
+                        <div className="text-center py-8 text-t3 font-outfit">
                             <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300" />
                             <p>No pending locations to review</p>
                         </div>
@@ -1342,14 +1342,14 @@ export default function Admin() {
                             {pendingPlaces.map((place: any) => (
                                 <div
                                     key={place.id}
-                                    className="border border-gray-200 rounded-lg p-4"
+                                    className="border border-mist rounded-lg p-4"
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <div>
                                             <h3 className="font-semibold text-lg">
                                                 {place.name}
                                             </h3>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-t2 font-outfit">
                                                 {place.category}
                                             </p>
                                         </div>
@@ -1498,7 +1498,7 @@ export default function Admin() {
                 </CardHeader>
                 <CardContent>
                     {pendingEvents.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
+                        <div className="text-center py-8 text-t3 font-outfit">
                             <Calendar className="h-12 w-12 mx-auto mb-2 text-gray-400" />
                             <p>No pending events to review</p>
                         </div>
@@ -1525,22 +1525,22 @@ export default function Admin() {
 
                                             <div className="grid grid-cols-2 gap-4 text-sm">
                                                 <div>
-                                                    <p className="text-gray-500 font-medium">Date & Time</p>
+                                                    <p className="text-t3 font-outfit font-medium">Date & Time</p>
                                                     <p className="text-gray-900">
                                                         {new Date(event.date).toLocaleDateString()} at {event.time}
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-gray-500 font-medium">Location</p>
+                                                    <p className="text-t3 font-outfit font-medium">Location</p>
                                                     <p className="text-gray-900">{event.location}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-gray-500 font-medium">City</p>
+                                                    <p className="text-t3 font-outfit font-medium">City</p>
                                                     <p className="text-gray-900">{event.city}</p>
                                                 </div>
                                                 {event.organizerName && (
                                                     <div>
-                                                        <p className="text-gray-500 font-medium">Organizer</p>
+                                                        <p className="text-t3 font-outfit font-medium">Organizer</p>
                                                         <p className="text-gray-900">
                                                             {event.organizerName}
                                                             {event.organizerRole && ` · ${event.organizerRole}`}
@@ -1548,16 +1548,16 @@ export default function Admin() {
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <p className="text-gray-500 font-medium">Submitted By</p>
+                                                    <p className="text-t3 font-outfit font-medium">Submitted By</p>
                                                     <p className="text-gray-900">{event.submittedBy}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-gray-500 font-medium">Contact Email</p>
+                                                    <p className="text-t3 font-outfit font-medium">Contact Email</p>
                                                     <p className="text-gray-900">{event.submitterEmail}</p>
                                                 </div>
                                                 {event.website && (
                                                     <div>
-                                                        <p className="text-gray-500 font-medium">Website</p>
+                                                        <p className="text-t3 font-outfit font-medium">Website</p>
                                                         <a
                                                             href={event.website}
                                                             target="_blank"
@@ -1618,7 +1618,7 @@ export default function Admin() {
                                 <Card className="w-full">
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2">
-                                            <Map className="h-5 w-5 text-[#E07A5F]" />
+                                            <Map className="h-5 w-5 text-bark-lt" />
                                             Batch Geocode Locations
                                         </CardTitle>
                                         <CardDescription>
@@ -1662,7 +1662,7 @@ export default function Admin() {
                                                             <p className="text-2xl font-bold text-gray-900">
                                                                 {batchGeocodeResults.summary.total}
                                                             </p>
-                                                            <p className="text-sm text-gray-600">Total</p>
+                                                            <p className="text-sm text-t2 font-outfit">Total</p>
                                                         </div>
                                                         <div className="bg-green-50 p-3 rounded border border-green-200">
                                                             <p className="text-2xl font-bold text-green-700">

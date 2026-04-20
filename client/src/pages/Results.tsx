@@ -95,28 +95,28 @@ const Results = () => {
     const getTagIcon = (tagId: string) => {
         const iconMap: Record<string, JSX.Element> = {
             // Grocery tags
-            "gluten-free": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
-            "dairy-free": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
-            "nut-free": <Apple className="h-4 w-4 text-[#E07A5F]" />,
-            "vegan": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
-            "organic": <Apple className="h-4 w-4 text-[#94AF9F]" />,
-            "local-farms": <Truck className="h-4 w-4 text-[#94AF9F]" />,
-            "fresh-vegetables": <Carrot className="h-4 w-4 text-[#E07A5F]" />,
-            "farm-raised-meat": <Egg className="h-4 w-4 text-[#E07A5F]" />,
-            "no-processed": <Package2 className="h-4 w-4 text-[#94AF9F]" />,
-            "kid-friendly": <Baby className="h-4 w-4 text-[#E07A5F]" />,
-            "bulk-buying": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
-            "zero-waste": <Leaf className="h-4 w-4 text-[#E07A5F]" />,
+            "gluten-free": <Wheat className="h-4 w-4 text-bark-lt" />,
+            "dairy-free": <Cherry className="h-4 w-4 text-bark-lt" />,
+            "nut-free": <Apple className="h-4 w-4 text-bark-lt" />,
+            "vegan": <Leaf className="h-4 w-4 text-sage" />,
+            "organic": <Apple className="h-4 w-4 text-sage" />,
+            "local-farms": <Truck className="h-4 w-4 text-sage" />,
+            "fresh-vegetables": <Carrot className="h-4 w-4 text-bark-lt" />,
+            "farm-raised-meat": <Egg className="h-4 w-4 text-bark-lt" />,
+            "no-processed": <Package2 className="h-4 w-4 text-sage" />,
+            "kid-friendly": <Baby className="h-4 w-4 text-bark-lt" />,
+            "bulk-buying": <ShoppingBag className="h-4 w-4 text-sage" />,
+            "zero-waste": <Leaf className="h-4 w-4 text-bark-lt" />,
             
             // Supplement tags
-            "supplements": <Package2 className="h-4 w-4 text-[#E07A5F]" />,
-            "vitamins": <Apple className="h-4 w-4 text-[#E07A5F]" />,
-            "sports-nutrition": <Truck className="h-4 w-4 text-[#94AF9F]" />,
-            "omega-3": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
-            "herbal-remedies": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
-            "practitioner-grade": <Search className="h-4 w-4 text-[#E07A5F]" />,
-            "hypoallergenic": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
-            "online": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
+            "supplements": <Package2 className="h-4 w-4 text-bark-lt" />,
+            "vitamins": <Apple className="h-4 w-4 text-bark-lt" />,
+            "sports-nutrition": <Truck className="h-4 w-4 text-sage" />,
+            "omega-3": <Cherry className="h-4 w-4 text-bark-lt" />,
+            "herbal-remedies": <Leaf className="h-4 w-4 text-sage" />,
+            "practitioner-grade": <Search className="h-4 w-4 text-bark-lt" />,
+            "hypoallergenic": <Wheat className="h-4 w-4 text-bark-lt" />,
+            "online": <ShoppingBag className="h-4 w-4 text-sage" />,
         };
         
         return iconMap[tagId] || null;
@@ -221,7 +221,7 @@ const Results = () => {
                     <Button
                         variant="ghost"
                         onClick={() => window.history.back()}
-                        className="mb-4 text-[#E07A5F] hover:text-[#E07A5F]/80"
+                        className="mb-4 text-bark-lt hover:text-bark-lt/80"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Modify Search
@@ -229,7 +229,7 @@ const Results = () => {
 
                     <div className="text-center">
                         <div className="flex justify-center items-center gap-2 mb-4">
-                            <div className="bg-[#94AF9F] text-white px-3 py-1 rounded-full text-sm font-medium">
+                            <div className="bg-sage text-white px-3 py-1 rounded-full text-sm font-medium">
                                 {getLocationName()}
                             </div>
                         </div>
@@ -237,7 +237,7 @@ const Results = () => {
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                             Results
                         </h1>
-                        <p className="text-gray-600">
+                        <p className="text-t2 font-outfit">
                             {isLoading ? "Searching..." : getResultsDescription()}
                         </p>
                     </div>
@@ -254,8 +254,8 @@ const Results = () => {
                                     onClick={() => setViewMode("list")}
                                     className={`${
                                         viewMode === "list"
-                                            ? "bg-[#E07A5F] text-white hover:bg-[#d06851]"
-                                            : "text-gray-600 hover:text-gray-900"
+                                            ? "bg-bark-lt text-white hover:bg-[#d06851]"
+                                            : "text-t2 font-outfit hover:text-gray-900"
                                     }`}
                                 >
                                     <List className="h-4 w-4 mr-1" />
@@ -269,8 +269,8 @@ const Results = () => {
                                     onClick={() => setViewMode("map")}
                                     className={`${
                                         viewMode === "map"
-                                            ? "bg-[#E07A5F] text-white hover:bg-[#d06851]"
-                                            : "text-gray-600 hover:text-gray-900"
+                                            ? "bg-bark-lt text-white hover:bg-[#d06851]"
+                                            : "text-t2 font-outfit hover:text-gray-900"
                                     }`}
                                     >
                                         <Map className="h-4 w-4 mr-1" />
@@ -304,14 +304,14 @@ const Results = () => {
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                             No results found
                         </h2>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-t2 font-outfit mb-6">
                             We couldn't find any businesses matching your criteria.
                             <br />
                             Try adjusting your search parameters.
                         </p>
                         <Button
                             onClick={() => window.history.back()}
-                            className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                            className="bg-bark-lt hover:bg-bark-lt/90 text-white"
                         >
                             Modify Search
                         </Button>
@@ -351,7 +351,7 @@ const Results = () => {
                                                 <CardTitle className="text-lg font-semibold text-gray-900">
                                                     {place.name}
                                                 </CardTitle>
-                                                <div className="flex items-center text-sm text-gray-500 mt-1">
+                                                <div className="flex items-center text-sm text-t3 font-outfit mt-1">
                                                     <MapPin className="h-4 w-4 mr-1" />
                                                     {place.city}
                                                 </div>
@@ -360,7 +360,7 @@ const Results = () => {
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                                        <p className="text-t2 font-outfit text-sm mb-4 line-clamp-3">
                                             {place.description}
                                         </p>
 
@@ -369,7 +369,7 @@ const Results = () => {
                                                 <p className="text-sm font-medium text-gray-700">
                                                     Category
                                                 </p>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-t2 font-outfit">
                                                     {place.category}
                                                 </p>
                                             </div>
@@ -378,7 +378,7 @@ const Results = () => {
                                                 <p className="text-sm font-medium text-gray-700">
                                                     Address
                                                 </p>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-t2 font-outfit">
                                                     {place.address}
                                                 </p>
                                             </div>
@@ -391,12 +391,12 @@ const Results = () => {
                                                     </p>
                                                     <div className="space-y-1">
                                                         {place.phone && (
-                                                            <p className="text-sm text-gray-600">
+                                                            <p className="text-sm text-t2 font-outfit">
                                                                 📞 {place.phone}
                                                             </p>
                                                         )}
                                                         {place.email && (
-                                                            <p className="text-sm text-gray-600">
+                                                            <p className="text-sm text-t2 font-outfit">
                                                                 ✉️ {place.email}
                                                             </p>
                                                         )}
@@ -420,7 +420,7 @@ const Results = () => {
                                                         onClick={(e) =>
                                                             e.stopPropagation()
                                                         }
-                                                        className="inline-flex items-center text-sm text-[#E07A5F] hover:text-[#d06851] font-medium"
+                                                        className="inline-flex items-center text-sm text-bark-lt hover:text-[#d06851] font-medium"
                                                     >
                                                         📷 Instagram
                                                     </a>
@@ -449,7 +449,7 @@ const Results = () => {
                                                                                     index
                                                                                 }
                                                                                 variant="secondary"
-                                                                                className="text-xs bg-[#94AF9F]/10 text-[#94AF9F] hover:bg-[#94AF9F]/20 flex items-center gap-1"
+                                                                                className="text-xs bg-sage/10 text-sage hover:bg-sage/20 flex items-center gap-1"
                                                                             >
                                                                                 {tagIcon}
                                                                                 {tag
@@ -487,7 +487,7 @@ const Results = () => {
                                             })()}
 
                                             <div className="pt-2">
-                                                <p className="text-sm text-[#E07A5F] font-medium text-center">
+                                                <p className="text-sm text-bark-lt font-medium text-center">
                                                     Click to view details →
                                                 </p>
                                             </div>
@@ -510,7 +510,7 @@ const Results = () => {
                                                             <CardTitle className="text-lg font-semibold text-gray-900">
                                                                 {place.name}
                                                             </CardTitle>
-                                                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                                                            <div className="flex items-center text-sm text-t3 font-outfit mt-1">
                                                                 <MapPin className="h-4 w-4 mr-1" />
                                                                 {place.city}
                                                             </div>
@@ -518,7 +518,7 @@ const Results = () => {
                                                     </div>
                                                 </CardHeader>
                                                 <CardContent>
-                                                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                                                    <p className="text-t2 font-outfit text-sm mb-4 line-clamp-3">
                                                         {place.description}
                                                     </p>
                                                 </CardContent>
@@ -531,20 +531,20 @@ const Results = () => {
                                         <Card className="max-w-md mx-4 shadow-2xl border-2 border-[#E07A5F]">
                                             <CardContent className="p-8 text-center">
                                                 <div className="mb-4 flex justify-center">
-                                                    <div className="rounded-full bg-[#E07A5F]/10 p-4">
-                                                        <Lock className="h-12 w-12 text-[#E07A5F]" />
+                                                    <div className="rounded-full bg-bark-lt/10 p-4">
+                                                        <Lock className="h-12 w-12 text-bark-lt" />
                                                     </div>
                                                 </div>
                                                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
                                                     Unlock All Results
                                                 </h3>
-                                                <p className="text-gray-600 mb-6">
+                                                <p className="text-t2 font-outfit mb-6">
                                                     Create a free account to view all {results.length} results and access detailed information about each location.
                                                 </p>
                                                 <div className="space-y-3">
                                                     <Button
                                                         onClick={() => setLocation("/register")}
-                                                        className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white text-lg py-6"
+                                                        className="w-full bg-bark-lt hover:bg-bark-lt/90 text-white text-lg py-6"
                                                         size="lg"
                                                     >
                                                         Create an Account
@@ -552,7 +552,7 @@ const Results = () => {
                                                     <Button
                                                         onClick={() => setLoginModalOpen(true)}
                                                         variant="outline"
-                                                        className="w-full border-[#94AF9F] text-[#94AF9F] hover:bg-[#94AF9F]/10 text-lg py-6"
+                                                        className="w-full border-[#94AF9F] text-sage hover:bg-sage/10 text-lg py-6"
                                                         size="lg"
                                                     >
                                                         Log In

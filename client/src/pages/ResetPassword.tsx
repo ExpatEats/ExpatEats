@@ -147,7 +147,7 @@ export default function ResetPassword() {
                     <Card>
                         <CardContent className="pt-16 pb-16 text-center">
                             <Loader2 className="h-12 w-12 animate-spin text-[#E07A5F] mx-auto mb-4" />
-                            <p className="text-gray-600">Verifying reset link...</p>
+                            <p className="text-t2 font-outfit">Verifying reset link...</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -174,7 +174,7 @@ export default function ResetPassword() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
-                                <p className="text-sm text-gray-600 text-center">
+                                <p className="text-sm text-t2 font-outfit text-center">
                                     Password reset links expire after 1 hour for security reasons.
                                 </p>
                                 <Button
@@ -210,7 +210,7 @@ export default function ResetPassword() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
-                                <p className="text-sm text-gray-600 text-center">
+                                <p className="text-sm text-t2 font-outfit text-center">
                                     You can now login with your new password.
                                 </p>
                                 <p className="text-sm text-gray-500 text-center">
@@ -314,7 +314,7 @@ export default function ResetPassword() {
                                     <Button
                                         type="button"
                                         variant="ghost"
-                                        className="text-sm text-gray-600"
+                                        className="text-sm text-t2 font-outfit"
                                         onClick={() => navigate("/")}
                                         disabled={isResetting}
                                     >

@@ -39,30 +39,30 @@ import { getTagsFromPlace } from "@/lib/tagUtils";
 const getTagIcon = (tagId: string) => {
     const iconMap: Record<string, JSX.Element> = {
         // Grocery tags
-        "gluten-free": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
-        "dairy-free": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
-        "nut-free": <Apple className="h-4 w-4 text-[#E07A5F]" />,
-        "vegan": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
-        "organic": <Apple className="h-4 w-4 text-[#94AF9F]" />,
-        "local-farms": <Truck className="h-4 w-4 text-[#94AF9F]" />,
-        "fresh-vegetables": <Carrot className="h-4 w-4 text-[#E07A5F]" />,
-        "farm-raised-meat": <Egg className="h-4 w-4 text-[#E07A5F]" />,
-        "no-processed": <Package2 className="h-4 w-4 text-[#94AF9F]" />,
-        "kid-friendly": <Baby className="h-4 w-4 text-[#E07A5F]" />,
-        "bulk-buying": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
-        "zero-waste": <Leaf className="h-4 w-4 text-[#E07A5F]" />,
+        "gluten-free": <Wheat className="h-4 w-4 text-bark-lt" />,
+        "dairy-free": <Cherry className="h-4 w-4 text-bark-lt" />,
+        "nut-free": <Apple className="h-4 w-4 text-bark-lt" />,
+        "vegan": <Leaf className="h-4 w-4 text-sage" />,
+        "organic": <Apple className="h-4 w-4 text-sage" />,
+        "local-farms": <Truck className="h-4 w-4 text-sage" />,
+        "fresh-vegetables": <Carrot className="h-4 w-4 text-bark-lt" />,
+        "farm-raised-meat": <Egg className="h-4 w-4 text-bark-lt" />,
+        "no-processed": <Package2 className="h-4 w-4 text-sage" />,
+        "kid-friendly": <Baby className="h-4 w-4 text-bark-lt" />,
+        "bulk-buying": <ShoppingBag className="h-4 w-4 text-sage" />,
+        "zero-waste": <Leaf className="h-4 w-4 text-bark-lt" />,
 
         // Supplement tags
-        "general-supplements": <Package2 className="h-4 w-4 text-[#E07A5F]" />,
-        "vitamins": <Apple className="h-4 w-4 text-[#E07A5F]" />,
-        "sports-nutrition": <Truck className="h-4 w-4 text-[#94AF9F]" />,
-        "omega-3": <Cherry className="h-4 w-4 text-[#E07A5F]" />,
-        "herbal-remedies": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
-        "practitioner-grade": <Search className="h-4 w-4 text-[#E07A5F]" />,
-        "hypoallergenic": <Wheat className="h-4 w-4 text-[#E07A5F]" />,
-        "online-retailer": <ShoppingBag className="h-4 w-4 text-[#94AF9F]" />,
-        "vegan-supplements": <Leaf className="h-4 w-4 text-[#94AF9F]" />,
-        "organic-supplements": <Apple className="h-4 w-4 text-[#94AF9F]" />,
+        "general-supplements": <Package2 className="h-4 w-4 text-bark-lt" />,
+        "vitamins": <Apple className="h-4 w-4 text-bark-lt" />,
+        "sports-nutrition": <Truck className="h-4 w-4 text-sage" />,
+        "omega-3": <Cherry className="h-4 w-4 text-bark-lt" />,
+        "herbal-remedies": <Leaf className="h-4 w-4 text-sage" />,
+        "practitioner-grade": <Search className="h-4 w-4 text-bark-lt" />,
+        "hypoallergenic": <Wheat className="h-4 w-4 text-bark-lt" />,
+        "online-retailer": <ShoppingBag className="h-4 w-4 text-sage" />,
+        "vegan-supplements": <Leaf className="h-4 w-4 text-sage" />,
+        "organic-supplements": <Apple className="h-4 w-4 text-sage" />,
     };
 
     return iconMap[tagId] || null;
@@ -307,13 +307,13 @@ export default function Store() {
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-2xl font-bold mb-4">Store Not Found</h1>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-t2 font-outfit mb-4">
                         The store you're looking for doesn't exist or has been
                         removed.
                     </p>
                     <Button
                         onClick={() => setLocation("/search")}
-                        className="bg-[#E07A5F] hover:bg-[#d06851] text-white"
+                        className="bg-bark-lt hover:bg-[#d06851] text-white"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back to Search
@@ -331,7 +331,7 @@ export default function Store() {
                     <Button
                         onClick={() => window.history.back()}
                         variant="outline"
-                        className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                        className="border-[#E07A5F] text-bark-lt hover:bg-bark-lt hover:text-white"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back to Results
@@ -367,8 +367,8 @@ export default function Store() {
                             size="sm"
                             className={`border-[#E07A5F] ${
                                 isSaved
-                                    ? "bg-[#E07A5F] text-white"
-                                    : "text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                                    ? "bg-bark-lt text-white"
+                                    : "text-bark-lt hover:bg-bark-lt hover:text-white"
                             }`}
                             disabled={saveMutation.isPending}
                         >
@@ -382,7 +382,7 @@ export default function Store() {
                             onClick={handleShare}
                             variant="outline"
                             size="sm"
-                            className="border-[#E07A5F] text-[#E07A5F] hover:bg-[#E07A5F] hover:text-white"
+                            className="border-[#E07A5F] text-bark-lt hover:bg-bark-lt hover:text-white"
                         >
                             <Share2 className="h-4 w-4 mr-1" />
                             Share
@@ -397,7 +397,7 @@ export default function Store() {
                             <h1 className="text-3xl font-bold mb-2">
                                 {store.name}
                             </h1>
-                            <p className="text-lg text-gray-600 mb-3">
+                            <p className="text-lg text-t2 font-outfit mb-3">
                                 {store.category}
                             </p>
 
@@ -422,7 +422,7 @@ export default function Store() {
                                         <Badge
                                             key={index}
                                             variant="secondary"
-                                            className="bg-[#E8F4F0] text-[#94AF9F] border-[#94AF9F]/20 flex items-center gap-1.5 px-3 py-1.5"
+                                            className="bg-[#E8F4F0] text-sage border-[#94AF9F]/20 flex items-center gap-1.5 px-3 py-1.5"
                                         >
                                             {tagIcon}
                                             {tag
@@ -472,14 +472,14 @@ export default function Store() {
                                 {/* Website */}
                                 {store.website && (
                                     <div className="flex items-start gap-3">
-                                        <ExternalLink className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0" />
+                                        <ExternalLink className="h-5 w-5 text-bark-lt mt-0.5 flex-shrink-0" />
                                         <div>
                                             <p className="font-medium">Website</p>
                                             <a
                                                 href={store.website.startsWith('http') ? store.website : `https://${store.website}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-[#E07A5F] hover:text-[#d06851] font-medium break-all"
+                                                className="text-bark-lt hover:text-[#d06851] font-medium break-all"
                                             >
                                                 {store.website}
                                             </a>
@@ -488,7 +488,7 @@ export default function Store() {
                                 )}
 
                                 <div className="flex items-start gap-3">
-                                    <MapPin className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0" />
+                                    <MapPin className="h-5 w-5 text-bark-lt mt-0.5 flex-shrink-0" />
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-1">
                                             <p className="font-medium">Address</p>
@@ -497,16 +497,16 @@ export default function Store() {
                                                 href={generateGoogleMapsUrl(store.address, store.city, store.country)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="hidden md:block text-[#E07A5F] hover:text-[#d06851] transition-colors"
+                                                className="hidden md:block text-bark-lt hover:text-[#d06851] transition-colors"
                                                 title="Open in Google Maps"
                                             >
                                                 <ExternalLink className="h-4 w-4" />
                                             </a>
                                         </div>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             {store.address}
                                         </p>
-                                        <p className="text-gray-600 mb-2">
+                                        <p className="text-t2 font-outfit mb-2">
                                             {store.city}, {store.country}
                                         </p>
                                         {/* Mobile: Navigation buttons */}
@@ -534,7 +534,7 @@ export default function Store() {
                                 {/* Contact Information */}
                                 {(store.phone || store.email) && (
                                     <div className="flex items-start gap-3">
-                                        <div className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0 flex items-center justify-center text-sm">
+                                        <div className="h-5 w-5 text-bark-lt mt-0.5 flex-shrink-0 flex items-center justify-center text-sm">
                                             📞
                                         </div>
                                         <div>
@@ -542,12 +542,12 @@ export default function Store() {
                                                 Contact
                                             </p>
                                             {store.phone && (
-                                                <p className="text-gray-600">
+                                                <p className="text-t2 font-outfit">
                                                     {store.phone}
                                                 </p>
                                             )}
                                             {store.email && (
-                                                <p className="text-gray-600">
+                                                <p className="text-t2 font-outfit">
                                                     {store.email}
                                                 </p>
                                             )}
@@ -558,7 +558,7 @@ export default function Store() {
                                 {/* Instagram Link */}
                                 {store.instagram && (
                                     <div className="flex items-start gap-3">
-                                        <div className="h-5 w-5 text-[#E07A5F] mt-0.5 flex-shrink-0 flex items-center justify-center text-sm">
+                                        <div className="h-5 w-5 text-bark-lt mt-0.5 flex-shrink-0 flex items-center justify-center text-sm">
                                             📷
                                         </div>
                                         <div>
@@ -575,7 +575,7 @@ export default function Store() {
                                                 }
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-[#E07A5F] hover:text-[#d06851] font-medium"
+                                                className="text-bark-lt hover:text-[#d06851] font-medium"
                                             >
                                                 {store.instagram.startsWith("@")
                                                     ? store.instagram
@@ -587,12 +587,12 @@ export default function Store() {
 
                                 {store.createdAt && (
                                     <div className="flex items-center gap-3">
-                                        <Clock className="h-5 w-5 text-[#E07A5F]" />
+                                        <Clock className="h-5 w-5 text-bark-lt" />
                                         <div>
                                             <p className="font-medium">
                                                 Added to Expat Eats
                                             </p>
-                                            <p className="text-gray-600">
+                                            <p className="text-t2 font-outfit">
                                                 {new Date(
                                                     store.createdAt,
                                                 ).toLocaleDateString("en-US", {
@@ -620,7 +620,7 @@ export default function Store() {
                                     onPlaceClick={() => {}}
                                 />
                             </div>
-                            <p className="text-sm text-gray-500 mt-2">
+                            <p className="text-sm text-t3 font-outfit mt-2">
                                 {store.address
                                     ? "Exact location based on provided address"
                                     : "Approximate location - exact address not available"}
@@ -651,7 +651,7 @@ export default function Store() {
                 {/* Contact Info Note */}
                 <Card className="bg-[#E8F4F0] border-[#94AF9F]/20">
                     <CardContent className="p-6">
-                        <h3 className="text-lg font-semibold mb-2 text-[#94AF9F]">
+                        <h3 className="text-lg font-semibold mb-2 text-sage">
                             Visit This Store
                         </h3>
                         <p className="text-gray-700">
