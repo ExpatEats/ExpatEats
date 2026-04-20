@@ -114,7 +114,7 @@ const Onboarding = () => {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="text-center mb-6">
-                <div className="inline-flex items-center bg-[#6D9075] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+                <div className="inline-flex items-center bg-sage text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-4 w-4 mr-1.5"
@@ -137,10 +137,10 @@ const Onboarding = () => {
                     </svg>
                     <span>PORTUGAL</span>
                 </div>
-                <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-bold mb-3">
                     Welcome to Expat Eats
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xl text-t2 font-outfit max-w-2xl mx-auto">
                     Sort out Your Food Situation.
                 </p>
             </div>
@@ -153,7 +153,7 @@ const Onboarding = () => {
                 </CardHeader>
 
                 <CardContent className="p-6">
-                    <p className="mb-6 text-center text-gray-600">
+                    <p className="mb-6 text-center text-t2 font-outfit">
                         Select your dietary preferences to help us find the
                         perfect local food sources for your needs.
                     </p>
@@ -167,7 +167,7 @@ const Onboarding = () => {
                   ${
                       selectedPreferences.includes(preference.id)
                           ? "border-primary/50 bg-primary/5"
-                          : "border-gray-200 hover:border-primary/30 hover:bg-gray-50"
+                          : "border-mist hover:border-primary/30 hover:bg-cream-mid"
                   }
                 `}
                             >

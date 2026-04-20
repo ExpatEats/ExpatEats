@@ -163,8 +163,8 @@ const CreatePost: React.FC = () => {
                             Back to Community
                         </Button>
                         <div className="text-center">
-                            <h1 className="font-montserrat text-3xl font-bold mb-2">Create New Post</h1>
-                            <p className="text-gray-600">
+                            <h1 className="font-cormorant text-3xl font-bold mb-2">Create New Post</h1>
+                            <p className="text-t2 font-outfit">
                                 Share your thoughts, questions, or discoveries with the community
                             </p>
                         </div>
@@ -192,7 +192,7 @@ const CreatePost: React.FC = () => {
                                                 <SelectItem key={section.id} value={section.id} className="text-left">
                                                     <div className="text-left w-full">
                                                         <div className="font-medium">{section.name}</div>
-                                                        <div className="text-sm text-gray-500">{section.description}</div>
+                                                        <div className="text-sm text-t3 font-outfit">{section.description}</div>
                                                     </div>
                                                 </SelectItem>
                                             ))}
@@ -202,7 +202,7 @@ const CreatePost: React.FC = () => {
                                         <p className="text-sm text-red-600">{errors.section}</p>
                                     )}
                                     {selectedSection && (
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-t3 font-outfit">
                                             Posting to: <span className="font-medium">{selectedSection.name}</span>
                                         </p>
                                     )}
@@ -218,7 +218,7 @@ const CreatePost: React.FC = () => {
                                         placeholder="Enter a descriptive title for your post"
                                         className={errors.title ? "border-red-500" : ""}
                                     />
-                                    <div className="flex justify-between text-sm text-gray-500">
+                                    <div className="flex justify-between text-sm text-t3 font-outfit">
                                         {errors.title ? (
                                             <span className="text-red-600">{errors.title}</span>
                                         ) : (
@@ -239,7 +239,7 @@ const CreatePost: React.FC = () => {
                                         rows={8}
                                         className={errors.body ? "border-red-500" : ""}
                                     />
-                                    <div className="flex justify-between text-sm text-gray-500">
+                                    <div className="flex justify-between text-sm text-t3 font-outfit">
                                         {errors.body ? (
                                             <span className="text-red-600">{errors.body}</span>
                                         ) : (

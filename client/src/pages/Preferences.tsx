@@ -128,7 +128,7 @@ const Preferences = () => {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="text-center mb-6">
-                <div className="inline-flex items-center bg-[#6D9075] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+                <div className="inline-flex items-center bg-sage text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-4 w-4 mr-1.5"
@@ -151,10 +151,10 @@ const Preferences = () => {
                     </svg>
                     <span>PORTUGAL</span>
                 </div>
-                <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-bold mb-3">
                     Set Your Preferences
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xl text-t2 font-outfit max-w-2xl mx-auto">
                     Your Guide to Sustainable Living Abroad
                 </p>
             </div>
@@ -167,7 +167,7 @@ const Preferences = () => {
                 </CardHeader>
 
                 <CardContent className="p-6">
-                    <p className="mb-6 text-center text-gray-600">
+                    <p className="mb-6 text-center text-t2 font-outfit">
                         Select your dietary preferences to help us find the
                         perfect local food sources for your needs.
                     </p>
@@ -181,7 +181,7 @@ const Preferences = () => {
                   ${
                       selectedPreferences.includes(preference.id)
                           ? "border-primary/50 bg-primary/5"
-                          : "border-gray-200 hover:border-primary/30 hover:bg-gray-50"
+                          : "border-mist hover:border-primary/30 hover:bg-cream-mid"
                   }
                 `}
                             >
@@ -215,7 +215,7 @@ const Preferences = () => {
                     <div className="flex flex-col items-center gap-4">
                         <Button
                             onClick={savePreferences}
-                            className="bg-[#6D9075] hover:bg-[#6D9075]/90 text-white text-lg px-8 py-6 rounded-full font-medium"
+                            className="bg-sage hover:bg-sage/90 text-white text-lg px-8 py-6 rounded-full font-medium"
                             size="lg"
                         >
                             Save My Profile & Find Food
@@ -224,7 +224,7 @@ const Preferences = () => {
                         <div className="mt-4">
                             <Button
                                 onClick={() => navigate("/contact")}
-                                className="bg-[#F5A623] hover:bg-[#F5A623]/90 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105"
+                                className="bg-bark-lt hover:bg-bark-lt/90 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105"
                             >
                                 I want someone to figure this all out for me
                             </Button>
