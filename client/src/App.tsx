@@ -36,6 +36,7 @@ import StockPantry from "./pages/StockPantry";
 import GroceryTour from "./pages/GroceryTour";
 import VIPExperience from "./pages/VIPExperience";
 import ResetPassword from "./pages/ResetPassword";
+import Interest from "./pages/Interest";
 import { useEffect } from "react";
 
 // Authentication guard component
@@ -77,6 +78,7 @@ function Router() {
                 <Route path="/" component={FindMyFood} />
                 <Route path="/register" component={Register} />
                 <Route path="/reset-password" component={ResetPassword} />
+                <Route path="/interest" component={Interest} />
                 <Route path="/terms" component={Terms} />
                 <Route path="/unauthorized" component={Unauthorized} />
                 <Route path="/onboarding" component={Onboarding} />{" "}
