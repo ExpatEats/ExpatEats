@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Menu, UserCircle, LogOut, Settings, Heart, ShoppingBag } from "lucide-react";
@@ -17,6 +17,7 @@ const Header = () => {
     const [location] = useLocation();
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
     const { user, isAuthenticated, logout, isLoading } = useAuth();
     const [notificationOpen, setNotificationOpen] = useState(false);
     const [notificationConfig, setNotificationConfig] = useState<{
@@ -51,19 +52,33 @@ const Header = () => {
         }
     };
 
+    // Handle scroll effect
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <header className="bg-soil shadow-sm sticky top-0 z-50 w-full">
+        <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+            isScrolled
+                ? 'bg-white/95 backdrop-blur-xl border-b border-bark/10 shadow-[0_2px_24px_rgba(44,31,15,0.07)]'
+                : 'bg-transparent'
+        }`}>
             <div className="w-full max-w-full px-4 py-3 flex items-center">
                 {/* Left side - Logo */}
                 <div className="flex items-center flex-1">
                     <Link href="/">
                         <div className="font-cormorant text-2xl tracking-wide">
-                            <span className="font-light text-cream">
+                            <span className={`font-semibold transition-colors ${isScrolled ? 'text-soil' : 'text-white'}`}>
                                 Expat
                             </span>
-                            <span className="font-light text-white">
+                            <em className={`font-semibold italic transition-colors ${isScrolled ? 'text-bark' : 'text-bark-lt'}`}>
                                 Eats
-                            </span>
+                            </em>
                         </div>
                     </Link>
                 </div>
@@ -71,32 +86,56 @@ const Header = () => {
                 {/* Center - Navigation */}
                 <nav className="hidden md:flex space-x-5 flex-shrink-0 font-outfit">
                     <div
-                        className={`py-2 transition-elegant ${isActive("/search") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
+                        className={`py-2 transition-colors ${
+                            isActive("/search")
+                                ? (isScrolled ? "text-soil border-b-2 border-bark" : "text-white border-b-2 border-white/20")
+                                : (isScrolled ? "text-t2 hover:text-soil" : "text-white/80 hover:text-white")
+                        }`}
                     >
                         <Link href="/search">Find My Food</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/services") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
+                        className={`py-2 transition-colors ${
+                            isActive("/services")
+                                ? (isScrolled ? "text-soil border-b-2 border-bark" : "text-white border-b-2 border-white/20")
+                                : (isScrolled ? "text-t2 hover:text-soil" : "text-white/80 hover:text-white")
+                        }`}
                     >
                         <Link href="/services">Services</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/events") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
+                        className={`py-2 transition-colors ${
+                            isActive("/events")
+                                ? (isScrolled ? "text-soil border-b-2 border-bark" : "text-white border-b-2 border-white/20")
+                                : (isScrolled ? "text-t2 hover:text-soil" : "text-white/80 hover:text-white")
+                        }`}
                     >
                         <Link href="/events">Events</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/resources") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
+                        className={`py-2 transition-colors ${
+                            isActive("/resources")
+                                ? (isScrolled ? "text-soil border-b-2 border-bark" : "text-white border-b-2 border-white/20")
+                                : (isScrolled ? "text-t2 hover:text-soil" : "text-white/80 hover:text-white")
+                        }`}
                     >
                         <Link href="/resources">Resources</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/community") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
+                        className={`py-2 transition-colors ${
+                            isActive("/community")
+                                ? (isScrolled ? "text-soil border-b-2 border-bark" : "text-white border-b-2 border-white/20")
+                                : (isScrolled ? "text-t2 hover:text-soil" : "text-white/80 hover:text-white")
+                        }`}
                     >
                         <Link href="/community">Community</Link>
                     </div>
                     <div
-                        className={`py-2 transition-elegant ${isActive("/add-location") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
+                        className={`py-2 transition-colors ${
+                            isActive("/add-location")
+                                ? (isScrolled ? "text-soil border-b-2 border-bark" : "text-white border-b-2 border-white/20")
+                                : (isScrolled ? "text-t2 hover:text-soil" : "text-white/80 hover:text-white")
+                        }`}
                     >
                         <Link href="/add-location">Add Location</Link>
                     </div>
@@ -111,7 +150,11 @@ const Header = () => {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="ghost"
-                                        className="flex items-center space-x-2 text-cream hover:text-white hover:bg-bark-lt"
+                                        className={`flex items-center space-x-2 transition-colors ${
+                                            isScrolled
+                                                ? "text-t2 hover:text-soil hover:bg-bark/10"
+                                                : "text-white/80 hover:text-white hover:bg-white/10"
+                                        }`}
                                         disabled={isLoading}
                                     >
                                         <UserCircle className="h-5 w-5" />
@@ -149,7 +192,11 @@ const Header = () => {
                             <Button
                                 variant="default"
                                 size="sm"
-                                className="bg-bark-lt hover:bg-bark-pale text-white"
+                                className={`transition-colors ${
+                                    isScrolled
+                                        ? "bg-bark hover:bg-soil text-white"
+                                        : "bg-white/20 hover:bg-white/30 text-white border border-white/20"
+                                }`}
                                 onClick={() => setLoginModalOpen(true)}
                             >
                                 Login
@@ -162,7 +209,11 @@ const Header = () => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="lg:hidden text-cream hover:text-white hover:bg-bark-lt"
+                                className={`lg:hidden transition-colors ${
+                                    isScrolled
+                                        ? "text-t2 hover:text-soil hover:bg-bark/10"
+                                        : "text-white/80 hover:text-white hover:bg-white/10"
+                                }`}
                             >
                                 <Menu className="h-6 w-6" />
                             </Button>
