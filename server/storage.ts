@@ -294,20 +294,30 @@ class DatabaseStorage implements Storage {
 
     // Location methods
     async getDistinctLocations(): Promise<{id: string, name: string}[]> {
-        // Get cities from the cities table, excluding "Online"
-        const citiesFromDb = await db
-            .select()
-            .from(cities)
-            .where(and(
-                eq(cities.isActive, true),
-                sql`${cities.slug} != 'online'`
-            ))
-            .orderBy(cities.name);
+        // Get distinct cities from places table
+        const placeCities = await db.selectDistinct({ city: places.city }).from(places);
 
-        return citiesFromDb.map(city => ({
-            id: city.slug,
-            name: city.name
-        }));
+        // Combine and dedupe
+        const allLocations = new Set<string>();
+        placeCities.forEach(p => p.city && allLocations.add(p.city.toLowerCase()));
+
+        // Convert to expected format with proper capitalization
+        const locationMap: {[key: string]: string} = {
+            'lisbon': 'Lisbon',
+            'oeiras': 'Oeiras',
+            'cascais': 'Cascais',
+            'sintra': 'Sintra',
+            'oeires': 'Oeiras', // Handle typo in data
+            'online': 'Online'
+        };
+
+        return Array.from(allLocations)
+            .filter(loc => loc !== 'online') // Filter out online for location selector
+            .map(loc => ({
+                id: loc,
+                name: locationMap[loc] || loc.charAt(0).toUpperCase() + loc.slice(1)
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     // City methods
