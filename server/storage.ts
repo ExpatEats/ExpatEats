@@ -61,6 +61,7 @@ interface Storage {
 
     // Location methods
     getDistinctLocations(): Promise<{id: string, name: string}[]>;
+    getRandomPlaces(options: { limit: number; status?: string }): Promise<Place[]>;
 
     // City methods
     getCities(): Promise<City[]>;
@@ -318,6 +319,17 @@ class DatabaseStorage implements Storage {
                 name: locationMap[loc] || loc.charAt(0).toUpperCase() + loc.slice(1)
             }))
             .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    async getRandomPlaces(options: { limit: number; status?: string }): Promise<Place[]> {
+        const whereConditions = [eq(places.status, options.status || "approved")];
+
+        return await db
+            .select()
+            .from(places)
+            .where(and(...whereConditions))
+            .orderBy(sql`RANDOM()`)
+            .limit(options.limit);
     }
 
     // City methods

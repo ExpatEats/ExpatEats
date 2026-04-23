@@ -71,9 +71,9 @@ const Header = () => {
                 {/* Center - Navigation */}
                 <nav className="hidden md:flex space-x-5 flex-shrink-0 font-outfit">
                     <div
-                        className={`py-2 transition-elegant ${isActive("/") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
+                        className={`py-2 transition-elegant ${isActive("/search") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
-                        <Link href="/">FIND MY FOOD</Link>
+                        <Link href="/search">FIND MY FOOD</Link>
                     </div>
                     <div
                         className={`py-2 transition-elegant ${isActive("/services") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
@@ -180,10 +180,10 @@ const Header = () => {
                             </div>
                             <nav className="flex flex-col space-y-4 mt-8 font-outfit">
                                 <div
-                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
+                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/search") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
-                                    <Link href="/">
+                                    <Link href="/search">
                                         FIND MY FOOD
                                     </Link>
                                 </div>

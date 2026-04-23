@@ -480,6 +480,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
     });
 
+    // Get random places for featured section
+    app.get("/api/places/random", async (req, res) => {
+        try {
+            const limit = parseInt(req.query.limit as string) || 4;
+            const randomPlaces = await storage.getRandomPlaces({
+                limit,
+                status: "approved"
+            });
+            res.json(randomPlaces);
+        } catch (error) {
+            console.error("Failed to fetch random places:", error);
+            res.status(500).json({ message: "Failed to fetch random places" });
+        }
+    });
+
     // Get place by ID
     app.get("/api/places/:id", async (req, res) => {
         try {

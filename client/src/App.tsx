@@ -37,6 +37,7 @@ import GroceryTour from "./pages/GroceryTour";
 import VIPExperience from "./pages/VIPExperience";
 import ResetPassword from "./pages/ResetPassword";
 import Interest from "./pages/Interest";
+import Home from "./pages/Home";
 import { useEffect } from "react";
 
 // Authentication guard component
@@ -75,7 +76,7 @@ function Router() {
         <Layout>
             <Switch>
                 {/* Public routes */}
-                <Route path="/" component={FindMyFood} />
+                <Route path="/" component={Home} />
                 <Route path="/register" component={Register} />
                 <Route path="/reset-password" component={ResetPassword} />
                 <Route path="/interest" component={Interest} />
@@ -87,10 +88,12 @@ function Router() {
                     <RequireAuth component={Preferences} redirectTo="/unauthorized" />
                 </Route>
                 {/* Protected routes */}
-                <Route path="/search">
+                <Route path="/shop">
                     <RequireAuth component={Shop} redirectTo="/unauthorized" />
                 </Route>
-                <Route path="/find-my-food" component={FindMyFood} />
+                <Route path="/search" component={FindMyFood} />
+                <Route path="/find-my-food" component={FindMyFood} />{" "}
+                {/* Legacy route for backward compatibility */}
                 <Route path="/results" component={Results} />
                 <Route path="/contact-us" component={GeneralContact} />
                 <Route path="/contact">
