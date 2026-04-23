@@ -55,7 +55,7 @@ export const RegistrationSuccessModal: React.FC<RegistrationSuccessModalProps> =
                         <div className="flex flex-col space-y-3">
                             <Button
                                 onClick={handleLoginClick}
-                                className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                className="w-full bg-bark hover:bg-soil text-white"
                             >
                                 Sign In Now
                             </Button>

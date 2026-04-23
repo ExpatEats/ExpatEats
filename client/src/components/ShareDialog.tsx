@@ -90,7 +90,7 @@ export const ShareDialog = ({
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
                     <div className="flex items-center gap-4">
-                        <Mail className="h-5 w-5 text-gray-500" />
+                        <Mail className="h-5 w-5 text-t3" />
                         <Input
                             placeholder="friend@example.com"
                             type="email"
@@ -99,8 +99,8 @@ export const ShareDialog = ({
                             className="flex-1"
                         />
                     </div>
-                    <div className="bg-[#F7F4EF] p-4 rounded-md text-sm">
-                        <p className="text-gray-700">
+                    <div className="bg-cream p-4 rounded-md text-sm">
+                        <p className="text-t2">
                             Your friend will receive an invitation to join
                             ExpatEats and discover food sources in Lisbon that
                             match their dietary preferences.
@@ -108,7 +108,7 @@ export const ShareDialog = ({
                     </div>
                     <Separator />
                     <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-t3">
                             Or share via:
                         </span>
                         <div className="flex gap-2">
@@ -187,7 +187,7 @@ export const ShareDialog = ({
                         variant="default"
                         onClick={handleShare}
                         disabled={!email || isSending || isSent}
-                        className="bg-[#6D9075] hover:bg-[#6D9075]/90 gap-1"
+                        className="bg-sage hover:bg-sage/90 gap-1"
                     >
                         {isSending ? (
                             <>Sending...</>

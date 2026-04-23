@@ -54,19 +54,19 @@ export const GeocodingErrorModal = ({
                         </AlertDescription>
                     </Alert>
 
-                    <div className="p-3 bg-gray-50 rounded-lg space-y-1">
-                        <p className="text-sm font-semibold text-gray-900">
+                    <div className="p-3 bg-cream-mid rounded-lg space-y-1">
+                        <p className="text-sm font-semibold text-t1">
                             {place.name}
                         </p>
-                        <p className="text-sm text-gray-600">{place.address}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-t2">{place.address}</p>
+                        <p className="text-sm text-t2">
                             {place.city}
                             {place.region && `, ${place.region}`}
                             {place.country && `, ${place.country}`}
                         </p>
                     </div>
 
-                    <div className="text-sm text-gray-600 space-y-1">
+                    <div className="text-sm text-t2 space-y-1">
                         <p className="font-medium">What would you like to do?</p>
                         <p className="text-xs">
                             You can approve without coordinates, edit the address and try

@@ -204,7 +204,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                             <Button
                                 type="button"
                                 variant="ghost"
-                                className="w-full justify-start text-sm text-gray-600"
+                                className="w-full justify-start text-sm text-t2"
                                 onClick={() => {
                                     setView("login");
                                     setLocalError(null);
@@ -238,7 +238,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
 
                                     <Button
                                         type="submit"
-                                        className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                        className="w-full bg-bark hover:bg-soil text-white"
                                         disabled={isResetting}
                                     >
                                         {isResetting ? "Sending Reset Link..." : "Send Reset Link"}
@@ -337,7 +337,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                             <div className="space-y-3 pt-4">
                                 <Button
                                     type="submit"
-                                    className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                    className="w-full bg-bark hover:bg-soil text-white"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? "Signing in..." : "Sign In"}
@@ -356,7 +356,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange }) =>
                                 <Button
                                     type="button"
                                     variant="ghost"
-                                    className="w-full text-sm text-gray-600"
+                                    className="w-full text-sm text-t2"
                                     onClick={() => setView("reset-password")}
                                     disabled={isLoading}
                                 >
