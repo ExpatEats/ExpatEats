@@ -87,8 +87,8 @@ const Contact = () => {
             <div className="container mx-auto px-4 py-12 max-w-4xl">
                 <Card className="border shadow-lg">
                     <CardContent className="pt-8 pb-8 px-6 text-center">
-                        <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-green-100 rounded-full">
-                            <CheckCircle className="h-8 w-8 text-green-600" />
+                        <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-sage-lt rounded-full">
+                            <CheckCircle className="h-8 w-8 text-sage" />
                         </div>
                         <h2 className="text-2xl font-bold font-cormorant mb-4">
                             Thank You!

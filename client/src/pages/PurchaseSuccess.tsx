@@ -75,11 +75,11 @@ export default function PurchaseSuccess() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#F9F5F0] flex items-center justify-center">
-                <Card className="border-[#DDB892]/20 max-w-md w-full mx-4">
+            <div className="min-h-screen bg-cream flex items-center justify-center">
+                <Card className="border-mist max-w-md w-full mx-4">
                     <CardContent className="pt-12 pb-12">
                         <div className="flex flex-col items-center gap-4 text-center">
-                            <Loader2 className="h-16 w-16 animate-spin text-[#94AF9F]" />
+                            <Loader2 className="h-16 w-16 animate-spin text-sage" />
                             <h2 className="text-2xl font-semibold text-gray-800">
                                 Verifying your purchase...
                             </h2>
@@ -95,7 +95,7 @@ export default function PurchaseSuccess() {
 
     if (error || !purchaseStatus) {
         return (
-            <div className="min-h-screen bg-[#F9F5F0] py-12">
+            <div className="min-h-screen bg-cream py-12">
                 <div className="max-w-2xl mx-auto px-4">
                     <Card className="border-red-200 bg-red-50">
                         <CardContent className="pt-12 pb-12">
@@ -116,7 +116,7 @@ export default function PurchaseSuccess() {
                                     </Button>
                                     <Button
                                         onClick={() => setLocation("/purchases")}
-                                        className="bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
+                                        className="bg-sage hover:bg-sage/90 text-white"
                                     >
                                         View My Guides
                                     </Button>
@@ -132,16 +132,16 @@ export default function PurchaseSuccess() {
     const isPaid = purchaseStatus.status === "paid" || purchaseStatus.paymentStatus === "succeeded";
 
     return (
-        <div className="min-h-screen bg-[#F9F5F0] py-12">
+        <div className="min-h-screen bg-cream py-12">
             <div className="max-w-2xl mx-auto px-4">
-                <Card className="border-[#94AF9F]/20">
+                <Card className="border-sage/20">
                     <CardContent className="pt-12 pb-12">
                         <div className="flex flex-col items-center text-center gap-6">
                             {isPaid ? (
                                 <>
                                     <div className="relative">
-                                        <CheckCircle className="h-24 w-24 text-green-500" />
-                                        <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
+                                        <CheckCircle className="h-24 w-24 text-sage" />
+                                        <div className="absolute inset-0 bg-sage/20 rounded-full animate-ping" />
                                     </div>
 
                                     <div>
@@ -153,23 +153,23 @@ export default function PurchaseSuccess() {
                                         </p>
                                     </div>
 
-                                    <div className="bg-[#94AF9F]/10 rounded-lg p-6 w-full max-w-md">
+                                    <div className="bg-sage/10 rounded-lg p-6 w-full max-w-md">
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-gray-600">Guide:</span>
-                                                <span className="font-semibold text-gray-800 capitalize">
+                                                <span className="text-t2">Guide:</span>
+                                                <span className="font-semibold text-t1 capitalize">
                                                     {purchaseStatus.guideSlug.replace(/-/g, ' ')}
                                                 </span>
                                             </div>
                                             <div className="flex justify-between items-center">
-                                                <span className="text-gray-600">Amount:</span>
-                                                <span className="font-semibold text-gray-800">
+                                                <span className="text-t2">Amount:</span>
+                                                <span className="font-semibold text-t1">
                                                     €{purchaseStatus.amountTotal.toFixed(2)}
                                                 </span>
                                             </div>
                                             <div className="flex justify-between items-center">
-                                                <span className="text-gray-600">Status:</span>
-                                                <span className="font-semibold text-green-600">
+                                                <span className="text-t2">Status:</span>
+                                                <span className="font-semibold text-sage">
                                                     Paid
                                                 </span>
                                             </div>
@@ -184,7 +184,7 @@ export default function PurchaseSuccess() {
                                         <div className="flex flex-col sm:flex-row gap-3">
                                             <Button
                                                 onClick={handleViewGuide}
-                                                className="flex-1 bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                                className="flex-1 bg-bark hover:bg-soil text-white"
                                             >
                                                 <BookOpen className="mr-2 h-4 w-4" />
                                                 View Guide Now
@@ -220,7 +220,7 @@ export default function PurchaseSuccess() {
                                     </div>
                                     <Button
                                         onClick={handleViewAllGuides}
-                                        className="bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
+                                        className="bg-sage hover:bg-sage/90 text-white"
                                     >
                                         View My Guides
                                     </Button>

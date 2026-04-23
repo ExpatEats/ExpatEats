@@ -245,7 +245,7 @@ const Results = () => {
                     {/* View Toggle */}
                     {results.length > 0 && (
                         <div className="flex justify-center mt-4">
-                            <div className="bg-gray-100 rounded-lg p-1 inline-flex">
+                            <div className="bg-cream-mid rounded-lg p-1 inline-flex">
                                 <Button
                                     variant={
                                         viewMode === "list" ? "default" : "ghost"
@@ -254,7 +254,7 @@ const Results = () => {
                                     onClick={() => setViewMode("list")}
                                     className={`${
                                         viewMode === "list"
-                                            ? "bg-bark-lt text-white hover:bg-[#d06851]"
+                                            ? "bg-bark-lt text-white hover:bg-bark"
                                             : "text-t2 font-outfit hover:text-gray-900"
                                     }`}
                                 >
@@ -269,7 +269,7 @@ const Results = () => {
                                     onClick={() => setViewMode("map")}
                                     className={`${
                                         viewMode === "map"
-                                            ? "bg-bark-lt text-white hover:bg-[#d06851]"
+                                            ? "bg-bark-lt text-white hover:bg-bark"
                                             : "text-t2 font-outfit hover:text-gray-900"
                                     }`}
                                     >
@@ -287,13 +287,13 @@ const Results = () => {
                         {[...Array(6)].map((_, i) => (
                             <Card key={i} className="animate-pulse">
                                 <CardHeader>
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                                    <div className="h-4 bg-mist rounded w-3/4"></div>
+                                    <div className="h-3 bg-mist rounded w-1/2"></div>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2">
-                                        <div className="h-3 bg-gray-200 rounded"></div>
-                                        <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+                                        <div className="h-3 bg-mist rounded"></div>
+                                        <div className="h-3 bg-mist rounded w-5/6"></div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -420,7 +420,7 @@ const Results = () => {
                                                         onClick={(e) =>
                                                             e.stopPropagation()
                                                         }
-                                                        className="inline-flex items-center text-sm text-bark-lt hover:text-[#d06851] font-medium"
+                                                        className="inline-flex items-center text-sm text-bark-lt hover:text-bark font-medium"
                                                     >
                                                         📷 Instagram
                                                     </a>
@@ -528,7 +528,7 @@ const Results = () => {
 
                                     {/* Overlay with Sign-up Prompt */}
                                     <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[2px]">
-                                        <Card className="max-w-md mx-4 shadow-2xl border-2 border-[#E07A5F]">
+                                        <Card className="max-w-md mx-4 shadow-2xl border-2 border-bark">
                                             <CardContent className="p-8 text-center">
                                                 <div className="mb-4 flex justify-center">
                                                     <div className="rounded-full bg-bark-lt/10 p-4">
@@ -552,7 +552,7 @@ const Results = () => {
                                                     <Button
                                                         onClick={() => setLoginModalOpen(true)}
                                                         variant="outline"
-                                                        className="w-full border-[#94AF9F] text-sage hover:bg-sage/10 text-lg py-6"
+                                                        className="w-full border-sage text-sage hover:bg-sage/10 text-lg py-6"
                                                         size="lg"
                                                     >
                                                         Log In

@@ -375,7 +375,7 @@ const Nutrition: React.FC = () => {
                                             superfoods!"
                                         </p>
                                         <div className="flex items-center">
-                                            <div className="w-10 h-10 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-mist rounded-full mr-3 flex items-center justify-center">
                                                 M
                                             </div>
                                             <div>
@@ -402,7 +402,7 @@ const Nutrition: React.FC = () => {
                                             time and stress."
                                         </p>
                                         <div className="flex items-center">
-                                            <div className="w-10 h-10 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-mist rounded-full mr-3 flex items-center justify-center">
                                                 S
                                             </div>
                                             <div>

@@ -275,7 +275,7 @@ const Register = () => {
                                                         <Loader2 className="h-4 w-4 animate-spin text-t3 font-outfit" />
                                                     )}
                                                     {!validationState.usernameChecking && validationState.usernameAvailable === true && (
-                                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        <CheckCircle className="h-4 w-4 text-sage" />
                                                     )}
                                                     {!validationState.usernameChecking && validationState.usernameAvailable === false && (
                                                         <X className="h-4 w-4 text-red-500" />
@@ -288,7 +288,7 @@ const Register = () => {
                                             <p className="text-sm text-red-600">Username is already taken</p>
                                         )}
                                         {validationState.usernameAvailable === true && (
-                                            <p className="text-sm text-green-600">Username is available</p>
+                                            <p className="text-sm text-sage">Username is available</p>
                                         )}
                                     </FormItem>
                                 )}
@@ -316,7 +316,7 @@ const Register = () => {
                                                         <Loader2 className="h-4 w-4 animate-spin text-t3 font-outfit" />
                                                     )}
                                                     {!validationState.emailChecking && validationState.emailAvailable === true && (
-                                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        <CheckCircle className="h-4 w-4 text-sage" />
                                                     )}
                                                     {!validationState.emailChecking && validationState.emailAvailable === false && (
                                                         <X className="h-4 w-4 text-red-500" />
@@ -329,7 +329,7 @@ const Register = () => {
                                             <p className="text-sm text-red-600">Email is already registered</p>
                                         )}
                                         {validationState.emailAvailable === true && (
-                                            <p className="text-sm text-green-600">Email is available</p>
+                                            <p className="text-sm text-sage">Email is available</p>
                                         )}
                                     </FormItem>
                                 )}

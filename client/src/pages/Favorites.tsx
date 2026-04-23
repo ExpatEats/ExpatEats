@@ -136,10 +136,10 @@ export default function Favorites() {
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-6xl mx-auto">
                     <div className="animate-pulse">
-                        <div className="h-8 bg-gray-200 rounded w-1/4 mb-4 mx-auto"></div>
+                        <div className="h-8 bg-mist rounded w-1/4 mb-4 mx-auto"></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[...Array(6)].map((_, i) => (
-                                <div key={i} className="h-64 bg-gray-200 rounded"></div>
+                                <div key={i} className="h-64 bg-mist rounded"></div>
                             ))}
                         </div>
                     </div>
@@ -158,7 +158,7 @@ export default function Favorites() {
                     </p>
                     <Button
                         onClick={() => setLocation("/")}
-                        className="bg-bark-lt hover:bg-[#d06851] text-white"
+                        className="bg-bark-lt hover:bg-bark text-white"
                     >
                         Go to Login
                     </Button>
