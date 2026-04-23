@@ -117,7 +117,7 @@ export const ApprovalDialog = ({
                         type="button"
                         onClick={handleConfirm}
                         disabled={isLoading}
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                        className="flex-1 bg-sage hover:bg-sage/90 text-white"
                     >
                         {isLoading ? (
                             <>
