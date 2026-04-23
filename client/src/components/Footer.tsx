@@ -1,145 +1,111 @@
 import { Link } from "wouter";
-import { Facebook, Instagram, Twitter } from "lucide-react";
-import { FeedbackDialog } from "./FeedbackDialog";
-import { ShareDialog } from "./ShareDialog";
 
 const Footer = () => {
     return (
-        <footer className="bg-soil text-white py-8">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <footer className="bg-[#160F06] py-[60px_44px_32px] px-11">
+            <div className="max-w-[1100px] mx-auto">
+                {/* Footer grid */}
+                <div className="grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-11 mb-11">
+                    {/* Brand column */}
                     <div>
-                        <h3 className="font-cormorant font-light text-xl tracking-wide mb-4">
-                            <span className="text-white">Expat</span>
-                            <span className="text-bark-lt">Eats</span>
-                        </h3>
-                        <p className="text-white font-outfit opacity-80 mb-4">
-                            Your guide to healthy living abroad
-                        </p>
-                        <div className="flex space-x-4 mb-4">
-                            <a
-                                href="#"
-                                className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                            >
-                                <Facebook className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="https://instagram.com/expateatsguide"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                            >
-                                <Instagram className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="#"
-                                className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                            >
-                                <Twitter className="h-5 w-5" />
-                            </a>
+                        <div className="font-cormorant text-[20px] font-semibold text-white mb-[7px]">
+                            Expat<em className="italic text-bark-lt">Eats</em>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <ShareDialog
-                                buttonVariant="outline"
-                                buttonSize="sm"
-                                buttonText="Share"
-                                buttonClassName="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white font-outfit"
-                            />
-                            <FeedbackDialog
-                                buttonClassName="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white font-outfit"
-                            />
+                        <div className="text-[13px] font-outfit font-light text-white/[0.28] leading-[1.65] max-w-[200px] mb-[18px]">
+                            Making healthy, sustainable living simple for expats – starting in Portugal.
+                        </div>
+                        <div className="flex gap-[6px]">
+                            {[
+                                { label: "ig", href: "https://instagram.com/expateatsguide" },
+                                { label: "yt", href: "#" },
+                                { label: "fb", href: "#" },
+                                { label: "wa", href: "#" }
+                            ].map((social, index) => (
+                                <a
+                                    key={index}
+                                    href={social.href}
+                                    target={social.href.startsWith("http") ? "_blank" : undefined}
+                                    rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                                    className="w-[34px] h-[34px] border border-white/10 rounded-md flex items-center justify-center text-[11px] font-outfit font-medium text-white/30 cursor-pointer transition-colors hover:border-bark-lt hover:text-bark-lt"
+                                >
+                                    {social.label}
+                                </a>
+                            ))}
                         </div>
                     </div>
 
+                    {/* Discover column */}
                     <div>
-                        <h4 className="font-outfit font-semibold mb-4 text-white">
-                            Features
-                        </h4>
-                        <ul className="space-y-2 font-outfit">
-                            <li>
-                                <Link
-                                    className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                                    href="/search"
-                                >
-                                    Food Sources
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                                    href="/events"
-                                >
-                                    Community Events
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                                    href="/resources"
-                                >
-                                    Food Resources
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                                    href="/services"
-                                >
-                                    Services
-                                </Link>
-                            </li>
-                        </ul>
+                        <h5 className="text-[10px] font-outfit font-medium tracking-[2px] uppercase text-white/[0.18] mb-[14px]">
+                            Discover
+                        </h5>
+                        <Link href="/search">
+                            <a className="block text-[13px] font-outfit font-light text-white/[0.38] mb-[9px] transition-colors hover:text-white/[0.72]">
+                                Food Guide
+                            </a>
+                        </Link>
+                        <a className="block text-[13px] font-outfit font-light text-white/[0.16] italic mb-[9px]">
+                            Restaurants – soon
+                        </a>
+                        <a className="block text-[13px] font-outfit font-light text-white/[0.16] italic mb-[9px]">
+                            Sustainable Living – soon
+                        </a>
                     </div>
 
+                    {/* Cities column */}
                     <div>
-                        <h4 className="font-outfit font-semibold mb-4 text-white">
-                            Countries
-                        </h4>
-                        <ul className="space-y-2 font-outfit">
-                            <li>
-                                <button className="text-white opacity-80 hover:opacity-100 transition-elegant">
-                                    Portugal
-                                </button>
-                            </li>
-                            <li>
-                                <span className="text-white opacity-60 italic">
-                                    More Coming Soon!
-                                </span>
-                            </li>
-                        </ul>
+                        <h5 className="text-[10px] font-outfit font-medium tracking-[2px] uppercase text-white/[0.18] mb-[14px]">
+                            Cities
+                        </h5>
+                        <Link href="/search">
+                            <a className="block text-[13px] font-outfit font-light text-white/[0.38] mb-[9px] transition-colors hover:text-white/[0.72]">
+                                Lisbon
+                            </a>
+                        </Link>
+                        <a className="block text-[13px] font-outfit font-light text-white/[0.16] italic mb-[9px]">
+                            Porto – soon
+                        </a>
+                        <a className="block text-[13px] font-outfit font-light text-white/[0.16] italic mb-[9px]">
+                            Algarve – soon
+                        </a>
                     </div>
 
+                    {/* Company column */}
                     <div>
-                        <h4 className="font-outfit font-semibold mb-4 text-white">
-                            Support
-                        </h4>
-                        <ul className="space-y-2 font-outfit">
-                            <li>
-                                <Link
-                                    className="text-white opacity-80 hover:opacity-100 transition-elegant"
-                                    href="/contact-us"
-                                >
-                                    Contact Us
-                                </Link>
-                            </li>
-                        </ul>
+                        <h5 className="text-[10px] font-outfit font-medium tracking-[2px] uppercase text-white/[0.18] mb-[14px]">
+                            Company
+                        </h5>
+                        <a href="#" className="block text-[13px] font-outfit font-light text-white/[0.38] mb-[9px] transition-colors hover:text-white/[0.72]">
+                            About
+                        </a>
+                        <a href="#" className="block text-[13px] font-outfit font-light text-white/[0.38] mb-[9px] transition-colors hover:text-white/[0.72]">
+                            Ambassadors
+                        </a>
+                        <a href="#" className="block text-[13px] font-outfit font-light text-white/[0.38] mb-[9px] transition-colors hover:text-white/[0.72]">
+                            For Businesses
+                        </a>
+                        <Link href="/contact-us">
+                            <a className="block text-[13px] font-outfit font-light text-white/[0.38] mb-[9px] transition-colors hover:text-white/[0.72]">
+                                Contact
+                            </a>
+                        </Link>
                     </div>
                 </div>
 
-                <div className="border-t border-white border-opacity-20 mt-8 pt-6">
-                    <div className="flex flex-col items-center space-y-2 font-outfit">
-                        <div className="flex items-center space-x-4 text-xs text-white opacity-70">
-                            <button className="hover:opacity-100 transition-elegant">
-                                Privacy Policy
-                            </button>
-                            <span>•</span>
-                            <Link href="/terms" className="hover:opacity-100 transition-elegant">
-                                Terms and Conditions
-                            </Link>
-                        </div>
-                        <p className="text-xs text-white opacity-70">
-                            Copyright Checkmate 2025 all rights reserved
-                        </p>
+                {/* Footer bottom */}
+                <div className="flex justify-between items-center border-t border-white/[0.05] pt-[22px] flex-wrap gap-3">
+                    <div className="text-[11px] font-outfit font-light text-white/[0.16]">
+                        © 2025 Expat Eats · admin@expateatsguide.com
+                    </div>
+                    <div className="flex gap-4">
+                        <a href="#" className="text-[11px] font-outfit text-white/[0.16] transition-colors hover:text-white/[0.42]">
+                            Privacy Policy
+                        </a>
+                        <Link href="/terms">
+                            <a className="text-[11px] font-outfit text-white/[0.16] transition-colors hover:text-white/[0.42]">
+                                Terms of Use
+                            </a>
+                        </Link>
                     </div>
                 </div>
             </div>
