@@ -62,12 +62,12 @@ export default function FindMyFood() {
                 {
                     id: "supplements",
                     name: "General Supplements",
-                    icon: <Package2 className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Package2 className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "vitamins",
                     name: "Vitamins",
-                    icon: <Apple className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Apple className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "sports-nutrition",
@@ -77,7 +77,7 @@ export default function FindMyFood() {
                 {
                     id: "omega-3",
                     name: "Omega-3 & Fish Oil",
-                    icon: <Cherry className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Cherry className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "herbal-remedies",
@@ -87,7 +87,7 @@ export default function FindMyFood() {
                 {
                     id: "practitioner-grade",
                     name: "Practitioner Grade",
-                    icon: <Search className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Search className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "vegan",
@@ -102,7 +102,7 @@ export default function FindMyFood() {
                 {
                     id: "hypoallergenic",
                     name: "Hypoallergenic",
-                    icon: <Wheat className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Wheat className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "online",
@@ -115,17 +115,17 @@ export default function FindMyFood() {
                 {
                     id: "gluten-free",
                     name: "Gluten-Free",
-                    icon: <Wheat className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Wheat className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "dairy-free",
                     name: "Dairy-Free",
-                    icon: <Cherry className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Cherry className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "nut-free",
                     name: "Nut-Free",
-                    icon: <Apple className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Apple className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "vegan",
@@ -145,12 +145,12 @@ export default function FindMyFood() {
                 {
                     id: "fresh-vegetables",
                     name: "Fresh Vegetables",
-                    icon: <Carrot className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Carrot className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "farm-raised-meat",
                     name: "Farm-Raised Meat",
-                    icon: <Egg className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Egg className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "no-processed",
@@ -160,7 +160,7 @@ export default function FindMyFood() {
                 {
                     id: "kid-friendly",
                     name: "Kid-Friendly Snacks",
-                    icon: <Baby className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Baby className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "bulk-buying",
@@ -170,7 +170,7 @@ export default function FindMyFood() {
                 {
                     id: "zero-waste",
                     name: "Zero Waste Packaging",
-                    icon: <Leaf className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Leaf className="h-5 w-5 text-bark" />,
                 },
             ];
         }

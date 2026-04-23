@@ -699,7 +699,7 @@ export default function Admin() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E07A5F] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bark mx-auto"></div>
                     <p className="mt-2 text-t2 font-outfit">Loading...</p>
                 </div>
             </div>
@@ -727,7 +727,7 @@ export default function Admin() {
                         <Button
                             onClick={handleLogout}
                             variant="outline"
-                            className="border-[#E07A5F] text-bark-lt hover:bg-bark-lt hover:text-white"
+                            className="border-bark text-bark-lt hover:bg-bark-lt hover:text-white"
                         >
                             <LogOut className="h-4 w-4 mr-2" />
                             Logout
@@ -1512,7 +1512,7 @@ export default function Admin() {
                                                 <div className="flex-1">
                                                     <h3 className="font-semibold text-lg">{event.title}</h3>
                                                     {event.category && (
-                                                        <Badge className="mt-1 bg-[#6D9075]">{event.category}</Badge>
+                                                        <Badge className="mt-1 bg-sage">{event.category}</Badge>
                                                     )}
                                                 </div>
                                                 <Badge className="bg-orange-500">

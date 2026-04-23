@@ -177,8 +177,8 @@ const PersonalizedMealPlans: React.FC = () => {
                             <Card className="shadow-lg hover:shadow-xl transition-shadow">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                            <Phone className="h-6 w-6 text-[#E07A5F]" />
+                                        <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                            <Phone className="h-6 w-6 text-bark" />
                                         </div>
                                         <div>
                                             <h3 className="font-cormorant font-semibold text-lg mb-2">
@@ -195,7 +195,7 @@ const PersonalizedMealPlans: React.FC = () => {
                             <Card className="shadow-lg hover:shadow-xl transition-shadow">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#DDB892] bg-opacity-30 p-3 rounded-full">
+                                        <div className="bg-bark-pale bg-opacity-30 p-3 rounded-full">
                                             <ChefHat className="h-6 w-6 text-sage" />
                                         </div>
                                         <div>
@@ -215,7 +215,7 @@ const PersonalizedMealPlans: React.FC = () => {
             </section>
 
             {/* Who It's Good For Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
@@ -262,11 +262,11 @@ const PersonalizedMealPlans: React.FC = () => {
 
                     {/* Coming Soon Banner */}
                     <div className="max-w-4xl mx-auto mb-8">
-                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                        <Card className="border-2 border-bark bg-gradient-to-r from-bark/5 to-bark-pale/5">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                        <Info className="h-6 w-6 text-[#E07A5F]" />
+                                    <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                        <Info className="h-6 w-6 text-bark" />
                                     </div>
                                     <div>
                                         <h3 className="font-cormorant font-semibold text-lg mb-2 text-neutral-dark">
@@ -331,7 +331,7 @@ const PersonalizedMealPlans: React.FC = () => {
                                         className={`w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed ${
                                             plan.popular
                                                 ? "bg-sage text-white"
-                                                : "bg-[#E07A5F] text-white"
+                                                : "bg-bark text-white"
                                         }`}
                                     >
                                         Coming Soon
@@ -356,7 +356,7 @@ const PersonalizedMealPlans: React.FC = () => {
             </section>
 
             {/* What You Get Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                         What's Included
@@ -378,8 +378,8 @@ const PersonalizedMealPlans: React.FC = () => {
 
                         <Card className="shadow-lg text-center">
                             <CardContent className="pt-6">
-                                <div className="bg-[#E07A5F] bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                                    <ChefHat className="h-8 w-8 text-[#E07A5F]" />
+                                <div className="bg-bark bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <ChefHat className="h-8 w-8 text-bark" />
                                 </div>
                                 <h3 className="font-cormorant font-semibold text-lg mb-2">
                                     Clickable Recipes
@@ -392,7 +392,7 @@ const PersonalizedMealPlans: React.FC = () => {
 
                         <Card className="shadow-lg text-center">
                             <CardContent className="pt-6">
-                                <div className="bg-[#DDB892] bg-opacity-30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                <div className="bg-bark-pale bg-opacity-30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                                     <Mail className="h-8 w-8 text-sage" />
                                 </div>
                                 <h3 className="font-cormorant font-semibold text-lg mb-2">

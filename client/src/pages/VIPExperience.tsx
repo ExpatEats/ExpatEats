@@ -64,7 +64,7 @@ const VIPExperience: React.FC = () => {
                         What's Included
                     </h2>
                     <div className="max-w-5xl mx-auto">
-                        <Card className="mb-8 shadow-lg border-t-4 border-[#E07A5F]">
+                        <Card className="mb-8 shadow-lg border-t-4 border-bark">
                             <CardContent className="pt-6">
                                 <p className="text-lg text-neutral-dark leading-relaxed mb-8">
                                     This premium package includes everything from personalized pantry setup to wellness-curated household essentials, all delivered and stocked before you arrive. You'll also receive a one-year membership to the Expat Eats community, which includes ongoing support, insider resources, wellness perks, and exclusive discounts.
@@ -115,7 +115,7 @@ const VIPExperience: React.FC = () => {
                             <Card className="shadow-lg hover:shadow-xl transition-shadow">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#DDB892] bg-opacity-30 p-3 rounded-full flex-shrink-0">
+                                        <div className="bg-bark-pale bg-opacity-30 p-3 rounded-full flex-shrink-0">
                                             <Gift className="h-6 w-6 text-sage" />
                                         </div>
                                         <div>
@@ -169,7 +169,7 @@ const VIPExperience: React.FC = () => {
                             <Card className="shadow-lg hover:shadow-xl transition-shadow">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#DDB892] bg-opacity-30 p-3 rounded-full flex-shrink-0">
+                                        <div className="bg-bark-pale bg-opacity-30 p-3 rounded-full flex-shrink-0">
                                             <Users className="h-6 w-6 text-sage" />
                                         </div>
                                         <div>
@@ -185,7 +185,7 @@ const VIPExperience: React.FC = () => {
                             </Card>
                         </div>
 
-                        <Card className="mt-6 shadow-lg bg-gradient-to-r from-[#94AF9F]/5 to-[#E07A5F]/5 border-2 border-[#E07A5F]">
+                        <Card className="mt-6 shadow-lg bg-gradient-to-r from-sage/5 to-bark/5 border-2 border-bark">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
                                     <div className="bg-bark-lt bg-opacity-10 p-3 rounded-full flex-shrink-0">
@@ -207,7 +207,7 @@ const VIPExperience: React.FC = () => {
             </section>
 
             {/* Perfect For Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
@@ -235,7 +235,7 @@ const VIPExperience: React.FC = () => {
                                         </p>
                                     </div>
                                     <div>
-                                        <div className="bg-[#DDB892] bg-opacity-30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                        <div className="bg-bark-pale bg-opacity-30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                                             <ShoppingBag className="h-8 w-8 text-sage" />
                                         </div>
                                         <h3 className="font-semibold text-lg mb-2">Busy Professionals</h3>
@@ -262,7 +262,7 @@ const VIPExperience: React.FC = () => {
 
                     {/* Coming Soon Banner */}
                     <div className="max-w-4xl mx-auto mb-8">
-                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                        <Card className="border-2 border-bark bg-gradient-to-r from-bark/5 to-bark-pale/5">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
                                     <div className="bg-bark-lt bg-opacity-10 p-3 rounded-full">
@@ -282,7 +282,7 @@ const VIPExperience: React.FC = () => {
                     </div>
 
                     <div className="max-w-2xl mx-auto">
-                        <Card className="shadow-xl border-2 border-[#E07A5F] relative">
+                        <Card className="shadow-xl border-2 border-bark relative">
                             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                                 <span className="bg-bark-lt text-white px-6 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
                                     <Star className="h-4 w-4" />
@@ -354,7 +354,7 @@ const VIPExperience: React.FC = () => {
                                     </li>
                                 </ul>
 
-                                <div className="bg-[#F9F5F0] rounded-lg p-4 mb-6">
+                                <div className="bg-cream rounded-lg p-4 mb-6">
                                     <p className="text-sm text-t2 font-outfit text-center">
                                         <strong>Note:</strong> Pricing varies depending on household size and preferences.
                                     </p>
@@ -381,7 +381,7 @@ const VIPExperience: React.FC = () => {
                         <Link href="/contact-us">
                             <Button
                                 variant="outline"
-                                className="border-2 border-[#94AF9F] text-sage hover:bg-sage hover:text-white py-3 px-8 rounded-full font-semibold transition"
+                                className="border-2 border-sage text-sage hover:bg-sage hover:text-white py-3 px-8 rounded-full font-semibold transition"
                             >
                                 <Mail className="h-4 w-4 mr-2" />
                                 Contact Us
@@ -392,7 +392,7 @@ const VIPExperience: React.FC = () => {
             </section>
 
             {/* How to Reserve Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
@@ -424,7 +424,7 @@ const VIPExperience: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#DDB892] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold flex-shrink-0">
+                                        <div className="bg-bark-pale text-white rounded-full w-10 h-10 flex items-center justify-center font-bold flex-shrink-0">
                                             3
                                         </div>
                                         <div>
@@ -453,7 +453,7 @@ const VIPExperience: React.FC = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gradient-to-r from-[#94AF9F] to-[#E07A5F] text-white">
+            <section className="py-16 bg-gradient-to-r from-sage to-bark text-white">
                 <div className="container mx-auto px-4 text-center">
                     <Star className="h-12 w-12 mx-auto mb-4" />
                     <h2 className="font-cormorant text-3xl font-bold mb-4">

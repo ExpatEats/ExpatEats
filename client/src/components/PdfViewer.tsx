@@ -209,7 +209,7 @@ export function PdfViewer({ pdfUrl }: PdfViewerProps) {
               onLoadError={onDocumentLoadError}
               loading={
                 <div className="flex flex-col items-center justify-center p-12">
-                  <Loader2 className="h-12 w-12 animate-spin text-[#94AF9F] mb-4" />
+                  <Loader2 className="h-12 w-12 animate-spin text-sage mb-4" />
                   <p className="text-gray-600">Loading PDF...</p>
                 </div>
               }
@@ -225,7 +225,7 @@ export function PdfViewer({ pdfUrl }: PdfViewerProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-12">
-            <Loader2 className="h-12 w-12 animate-spin text-[#94AF9F] mb-4" />
+            <Loader2 className="h-12 w-12 animate-spin text-sage mb-4" />
             <p className="text-gray-600">Preparing PDF...</p>
           </div>
         )}

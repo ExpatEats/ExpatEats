@@ -225,7 +225,7 @@ const ArrivalPackages: React.FC = () => {
             </section>
 
             {/* What's Included - All Packages */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
@@ -266,11 +266,11 @@ const ArrivalPackages: React.FC = () => {
 
                     {/* Coming Soon Banner */}
                     <div className="max-w-4xl mx-auto mb-8">
-                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                        <Card className="border-2 border-bark bg-gradient-to-r from-bark/5 to-bark-pale/5">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                        <Info className="h-6 w-6 text-[#E07A5F]" />
+                                    <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                        <Info className="h-6 w-6 text-bark" />
                                     </div>
                                     <div>
                                         <h3 className="font-cormorant font-semibold text-lg mb-2 text-neutral-dark">
@@ -331,7 +331,7 @@ const ArrivalPackages: React.FC = () => {
                                         ))}
                                     </ul>
 
-                                    <div className="bg-[#F9F5F0] p-3 rounded-lg mb-4">
+                                    <div className="bg-cream p-3 rounded-lg mb-4">
                                         <p className="text-sm text-t2 font-outfit">
                                             <span className="font-semibold">
                                                 Perfect for:
@@ -345,7 +345,7 @@ const ArrivalPackages: React.FC = () => {
                                         className={`w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed ${
                                             pkg.popular
                                                 ? "bg-sage text-white"
-                                                : "bg-[#E07A5F] text-white"
+                                                : "bg-bark text-white"
                                         }`}
                                     >
                                         Coming Soon
@@ -358,7 +358,7 @@ const ArrivalPackages: React.FC = () => {
             </section>
 
             {/* How to Get Started Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                         How to Get Started
@@ -386,8 +386,8 @@ const ArrivalPackages: React.FC = () => {
                         <Card className="shadow-lg hover:shadow-xl transition-shadow">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                        <Mail className="h-6 w-6 text-[#E07A5F]" />
+                                    <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                        <Mail className="h-6 w-6 text-bark" />
                                     </div>
                                     <div>
                                         <h3 className="font-cormorant font-semibold text-lg mb-2">
@@ -405,7 +405,7 @@ const ArrivalPackages: React.FC = () => {
                         <Card className="shadow-lg hover:shadow-xl transition-shadow">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#DDB892] bg-opacity-30 p-3 rounded-full">
+                                    <div className="bg-bark-pale bg-opacity-30 p-3 rounded-full">
                                         <Home className="h-6 w-6 text-sage" />
                                     </div>
                                     <div>
@@ -425,7 +425,7 @@ const ArrivalPackages: React.FC = () => {
             </section>
 
             {/* Contact Form Section */}
-            <section className="py-16 bg-gradient-to-br from-[#94AF9F]/10 to-[#DDB892]/10">
+            <section className="py-16 bg-gradient-to-br from-sage/10 to-bark-pale/10">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl mx-auto">
                         <Card className="shadow-2xl border-2 border-sage">
@@ -522,7 +522,7 @@ const ArrivalPackages: React.FC = () => {
                                     <Button
                                         type="submit"
                                         disabled={true}
-                                        className="w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed bg-[#E07A5F] text-white shadow-lg"
+                                        className="w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed bg-bark text-white shadow-lg"
                                     >
                                         Coming Soon
                                     </Button>
@@ -542,8 +542,8 @@ const ArrivalPackages: React.FC = () => {
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center">
-                        <div className="bg-gradient-to-r from-[#94AF9F]/10 via-[#DDB892]/10 to-[#E07A5F]/10 rounded-2xl p-8 md:p-12">
-                            <Sparkles className="h-12 w-12 text-[#E07A5F] mx-auto mb-6" />
+                        <div className="bg-gradient-to-r from-sage/10 via-bark-pale/10 to-bark/10 rounded-2xl p-8 md:p-12">
+                            <Sparkles className="h-12 w-12 text-bark mx-auto mb-6" />
                             <h2 className="font-cormorant text-3xl font-bold mb-4 text-neutral-dark">
                                 What Happens Next?
                             </h2>
@@ -563,7 +563,7 @@ const ArrivalPackages: React.FC = () => {
                                     <span>Schedule your welcome call</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-t2 font-outfit">
-                                    <MessageCircle className="h-5 w-5 text-[#E07A5F]" />
+                                    <MessageCircle className="h-5 w-5 text-bark" />
                                     <span>Get WhatsApp support</span>
                                 </div>
                             </div>

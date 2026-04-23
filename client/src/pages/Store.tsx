@@ -313,7 +313,7 @@ export default function Store() {
                     </p>
                     <Button
                         onClick={() => setLocation("/search")}
-                        className="bg-bark-lt hover:bg-[#d06851] text-white"
+                        className="bg-bark-lt hover:bg-bark text-white"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back to Search
@@ -331,7 +331,7 @@ export default function Store() {
                     <Button
                         onClick={() => window.history.back()}
                         variant="outline"
-                        className="border-[#E07A5F] text-bark-lt hover:bg-bark-lt hover:text-white"
+                        className="border-bark text-bark-lt hover:bg-bark-lt hover:text-white"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back to Results
@@ -365,7 +365,7 @@ export default function Store() {
                             onClick={handleSave}
                             variant="outline"
                             size="sm"
-                            className={`border-[#E07A5F] ${
+                            className={`border-bark ${
                                 isSaved
                                     ? "bg-bark-lt text-white"
                                     : "text-bark-lt hover:bg-bark-lt hover:text-white"
@@ -382,7 +382,7 @@ export default function Store() {
                             onClick={handleShare}
                             variant="outline"
                             size="sm"
-                            className="border-[#E07A5F] text-bark-lt hover:bg-bark-lt hover:text-white"
+                            className="border-bark text-bark-lt hover:bg-bark-lt hover:text-white"
                         >
                             <Share2 className="h-4 w-4 mr-1" />
                             Share
@@ -422,7 +422,7 @@ export default function Store() {
                                         <Badge
                                             key={index}
                                             variant="secondary"
-                                            className="bg-[#E8F4F0] text-sage border-[#94AF9F]/20 flex items-center gap-1.5 px-3 py-1.5"
+                                            className="bg-sage-lt text-sage border-sage/20 flex items-center gap-1.5 px-3 py-1.5"
                                         >
                                             {tagIcon}
                                             {tag
@@ -444,7 +444,7 @@ export default function Store() {
                                 className="w-full md:w-64 h-48 object-cover rounded-lg"
                             />
                         ) : (
-                            <div className="w-full md:w-64 h-48 bg-gradient-to-br from-[#E8F4F0] to-[#94AF9F] rounded-lg flex items-center justify-center">
+                            <div className="w-full md:w-64 h-48 bg-gradient-to-br from-sage-lt to-sage rounded-lg flex items-center justify-center">
                                 <div className="text-center text-white">
                                     <MapPin className="h-8 w-8 mx-auto mb-2" />
                                     <p className="text-sm font-medium">
@@ -479,7 +479,7 @@ export default function Store() {
                                                 href={store.website.startsWith('http') ? store.website : `https://${store.website}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-bark-lt hover:text-[#d06851] font-medium break-all"
+                                                className="text-bark-lt hover:text-bark font-medium break-all"
                                             >
                                                 {store.website}
                                             </a>
@@ -497,7 +497,7 @@ export default function Store() {
                                                 href={generateGoogleMapsUrl(store.address, store.city, store.country)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="hidden md:block text-bark-lt hover:text-[#d06851] transition-colors"
+                                                className="hidden md:block text-bark-lt hover:text-bark transition-colors"
                                                 title="Open in Google Maps"
                                             >
                                                 <ExternalLink className="h-4 w-4" />
@@ -575,7 +575,7 @@ export default function Store() {
                                                 }
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-bark-lt hover:text-[#d06851] font-medium"
+                                                className="text-bark-lt hover:text-bark font-medium"
                                             >
                                                 {store.instagram.startsWith("@")
                                                     ? store.instagram
@@ -649,7 +649,7 @@ export default function Store() {
                 )}
 
                 {/* Contact Info Note */}
-                <Card className="bg-[#E8F4F0] border-[#94AF9F]/20">
+                <Card className="bg-sage-lt border-sage/20">
                     <CardContent className="p-6">
                         <h3 className="text-lg font-semibold mb-2 text-sage">
                             Visit This Store
