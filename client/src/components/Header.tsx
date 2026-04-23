@@ -73,32 +73,32 @@ const Header = () => {
                     <div
                         className={`py-2 transition-elegant ${isActive("/search") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
-                        <Link href="/search">FIND MY FOOD</Link>
+                        <Link href="/search">Find My Food</Link>
                     </div>
                     <div
                         className={`py-2 transition-elegant ${isActive("/services") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
-                        <Link href="/services">SERVICES</Link>
+                        <Link href="/services">Services</Link>
                     </div>
                     <div
                         className={`py-2 transition-elegant ${isActive("/events") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
-                        <Link href="/events">EVENTS</Link>
+                        <Link href="/events">Events</Link>
                     </div>
                     <div
                         className={`py-2 transition-elegant ${isActive("/resources") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
-                        <Link href="/resources">RESOURCES</Link>
+                        <Link href="/resources">Resources</Link>
                     </div>
                     <div
                         className={`py-2 transition-elegant ${isActive("/community") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
-                        <Link href="/community">COMMUNITY</Link>
+                        <Link href="/community">Community</Link>
                     </div>
                     <div
                         className={`py-2 transition-elegant ${isActive("/add-location") ? "text-white border-b-2 border-cream" : "text-cream hover:text-white"}`}
                     >
-                        <Link href="/add-location">ADD LOCATION</Link>
+                        <Link href="/add-location">Add Location</Link>
                     </div>
                 </nav>
 
@@ -184,39 +184,39 @@ const Header = () => {
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/search">
-                                        FIND MY FOOD
+                                        Find My Food
                                     </Link>
                                 </div>
                                 <div
                                     className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/services") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
-                                    <Link href="/services">SERVICES</Link>
+                                    <Link href="/services">Services</Link>
                                 </div>
                                 <div
                                     className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/events") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
-                                    <Link href="/events">EVENTS</Link>
+                                    <Link href="/events">Events</Link>
                                 </div>
                                 <div
                                     className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/resources") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
-                                    <Link href="/resources">RESOURCES</Link>
+                                    <Link href="/resources">Resources</Link>
                                 </div>
                                 <div
                                     className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/community") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
-                                    <Link href="/community">COMMUNITY</Link>
+                                    <Link href="/community">Community</Link>
                                 </div>
                                 <div
                                     className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/add-location") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
                                     onClick={handleNavClick}
                                 >
                                     <Link href="/add-location">
-                                        ADD LOCATION
+                                        Add Location
                                     </Link>
                                 </div>
 
