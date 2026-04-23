@@ -2,7 +2,7 @@ import { Link } from "wouter";
 
 const Footer = () => {
     return (
-        <footer className="bg-[#160F06] py-[60px_44px_32px] px-11">
+        <footer className="bg-[#160F06] pt-20 pb-8 px-11">
             <div className="max-w-[1100px] mx-auto">
                 {/* Footer grid */}
                 <div className="grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-11 mb-11">
