@@ -185,13 +185,13 @@ export default function AddLocation() {
         <div className="container mx-auto py-8">
             <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-8">
-                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#E07A5F]/10 mb-4">
-                        <Plus className="h-6 w-6 text-[#E07A5F]" />
+                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-bark-lt/10 mb-4">
+                        <Plus className="h-6 w-6 text-bark-lt" />
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                    <h1 className="text-3xl md:text-4xl font-cormorant font-medium mb-2 text-soil">
                         Add a Location
                     </h1>
-                    <p className="text-gray-600">
+                    <p className="text-t2 font-outfit">
                         Help other expats by sharing a great food source or
                         location you've discovered
                     </p>
@@ -200,7 +200,7 @@ export default function AddLocation() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <MapPin className="h-5 w-5 text-[#E07A5F]" />
+                            <MapPin className="h-5 w-5 text-bark-lt" />
                             Location Details
                         </CardTitle>
                         <CardDescription>
@@ -414,7 +414,7 @@ export default function AddLocation() {
                                     <FormLabel className="text-base font-medium">
                                         Tags
                                     </FormLabel>
-                                    <p className="text-sm text-gray-600 mb-3">
+                                    <p className="text-sm text-t2 font-outfit mb-3">
                                         Select all that apply to help others
                                         find this location
                                     </p>
@@ -444,7 +444,7 @@ export default function AddLocation() {
                                                         htmlFor={tag.id}
                                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer"
                                                     >
-                                                        <IconComponent className="h-4 w-4 text-[#E07A5F]" />
+                                                        <IconComponent className="h-4 w-4 text-bark-lt" />
                                                         {tag.label}
                                                     </label>
                                                 </div>
@@ -455,7 +455,7 @@ export default function AddLocation() {
 
                                 <Button
                                     type="submit"
-                                    className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                    className="w-full bg-bark-lt hover:bg-bark-lt/90 text-white"
                                     disabled={addLocationMutation.isPending}
                                 >
                                     {addLocationMutation.isPending

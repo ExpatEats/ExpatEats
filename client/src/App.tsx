@@ -26,6 +26,7 @@ import Store from "./pages/Store";
 import Favorites from "./pages/Favorites";
 import Purchases from "./pages/Purchases";
 import GuideViewer from "./pages/GuideViewer";
+import PurchaseSuccess from "./pages/PurchaseSuccess";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/not-found";
 import PersonalizedMealPlans from "./pages/PersonalizedMealPlans";
@@ -35,6 +36,8 @@ import StockPantry from "./pages/StockPantry";
 import GroceryTour from "./pages/GroceryTour";
 import VIPExperience from "./pages/VIPExperience";
 import ResetPassword from "./pages/ResetPassword";
+import Interest from "./pages/Interest";
+import Home from "./pages/Home";
 import { useEffect } from "react";
 
 // Authentication guard component
@@ -73,9 +76,10 @@ function Router() {
         <Layout>
             <Switch>
                 {/* Public routes */}
-                <Route path="/" component={FindMyFood} />
+                <Route path="/" component={Home} />
                 <Route path="/register" component={Register} />
                 <Route path="/reset-password" component={ResetPassword} />
+                <Route path="/interest" component={Interest} />
                 <Route path="/terms" component={Terms} />
                 <Route path="/unauthorized" component={Unauthorized} />
                 <Route path="/onboarding" component={Onboarding} />{" "}
@@ -84,10 +88,12 @@ function Router() {
                     <RequireAuth component={Preferences} redirectTo="/unauthorized" />
                 </Route>
                 {/* Protected routes */}
-                <Route path="/search">
+                <Route path="/shop">
                     <RequireAuth component={Shop} redirectTo="/unauthorized" />
                 </Route>
-                <Route path="/find-my-food" component={FindMyFood} />
+                <Route path="/search" component={FindMyFood} />
+                <Route path="/find-my-food" component={FindMyFood} />{" "}
+                {/* Legacy route for backward compatibility */}
                 <Route path="/results" component={Results} />
                 <Route path="/contact-us" component={GeneralContact} />
                 <Route path="/contact">
@@ -117,6 +123,9 @@ function Router() {
                 </Route>
                 <Route path="/purchases">
                     <RequireAuth component={Purchases} redirectTo="/unauthorized" />
+                </Route>
+                <Route path="/guides/purchase-success">
+                    <RequireAuth component={PurchaseSuccess} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/guides/:slug">
                     <RequireAuth component={GuideViewer} redirectTo="/unauthorized" />

@@ -173,10 +173,10 @@ const ArrivalPackages: React.FC = () => {
                 />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center justify-center p-3 bg-[#94AF9F] bg-opacity-10 rounded-full mb-6">
-                            <Package className="h-8 w-8 text-[#94AF9F]" />
+                        <div className="inline-flex items-center justify-center p-3 bg-sage bg-opacity-10 rounded-full mb-6">
+                            <Package className="h-8 w-8 text-sage" />
                         </div>
-                        <h1 className="font-montserrat text-4xl md:text-5xl lg:text-6xl font-light tracking-wide mb-4 text-neutral-dark">
+                        <h1 className="font-cormorant text-4xl md:text-5xl lg:text-6xl font-light tracking-wide mb-4 text-neutral-dark">
                             Arrival Packages & Assistance
                         </h1>
                         <p className="text-lg md:text-xl mb-8 text-neutral-dark">
@@ -191,11 +191,11 @@ const ArrivalPackages: React.FC = () => {
             {/* How It Works Section */}
             <section className="py-12 bg-white">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                         How It Works
                     </h2>
                     <div className="max-w-4xl mx-auto">
-                        <Card className="shadow-lg border-t-4 border-[#94AF9F]">
+                        <Card className="shadow-lg border-t-4 border-sage">
                             <CardContent className="pt-6">
                                 <p className="text-lg text-neutral-dark leading-relaxed mb-4">
                                     Relocating is exciting but also overwhelming. Our{" "}
@@ -225,10 +225,10 @@ const ArrivalPackages: React.FC = () => {
             </section>
 
             {/* What's Included - All Packages */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
-                        <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                        <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                             All Arrival Packages Include
                         </h2>
                         <Card className="shadow-lg">
@@ -239,7 +239,7 @@ const ArrivalPackages: React.FC = () => {
                                             key={index}
                                             className="flex items-start"
                                         >
-                                            <Check className="text-[#94AF9F] mr-3 h-5 w-5 mt-1 flex-shrink-0" />
+                                            <Check className="text-sage mr-3 h-5 w-5 mt-1 flex-shrink-0" />
                                             <span className="text-gray-700">
                                                 {item}
                                             </span>
@@ -255,10 +255,10 @@ const ArrivalPackages: React.FC = () => {
             {/* Package Options & Pricing */}
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-4 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-bold mb-4 text-center text-neutral-dark">
                         Choose Your Package
                     </h2>
-                    <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    <p className="text-center text-t2 font-outfit mb-8 max-w-2xl mx-auto">
                         Complete arrival support to help you settle into your new
                         life in Portugal - effortlessly. Each package includes
                         tailored essentials for a healthy, low-tox start.
@@ -266,14 +266,14 @@ const ArrivalPackages: React.FC = () => {
 
                     {/* Coming Soon Banner */}
                     <div className="max-w-4xl mx-auto mb-8">
-                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                        <Card className="border-2 border-bark bg-gradient-to-r from-bark/5 to-bark-pale/5">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                        <Info className="h-6 w-6 text-[#E07A5F]" />
+                                    <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                        <Info className="h-6 w-6 text-bark" />
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg mb-2 text-neutral-dark">
+                                        <h3 className="font-cormorant font-semibold text-lg mb-2 text-neutral-dark">
                                             Coming Soon
                                         </h3>
                                         <p className="text-gray-700 leading-relaxed">
@@ -291,26 +291,26 @@ const ArrivalPackages: React.FC = () => {
                                 key={pkg.id}
                                 className={`shadow-lg hover:shadow-xl transition-all ${
                                     pkg.popular
-                                        ? "border-2 border-[#94AF9F] relative"
+                                        ? "border-2 border-sage relative"
                                         : ""
                                 }`}
                             >
                                 {pkg.popular && (
                                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                        <span className="bg-[#94AF9F] text-white px-4 py-1 rounded-full text-sm font-semibold">
+                                        <span className="bg-sage text-white px-4 py-1 rounded-full text-sm font-semibold">
                                             Most Popular
                                         </span>
                                     </div>
                                 )}
                                 <CardHeader className="text-center pb-4">
-                                    <CardTitle className="text-2xl font-montserrat mb-2">
+                                    <CardTitle className="text-2xl font-cormorant mb-2">
                                         {pkg.name}
                                     </CardTitle>
-                                    <p className="text-gray-600 text-sm mb-4 italic">
+                                    <p className="text-t2 font-outfit text-sm mb-4 italic">
                                         {pkg.tagline}
                                     </p>
                                     <div className="flex items-center justify-center gap-1">
-                                        <span className="text-2xl text-gray-600">€</span>
+                                        <span className="text-2xl text-t2 font-outfit">€</span>
                                         <span className="text-5xl font-bold text-neutral-dark">
                                             {pkg.price}
                                         </span>
@@ -323,7 +323,7 @@ const ArrivalPackages: React.FC = () => {
                                                 key={index}
                                                 className="flex items-start"
                                             >
-                                                <Check className="text-[#94AF9F] mr-3 h-5 w-5 mt-0.5 flex-shrink-0" />
+                                                <Check className="text-sage mr-3 h-5 w-5 mt-0.5 flex-shrink-0" />
                                                 <span className="text-gray-700 text-sm">
                                                     {feature}
                                                 </span>
@@ -331,8 +331,8 @@ const ArrivalPackages: React.FC = () => {
                                         ))}
                                     </ul>
 
-                                    <div className="bg-[#F9F5F0] p-3 rounded-lg mb-4">
-                                        <p className="text-sm text-gray-600">
+                                    <div className="bg-cream p-3 rounded-lg mb-4">
+                                        <p className="text-sm text-t2 font-outfit">
                                             <span className="font-semibold">
                                                 Perfect for:
                                             </span>{" "}
@@ -344,8 +344,8 @@ const ArrivalPackages: React.FC = () => {
                                         disabled={true}
                                         className={`w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed ${
                                             pkg.popular
-                                                ? "bg-[#94AF9F] text-white"
-                                                : "bg-[#E07A5F] text-white"
+                                                ? "bg-sage text-white"
+                                                : "bg-bark text-white"
                                         }`}
                                     >
                                         Coming Soon
@@ -358,23 +358,23 @@ const ArrivalPackages: React.FC = () => {
             </section>
 
             {/* How to Get Started Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                         How to Get Started
                     </h2>
                     <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
                         <Card className="shadow-lg hover:shadow-xl transition-shadow">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#94AF9F] bg-opacity-10 p-3 rounded-full">
-                                        <Package className="h-6 w-6 text-[#94AF9F]" />
+                                    <div className="bg-sage bg-opacity-10 p-3 rounded-full">
+                                        <Package className="h-6 w-6 text-sage" />
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                        <h3 className="font-cormorant font-semibold text-lg mb-2">
                                             Step 1: Choose
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Select the package that fits your needs
                                             and lifestyle
                                         </p>
@@ -386,14 +386,14 @@ const ArrivalPackages: React.FC = () => {
                         <Card className="shadow-lg hover:shadow-xl transition-shadow">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                        <Mail className="h-6 w-6 text-[#E07A5F]" />
+                                    <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                        <Mail className="h-6 w-6 text-bark" />
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                        <h3 className="font-cormorant font-semibold text-lg mb-2">
                                             Step 2: Connect
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             Complete the form below and we'll
                                             schedule your welcome call
                                         </p>
@@ -405,14 +405,14 @@ const ArrivalPackages: React.FC = () => {
                         <Card className="shadow-lg hover:shadow-xl transition-shadow">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#DDB892] bg-opacity-30 p-3 rounded-full">
-                                        <Home className="h-6 w-6 text-[#94AF9F]" />
+                                    <div className="bg-bark-pale bg-opacity-30 p-3 rounded-full">
+                                        <Home className="h-6 w-6 text-sage" />
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                        <h3 className="font-cormorant font-semibold text-lg mb-2">
                                             Step 3: Relax
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-t2 font-outfit">
                                             We handle the rest and coordinate
                                             delivery for your arrival
                                         </p>
@@ -425,12 +425,12 @@ const ArrivalPackages: React.FC = () => {
             </section>
 
             {/* Contact Form Section */}
-            <section className="py-16 bg-gradient-to-br from-[#94AF9F]/10 to-[#DDB892]/10">
+            <section className="py-16 bg-gradient-to-br from-sage/10 to-bark-pale/10">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl mx-auto">
-                        <Card className="shadow-2xl border-2 border-[#94AF9F]">
-                            <CardHeader className="text-center pb-4 bg-[#94AF9F] text-white rounded-t-lg">
-                                <CardTitle className="text-3xl font-montserrat mb-2">
+                        <Card className="shadow-2xl border-2 border-sage">
+                            <CardHeader className="text-center pb-4 bg-sage text-white rounded-t-lg">
+                                <CardTitle className="text-3xl font-cormorant mb-2">
                                     Request Your Package
                                 </CardTitle>
                                 <p className="text-white/90 text-lg">
@@ -450,8 +450,8 @@ const ArrivalPackages: React.FC = () => {
                                                     key={pkg.id}
                                                     className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition ${
                                                         selectedPackage === pkg.id
-                                                            ? "border-[#94AF9F] bg-[#94AF9F]/10"
-                                                            : "border-gray-200 hover:border-[#94AF9F]/50"
+                                                            ? "border-sage bg-sage/10"
+                                                            : "border-gray-200 hover:border-sage/50"
                                                     }`}
                                                 >
                                                     <input
@@ -473,7 +473,7 @@ const ArrivalPackages: React.FC = () => {
                                                         <div className="font-semibold">
                                                             {pkg.name}
                                                         </div>
-                                                        <div className="text-sm text-gray-600">
+                                                        <div className="text-sm text-t2 font-outfit">
                                                             €{pkg.price}
                                                         </div>
                                                     </div>
@@ -522,7 +522,7 @@ const ArrivalPackages: React.FC = () => {
                                     <Button
                                         type="submit"
                                         disabled={true}
-                                        className="w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed bg-[#E07A5F] text-white shadow-lg"
+                                        className="w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed bg-bark text-white shadow-lg"
                                     >
                                         Coming Soon
                                     </Button>
@@ -542,9 +542,9 @@ const ArrivalPackages: React.FC = () => {
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center">
-                        <div className="bg-gradient-to-r from-[#94AF9F]/10 via-[#DDB892]/10 to-[#E07A5F]/10 rounded-2xl p-8 md:p-12">
-                            <Sparkles className="h-12 w-12 text-[#E07A5F] mx-auto mb-6" />
-                            <h2 className="font-montserrat text-3xl font-bold mb-4 text-neutral-dark">
+                        <div className="bg-gradient-to-r from-sage/10 via-bark-pale/10 to-bark/10 rounded-2xl p-8 md:p-12">
+                            <Sparkles className="h-12 w-12 text-bark mx-auto mb-6" />
+                            <h2 className="font-cormorant text-3xl font-bold mb-4 text-neutral-dark">
                                 What Happens Next?
                             </h2>
                             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
@@ -558,12 +558,12 @@ const ArrivalPackages: React.FC = () => {
                                 delivery for your arrival.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                                <div className="flex items-center gap-2 text-gray-600">
-                                    <Calendar className="h-5 w-5 text-[#94AF9F]" />
+                                <div className="flex items-center gap-2 text-t2 font-outfit">
+                                    <Calendar className="h-5 w-5 text-sage" />
                                     <span>Schedule your welcome call</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-gray-600">
-                                    <MessageCircle className="h-5 w-5 text-[#E07A5F]" />
+                                <div className="flex items-center gap-2 text-t2 font-outfit">
+                                    <MessageCircle className="h-5 w-5 text-bark" />
                                     <span>Get WhatsApp support</span>
                                 </div>
                             </div>
@@ -573,9 +573,9 @@ const ArrivalPackages: React.FC = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-[#94AF9F] text-white">
+            <section className="py-16 bg-sage text-white">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="font-montserrat text-3xl font-bold mb-4">
+                    <h2 className="font-cormorant text-3xl font-bold mb-4">
                         Ready to Start Your New Life in Portugal?
                     </h2>
                     <p className="text-lg mb-8 max-w-2xl mx-auto">
@@ -589,7 +589,7 @@ const ArrivalPackages: React.FC = () => {
                                 behavior: "smooth",
                             })
                         }
-                        className="bg-white text-[#94AF9F] hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105"
+                        className="bg-white text-sage hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105"
                     >
                         <Package className="mr-2 h-5 w-5" />
                         Request Your Package

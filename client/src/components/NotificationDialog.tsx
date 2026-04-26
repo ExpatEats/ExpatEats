@@ -38,11 +38,11 @@ export const NotificationDialog = ({
     const getIcon = () => {
         switch (variant) {
             case "success":
-                return <CheckCircle className="h-12 w-12 text-[#6D9075] mx-auto mb-4" />;
+                return <CheckCircle className="h-12 w-12 text-sage mx-auto mb-4" />;
             case "error":
                 return <XCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />;
             case "warning":
-                return <AlertCircle className="h-12 w-12 text-[#E07A5F] mx-auto mb-4" />;
+                return <AlertCircle className="h-12 w-12 text-bark mx-auto mb-4" />;
             case "info":
                 return <Info className="h-12 w-12 text-blue-600 mx-auto mb-4" />;
         }
@@ -51,11 +51,11 @@ export const NotificationDialog = ({
     const getTitleColor = () => {
         switch (variant) {
             case "success":
-                return "text-[#6D9075]";
+                return "text-sage";
             case "error":
                 return "text-red-600";
             case "warning":
-                return "text-[#E07A5F]";
+                return "text-bark";
             case "info":
                 return "text-blue-600";
         }

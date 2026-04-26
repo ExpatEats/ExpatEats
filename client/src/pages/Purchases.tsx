@@ -76,17 +76,17 @@ export default function Purchases() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F5F0] py-12">
+    <div className="min-h-screen bg-cream-mid py-12">
       <div className="max-w-6xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-4xl font-montserrat font-light text-[#94AF9F] mb-2">
+          <h1 className="text-4xl font-cormorant font-light text-sage mb-2">
             My Guides
           </h1>
-          <p className="text-gray-600">
+          <p className="text-t2 font-outfit">
             Access all your purchased guides in one place
           </p>
           {isAdmin && (
-            <div className="mt-4 flex items-center gap-2 text-[#94AF9F] bg-[#94AF9F]/10 px-4 py-2 rounded-lg inline-flex">
+            <div className="mt-4 flex items-center gap-2 text-sage bg-sage/10 px-4 py-2 rounded-lg inline-flex">
               <ShieldCheck className="h-5 w-5" />
               <span className="font-medium">Admin View - Showing all guides</span>
             </div>
@@ -96,7 +96,7 @@ export default function Purchases() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="border-[#DDB892]/20">
+              <Card key={i} className="border-bark-pale/20">
                 <CardHeader>
                   <Skeleton className="h-6 w-3/4 mb-2" />
                   <Skeleton className="h-4 w-1/2" />
@@ -117,18 +117,18 @@ export default function Purchases() {
             </CardContent>
           </Card>
         ) : guides.length === 0 ? (
-          <Card className="border-[#DDB892]/20">
+          <Card className="border-bark-pale/20">
             <CardContent className="pt-12 pb-12 text-center">
-              <BookOpen className="h-16 w-16 mx-auto text-[#DDB892] mb-4" />
-              <h3 className="text-xl font-medium text-gray-800 mb-2">
+              <BookOpen className="h-16 w-16 mx-auto text-bark-pale mb-4" />
+              <h3 className="text-xl font-medium text-soil font-outfit mb-2">
                 No guides yet
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-t2 font-outfit mb-6">
                 You haven't purchased any guides yet. Browse our guides to get started!
               </p>
               <Button
                 onClick={() => setLocation("/resources")}
-                className="bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
+                className="bg-sage hover:bg-sage/90 text-white"
               >
                 Browse Guides
               </Button>
@@ -139,10 +139,10 @@ export default function Purchases() {
             {guides.map((guide) => (
               <Card
                 key={guide.id}
-                className="border-[#DDB892]/20 hover:shadow-lg transition-shadow"
+                className="border-bark-pale/20 hover:shadow-lg transition-shadow"
               >
                 <CardHeader>
-                  <CardTitle className="text-[#94AF9F] flex items-center gap-2">
+                  <CardTitle className="text-sage flex items-center gap-2">
                     <BookOpen className="h-5 w-5" />
                     {formatGuideName(guide.slug)}
                   </CardTitle>
@@ -155,7 +155,7 @@ export default function Purchases() {
                 <CardContent>
                   <Button
                     onClick={() => handleViewGuide(guide.slug)}
-                    className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                    className="w-full bg-bark-lt hover:bg-bark-lt/90 text-white"
                   >
                     View Guide
                   </Button>

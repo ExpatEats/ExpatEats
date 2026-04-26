@@ -62,52 +62,52 @@ export default function FindMyFood() {
                 {
                     id: "supplements",
                     name: "General Supplements",
-                    icon: <Package2 className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Package2 className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "vitamins",
                     name: "Vitamins",
-                    icon: <Apple className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Apple className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "sports-nutrition",
                     name: "Sports Nutrition",
-                    icon: <Truck className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Truck className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "omega-3",
                     name: "Omega-3 & Fish Oil",
-                    icon: <Cherry className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Cherry className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "herbal-remedies",
                     name: "Herbal Remedies",
-                    icon: <Leaf className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Leaf className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "practitioner-grade",
                     name: "Practitioner Grade",
-                    icon: <Search className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Search className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "vegan",
                     name: "Vegan Supplements",
-                    icon: <Leaf className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Leaf className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "organic",
                     name: "Organic Supplements",
-                    icon: <Apple className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Apple className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "hypoallergenic",
                     name: "Hypoallergenic",
-                    icon: <Wheat className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Wheat className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "online",
                     name: "Online Retailers",
-                    icon: <ShoppingBag className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <ShoppingBag className="h-5 w-5 text-sage" />,
                 },
             ];
         } else {
@@ -115,62 +115,62 @@ export default function FindMyFood() {
                 {
                     id: "gluten-free",
                     name: "Gluten-Free",
-                    icon: <Wheat className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Wheat className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "dairy-free",
                     name: "Dairy-Free",
-                    icon: <Cherry className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Cherry className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "nut-free",
                     name: "Nut-Free",
-                    icon: <Apple className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Apple className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "vegan",
                     name: "Vegan",
-                    icon: <Leaf className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Leaf className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "organic",
                     name: "Bio/Organic",
-                    icon: <Apple className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Apple className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "local-farms",
                     name: "Local Farms",
-                    icon: <Truck className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Truck className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "fresh-vegetables",
                     name: "Fresh Vegetables",
-                    icon: <Carrot className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Carrot className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "farm-raised-meat",
                     name: "Farm-Raised Meat",
-                    icon: <Egg className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Egg className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "no-processed",
                     name: "No Processed Foods",
-                    icon: <Package2 className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <Package2 className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "kid-friendly",
                     name: "Kid-Friendly Snacks",
-                    icon: <Baby className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Baby className="h-5 w-5 text-bark" />,
                 },
                 {
                     id: "bulk-buying",
                     name: "Bulk Buying Options",
-                    icon: <ShoppingBag className="h-5 w-5 text-[#94AF9F]" />,
+                    icon: <ShoppingBag className="h-5 w-5 text-sage" />,
                 },
                 {
                     id: "zero-waste",
                     name: "Zero Waste Packaging",
-                    icon: <Leaf className="h-5 w-5 text-[#E07A5F]" />,
+                    icon: <Leaf className="h-5 w-5 text-bark" />,
                 },
             ];
         }
@@ -248,14 +248,14 @@ export default function FindMyFood() {
                 <div className="max-w-6xl mx-auto">
                     {/* Header */}
                     <div className="text-center mb-12">
-                        <div className="inline-flex items-center bg-[#94AF9F] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+                        <div className="inline-flex items-center bg-sage text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
                             <MapPin className="h-4 w-4 mr-1.5" />
                             <span>PORTUGAL</span>
                         </div>
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">
                             Find My Food
                         </h1>
-                        <p className="text-lg text-gray-600">
+                        <p className="text-lg text-t2 font-outfit">
                             Discover healthy, organic grocery stores and supplements near you,
                             curated for your diet and location in Portugal.
                         </p>
@@ -267,7 +267,7 @@ export default function FindMyFood() {
                             <CardTitle className="text-xl font-semibold">
                                 Location
                             </CardTitle>
-                            <p className="text-gray-600">
+                            <p className="text-t2 font-outfit">
                                 Select one or more locations:
                             </p>
                         </CardHeader>
@@ -279,7 +279,7 @@ export default function FindMyFood() {
                                     {locations.map((location) => (
                                     <div
                                         key={location.id}
-                                        className="border border-gray-200 rounded-lg p-4 hover:border-[#E07A5F]/50 transition-colors"
+                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors"
                                     >
                                         <div className="flex items-center space-x-3">
                                             <Checkbox
@@ -312,7 +312,7 @@ export default function FindMyFood() {
                             <CardTitle className="text-xl font-semibold">
                                 Guide Type
                             </CardTitle>
-                            <p className="text-gray-600">
+                            <p className="text-t2 font-outfit">
                                 Choose what you are looking for:
                             </p>
                         </CardHeader>
@@ -321,7 +321,7 @@ export default function FindMyFood() {
                                 {guideTypes.map((guide) => (
                                     <div
                                         key={guide.id}
-                                        className="border border-gray-200 rounded-lg p-4 hover:border-[#E07A5F]/50 transition-colors"
+                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors"
                                     >
                                         <div className="flex items-start space-x-3">
                                             <Checkbox
@@ -342,7 +342,7 @@ export default function FindMyFood() {
                                                 >
                                                     {guide.name}
                                                 </Label>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-t2 font-outfit">
                                                     {guide.description}
                                                 </p>
                                             </div>
@@ -359,7 +359,7 @@ export default function FindMyFood() {
                             <CardTitle className="text-xl font-semibold">
                                 Dietary Preferences
                             </CardTitle>
-                            <p className="text-gray-600">
+                            <p className="text-t2 font-outfit">
                                 Select all dietary preferences that apply.
                             </p>
                         </CardHeader>
@@ -368,7 +368,7 @@ export default function FindMyFood() {
                                 {getDietaryPreferences().map((preference) => (
                                     <div
                                         key={preference.id}
-                                        className="border border-gray-200 rounded-lg p-3 hover:border-[#E07A5F]/50 transition-colors"
+                                        className="border border-mist rounded-lg p-3 hover:border-sage/50 transition-colors"
                                     >
                                         <div className="flex items-start space-x-2">
                                             <Checkbox
@@ -411,7 +411,7 @@ export default function FindMyFood() {
                                 handleFindFood();
                             }}
                             disabled={!isFormValid()}
-                            className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-bark-lt hover:bg-bark-lt/90 text-white py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Search className="mr-2 h-5 w-5" />
                             Find My Food
@@ -420,7 +420,7 @@ export default function FindMyFood() {
                         <Button
                             variant="outline"
                             asChild
-                            className="w-full border-[#94AF9F] text-[#94AF9F] hover:bg-[#94AF9F]/10 py-3 text-base sm:text-lg font-medium"
+                            className="w-full border-sage text-sage hover:bg-sage/10 py-3 text-base sm:text-lg font-medium"
                         >
                             <Link href="/contact" className="flex items-center justify-center">
                                 <MessageCircle className="mr-2 h-5 w-5 flex-shrink-0" />

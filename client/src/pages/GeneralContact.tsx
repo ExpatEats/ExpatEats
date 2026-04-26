@@ -52,10 +52,10 @@ const GeneralContact = () => {
                         <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-green-100 rounded-full">
                             <CheckCircle className="h-8 w-8 text-green-600" />
                         </div>
-                        <h2 className="text-2xl font-bold font-montserrat mb-4">
+                        <h2 className="text-2xl font-bold font-cormorant mb-4">
                             Thank You!
                         </h2>
-                        <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+                        <p className="text-t2 font-outfit mb-6 max-w-lg mx-auto">
                             Your message has been sent successfully. We'll get back to you as soon as possible.
                         </p>
                         <Button
@@ -76,10 +76,10 @@ const GeneralContact = () => {
                 <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-primary/10 rounded-full">
                     <Mail className="h-8 w-8 text-primary" />
                 </div>
-                <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-bold mb-3">
                     Contact Us
                 </h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-lg text-t2 font-outfit max-w-2xl mx-auto">
                     Have a question or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
                 </p>
             </div>
@@ -180,7 +180,7 @@ const GeneralContact = () => {
             </Card>
 
             <div className="mt-8 text-center">
-                <p className="text-gray-600 text-sm">
+                <p className="text-t2 font-outfit text-sm">
                     Looking for meal planning services?{" "}
                     <a href="/contact" className="text-primary hover:underline font-medium">
                         Visit our Meal Planning & Support page

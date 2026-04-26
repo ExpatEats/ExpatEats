@@ -1,10 +1,14 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        cormorant: ["Cormorant Garamond", "serif"],
+        outfit: ["Outfit", "sans-serif"],
+        montserrat: ["Montserrat", "sans-serif"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -64,6 +68,23 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // New Design System - Earth Tones Palette
+        cream: "hsl(var(--cream))",
+        "cream-mid": "hsl(var(--cream-mid))",
+        bark: "hsl(var(--bark))",
+        "bark-lt": "hsl(var(--bark-lt))",
+        "bark-pale": "hsl(var(--bark-pale))",
+        soil: "hsl(var(--soil))",
+        mist: "hsl(var(--mist))",
+        sage: "hsl(var(--sage))",
+        "sage-lt": "hsl(var(--sage-lt))",
+        white: "hsl(var(--white))",
+        t1: "hsl(var(--t1))",
+        t2: "hsl(var(--t2))",
+        t3: "hsl(var(--t3))",
+      },
+      transitionTimingFunction: {
+        elegant: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
         "accordion-down": {

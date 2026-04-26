@@ -49,6 +49,51 @@ export function registerGuidesRoutes(app: Express) {
     });
 
     /**
+     * GET /api/guides/available
+     * Get all available guides for purchase with user's purchase status
+     * Shows all guides and indicates which ones the user has purchased
+     */
+    app.get("/api/guides/available", async (req, res) => {
+        try {
+            const userId = req.session?.userId;
+
+            // Get all guides
+            const allGuides = await storage.getAllGuides();
+
+            // If user is logged in, get their purchases
+            let purchasedGuideIds: number[] = [];
+            if (userId) {
+                const userGuides = await storage.getUserGuides(userId);
+                purchasedGuideIds = userGuides.map(g => g.id);
+            }
+
+            // Map guides with purchase status
+            const guidesWithStatus = allGuides.map(guide => ({
+                id: guide.id,
+                slug: guide.slug,
+                name: guide.slug
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' '),
+                description: `ExpatEats Digital Guide - ${guide.slug}`,
+                price: parseFloat(process.env.STRIPE_GUIDE_PRICE || "2500") / 100, // Convert cents to euros
+                currency: "EUR",
+                isPurchased: purchasedGuideIds.includes(guide.id),
+                previewImage: `/api/guides/${guide.slug}/preview`, // Preview endpoint we'll create
+                createdAt: guide.createdAt,
+            }));
+
+            res.json({
+                guides: guidesWithStatus,
+                isAuthenticated: !!userId,
+            });
+        } catch (error) {
+            console.error("Error fetching available guides:", error);
+            res.status(500).json({ message: "Failed to fetch guides" });
+        }
+    });
+
+    /**
      * GET /api/guides/:slug/access
      * Check if user has access to a specific guide
      * Returns access status and signed URL if accessible
@@ -197,6 +242,60 @@ export function registerGuidesRoutes(app: Express) {
             console.error("Error serving guide:", error);
             if (!res.headersSent) {
                 res.status(500).json({ message: "Failed to serve guide" });
+            }
+        }
+    });
+
+    /**
+     * GET /api/guides/:slug/preview
+     * Serve preview image for a guide (first page)
+     * Public endpoint - no authentication required
+     */
+    app.get("/api/guides/:slug/preview", async (req, res) => {
+        try {
+            const { slug } = req.params;
+
+            // Get guide by slug
+            const guide = await storage.getGuideBySlug(slug);
+
+            if (!guide) {
+                return res.status(404).json({ message: "Guide not found" });
+            }
+
+            // Look for preview image in /guides/previews/
+            // Try SVG first, then JPG
+            let previewPath = path.join(process.cwd(), 'guides', 'previews', `${slug}.svg`);
+            let contentType = 'image/svg+xml';
+
+            if (!fs.existsSync(previewPath)) {
+                previewPath = path.join(process.cwd(), 'guides', 'previews', `${slug}.jpg`);
+                contentType = 'image/jpeg';
+            }
+
+            // Check if preview exists
+            if (!fs.existsSync(previewPath)) {
+                // Return a placeholder if preview doesn't exist
+                return res.status(404).json({ message: "Preview not available" });
+            }
+
+            // Serve the preview image
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+
+            const imageStream = fs.createReadStream(previewPath);
+            imageStream.pipe(res);
+
+            imageStream.on('error', (error) => {
+                console.error('Error streaming preview:', error);
+                if (!res.headersSent) {
+                    res.status(500).json({ message: 'Failed to stream preview' });
+                }
+            });
+
+        } catch (error) {
+            console.error("Error serving guide preview:", error);
+            if (!res.headersSent) {
+                res.status(500).json({ message: "Failed to serve preview" });
             }
         }
     });

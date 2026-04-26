@@ -127,10 +127,10 @@ const PersonalizedMealPlans: React.FC = () => {
                 />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-3xl mx-auto text-center">
-                        <div className="inline-flex items-center justify-center p-3 bg-[#94AF9F] bg-opacity-10 rounded-full mb-6">
-                            <ChefHat className="h-8 w-8 text-[#94AF9F]" />
+                        <div className="inline-flex items-center justify-center p-3 bg-sage bg-opacity-10 rounded-full mb-6">
+                            <ChefHat className="h-8 w-8 text-sage" />
                         </div>
-                        <h1 className="font-montserrat text-4xl md:text-5xl lg:text-6xl font-light tracking-wide mb-4 text-neutral-dark">
+                        <h1 className="font-cormorant text-4xl md:text-5xl lg:text-6xl font-light tracking-wide mb-4 text-neutral-dark">
                             Personalized Meal Plans
                         </h1>
                         <p className="text-lg md:text-xl mb-8 text-neutral-dark">
@@ -143,11 +143,11 @@ const PersonalizedMealPlans: React.FC = () => {
             {/* How It Works Section */}
             <section className="py-12 bg-white">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                         How It Works
                     </h2>
                     <div className="max-w-4xl mx-auto">
-                        <Card className="mb-8 shadow-lg border-t-4 border-[#94AF9F]">
+                        <Card className="mb-8 shadow-lg border-t-4 border-sage">
                             <CardContent className="pt-6">
                                 <p className="text-lg text-neutral-dark leading-relaxed">
                                     This is a <span className="font-semibold">one-on-one service</span> where we craft a completely customized weekly meal plan tailored to your health goals, dietary restrictions, lifestyle, and local ingredient availability. Whether you're looking to eat cleaner, improve digestion, balance hormones, or simply simplify your weekly meals, we take the guesswork out of eating well in Portugal.
@@ -159,14 +159,14 @@ const PersonalizedMealPlans: React.FC = () => {
                             <Card className="shadow-lg hover:shadow-xl transition-shadow">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#94AF9F] bg-opacity-10 p-3 rounded-full">
-                                            <Mail className="h-6 w-6 text-[#94AF9F]" />
+                                        <div className="bg-sage bg-opacity-10 p-3 rounded-full">
+                                            <Mail className="h-6 w-6 text-sage" />
                                         </div>
                                         <div>
-                                            <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                            <h3 className="font-cormorant font-semibold text-lg mb-2">
                                                 Step 1: Purchase
                                             </h3>
-                                            <p className="text-gray-600">
+                                            <p className="text-t2 font-outfit">
                                                 Choose your plan and complete purchase. You'll receive an email with your intake form.
                                             </p>
                                         </div>
@@ -177,14 +177,14 @@ const PersonalizedMealPlans: React.FC = () => {
                             <Card className="shadow-lg hover:shadow-xl transition-shadow">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                            <Phone className="h-6 w-6 text-[#E07A5F]" />
+                                        <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                            <Phone className="h-6 w-6 text-bark" />
                                         </div>
                                         <div>
-                                            <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                            <h3 className="font-cormorant font-semibold text-lg mb-2">
                                                 Step 2: Connect
                                             </h3>
-                                            <p className="text-gray-600">
+                                            <p className="text-t2 font-outfit">
                                                 Book your 20-minute discovery call with Michaele, our nutrition consultant.
                                             </p>
                                         </div>
@@ -195,14 +195,14 @@ const PersonalizedMealPlans: React.FC = () => {
                             <Card className="shadow-lg hover:shadow-xl transition-shadow">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="bg-[#DDB892] bg-opacity-30 p-3 rounded-full">
-                                            <ChefHat className="h-6 w-6 text-[#94AF9F]" />
+                                        <div className="bg-bark-pale bg-opacity-30 p-3 rounded-full">
+                                            <ChefHat className="h-6 w-6 text-sage" />
                                         </div>
                                         <div>
-                                            <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                            <h3 className="font-cormorant font-semibold text-lg mb-2">
                                                 Step 3: Receive
                                             </h3>
-                                            <p className="text-gray-600">
+                                            <p className="text-t2 font-outfit">
                                                 Get your customized 7-day meal plan within 3-5 business days.
                                             </p>
                                         </div>
@@ -215,10 +215,10 @@ const PersonalizedMealPlans: React.FC = () => {
             </section>
 
             {/* Who It's Good For Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto">
-                        <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                        <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                             Who It's Good For
                         </h2>
                         <Card className="shadow-lg">
@@ -228,19 +228,19 @@ const PersonalizedMealPlans: React.FC = () => {
                                 </p>
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div className="flex items-start">
-                                        <Check className="text-[#94AF9F] mr-3 h-5 w-5 mt-1 flex-shrink-0" />
+                                        <Check className="text-sage mr-3 h-5 w-5 mt-1 flex-shrink-0" />
                                         <span>New expats adjusting to Portugal</span>
                                     </div>
                                     <div className="flex items-start">
-                                        <Check className="text-[#94AF9F] mr-3 h-5 w-5 mt-1 flex-shrink-0" />
+                                        <Check className="text-sage mr-3 h-5 w-5 mt-1 flex-shrink-0" />
                                         <span>Families seeking healthier meals</span>
                                     </div>
                                     <div className="flex items-start">
-                                        <Check className="text-[#94AF9F] mr-3 h-5 w-5 mt-1 flex-shrink-0" />
+                                        <Check className="text-sage mr-3 h-5 w-5 mt-1 flex-shrink-0" />
                                         <span>People with dietary restrictions</span>
                                     </div>
                                     <div className="flex items-start">
-                                        <Check className="text-[#94AF9F] mr-3 h-5 w-5 mt-1 flex-shrink-0" />
+                                        <Check className="text-sage mr-3 h-5 w-5 mt-1 flex-shrink-0" />
                                         <span>Anyone wanting to simplify meal planning</span>
                                     </div>
                                 </div>
@@ -253,23 +253,23 @@ const PersonalizedMealPlans: React.FC = () => {
             {/* Pricing Section */}
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-4 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-bold mb-4 text-center text-neutral-dark">
                         Choose Your Plan
                     </h2>
-                    <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    <p className="text-center text-t2 font-outfit mb-8 max-w-2xl mx-auto">
                         Select the plan that works best for you. All plans include a personalized consultation and customized meal planning.
                     </p>
 
                     {/* Coming Soon Banner */}
                     <div className="max-w-4xl mx-auto mb-8">
-                        <Card className="border-2 border-[#E07A5F] bg-gradient-to-r from-[#E07A5F]/5 to-[#DDB892]/5">
+                        <Card className="border-2 border-bark bg-gradient-to-r from-bark/5 to-bark-pale/5">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-[#E07A5F] bg-opacity-10 p-3 rounded-full">
-                                        <Info className="h-6 w-6 text-[#E07A5F]" />
+                                    <div className="bg-bark bg-opacity-10 p-3 rounded-full">
+                                        <Info className="h-6 w-6 text-bark" />
                                     </div>
                                     <div>
-                                        <h3 className="font-montserrat font-semibold text-lg mb-2 text-neutral-dark">
+                                        <h3 className="font-cormorant font-semibold text-lg mb-2 text-neutral-dark">
                                             Coming Soon
                                         </h3>
                                         <p className="text-gray-700 leading-relaxed">
@@ -287,26 +287,26 @@ const PersonalizedMealPlans: React.FC = () => {
                                 key={plan.id}
                                 className={`shadow-lg hover:shadow-xl transition-all ${
                                     plan.popular
-                                        ? "border-2 border-[#94AF9F] relative"
+                                        ? "border-2 border-sage relative"
                                         : ""
                                 }`}
                             >
                                 {plan.popular && (
                                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                        <span className="bg-[#94AF9F] text-white px-4 py-1 rounded-full text-sm font-semibold">
+                                        <span className="bg-sage text-white px-4 py-1 rounded-full text-sm font-semibold">
                                             Most Popular
                                         </span>
                                     </div>
                                 )}
                                 <CardHeader className="text-center pb-4">
-                                    <CardTitle className="text-2xl font-montserrat mb-2">
+                                    <CardTitle className="text-2xl font-cormorant mb-2">
                                         {plan.name}
                                     </CardTitle>
-                                    <p className="text-gray-600 text-sm mb-4">
+                                    <p className="text-t2 font-outfit text-sm mb-4">
                                         {plan.description}
                                     </p>
                                     <div className="flex items-center justify-center gap-2">
-                                        <Euro className="h-8 w-8 text-[#94AF9F]" />
+                                        <Euro className="h-8 w-8 text-sage" />
                                         <span className="text-5xl font-bold text-neutral-dark">
                                             {plan.price}
                                         </span>
@@ -319,7 +319,7 @@ const PersonalizedMealPlans: React.FC = () => {
                                                 key={index}
                                                 className="flex items-start"
                                             >
-                                                <Check className="text-[#94AF9F] mr-3 h-5 w-5 mt-0.5 flex-shrink-0" />
+                                                <Check className="text-sage mr-3 h-5 w-5 mt-0.5 flex-shrink-0" />
                                                 <span className="text-gray-700">
                                                     {feature}
                                                 </span>
@@ -330,8 +330,8 @@ const PersonalizedMealPlans: React.FC = () => {
                                         disabled={true}
                                         className={`w-full py-6 text-lg font-semibold rounded-full opacity-50 cursor-not-allowed ${
                                             plan.popular
-                                                ? "bg-[#94AF9F] text-white"
-                                                : "bg-[#E07A5F] text-white"
+                                                ? "bg-sage text-white"
+                                                : "bg-bark text-white"
                                         }`}
                                     >
                                         Coming Soon
@@ -342,12 +342,12 @@ const PersonalizedMealPlans: React.FC = () => {
                     </div>
 
                     <div className="text-center mt-8">
-                        <p className="text-gray-600 mb-2">
+                        <p className="text-t2 font-outfit mb-2">
                             Need ongoing support or custom plans?
                         </p>
                         <Button
                             variant="outline"
-                            className="border-2 border-[#94AF9F] text-[#94AF9F] hover:bg-[#94AF9F] hover:text-white py-3 px-8 rounded-full font-semibold transition"
+                            className="border-2 border-sage text-sage hover:bg-sage hover:text-white py-3 px-8 rounded-full font-semibold transition"
                         >
                             Contact Us for Custom Monthly Support
                         </Button>
@@ -356,21 +356,21 @@ const PersonalizedMealPlans: React.FC = () => {
             </section>
 
             {/* What You Get Section */}
-            <section className="py-12 bg-[#F9F5F0]">
+            <section className="py-12 bg-cream">
                 <div className="container mx-auto px-4">
-                    <h2 className="font-montserrat text-3xl font-bold mb-8 text-center text-neutral-dark">
+                    <h2 className="font-cormorant text-3xl font-bold mb-8 text-center text-neutral-dark">
                         What's Included
                     </h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                         <Card className="shadow-lg text-center">
                             <CardContent className="pt-6">
-                                <div className="bg-[#94AF9F] bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                                    <Calendar className="h-8 w-8 text-[#94AF9F]" />
+                                <div className="bg-sage bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <Calendar className="h-8 w-8 text-sage" />
                                 </div>
-                                <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                <h3 className="font-cormorant font-semibold text-lg mb-2">
                                     7-Day PDF Plan
                                 </h3>
-                                <p className="text-gray-600 text-sm">
+                                <p className="text-t2 font-outfit text-sm">
                                     Complete meal plan with breakfast, lunch, and dinner
                                 </p>
                             </CardContent>
@@ -378,13 +378,13 @@ const PersonalizedMealPlans: React.FC = () => {
 
                         <Card className="shadow-lg text-center">
                             <CardContent className="pt-6">
-                                <div className="bg-[#E07A5F] bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                                    <ChefHat className="h-8 w-8 text-[#E07A5F]" />
+                                <div className="bg-bark bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <ChefHat className="h-8 w-8 text-bark" />
                                 </div>
-                                <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                <h3 className="font-cormorant font-semibold text-lg mb-2">
                                     Clickable Recipes
                                 </h3>
-                                <p className="text-gray-600 text-sm">
+                                <p className="text-t2 font-outfit text-sm">
                                     Easy-to-follow recipes tailored to your preferences
                                 </p>
                             </CardContent>
@@ -392,13 +392,13 @@ const PersonalizedMealPlans: React.FC = () => {
 
                         <Card className="shadow-lg text-center">
                             <CardContent className="pt-6">
-                                <div className="bg-[#DDB892] bg-opacity-30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                                    <Mail className="h-8 w-8 text-[#94AF9F]" />
+                                <div className="bg-bark-pale bg-opacity-30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <Mail className="h-8 w-8 text-sage" />
                                 </div>
-                                <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                <h3 className="font-cormorant font-semibold text-lg mb-2">
                                     Shopping Lists
                                 </h3>
-                                <p className="text-gray-600 text-sm">
+                                <p className="text-t2 font-outfit text-sm">
                                     Local shopping lists with ingredient substitutions
                                 </p>
                             </CardContent>
@@ -406,13 +406,13 @@ const PersonalizedMealPlans: React.FC = () => {
 
                         <Card className="shadow-lg text-center">
                             <CardContent className="pt-6">
-                                <div className="bg-[#94AF9F] bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                                    <Clock className="h-8 w-8 text-[#94AF9F]" />
+                                <div className="bg-sage bg-opacity-10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <Clock className="h-8 w-8 text-sage" />
                                 </div>
-                                <h3 className="font-montserrat font-semibold text-lg mb-2">
+                                <h3 className="font-cormorant font-semibold text-lg mb-2">
                                     Fast Turnaround
                                 </h3>
-                                <p className="text-gray-600 text-sm">
+                                <p className="text-t2 font-outfit text-sm">
                                     Receive your plan within 3-5 business days
                                 </p>
                             </CardContent>
@@ -422,9 +422,9 @@ const PersonalizedMealPlans: React.FC = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-[#94AF9F] text-white">
+            <section className="py-16 bg-sage text-white">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="font-montserrat text-3xl font-bold mb-4">
+                    <h2 className="font-cormorant text-3xl font-bold mb-4">
                         Ready to Simplify Your Meals?
                     </h2>
                     <p className="text-lg mb-8 max-w-2xl mx-auto">
@@ -432,7 +432,7 @@ const PersonalizedMealPlans: React.FC = () => {
                     </p>
                     <Button
                         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                        className="bg-white text-[#94AF9F] hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105"
+                        className="bg-white text-sage hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105"
                     >
                         Get Your Meal Plan
                     </Button>

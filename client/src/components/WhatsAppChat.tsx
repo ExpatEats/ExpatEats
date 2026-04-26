@@ -36,7 +36,7 @@ export const WhatsAppChat = () => {
             <Sheet>
                 <SheetTrigger asChild>
                     <Button
-                        className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white rounded-full h-14 w-14 flex items-center justify-center shadow-lg border-none"
+                        className="bg-bark hover:bg-soil text-white rounded-full h-14 w-14 flex items-center justify-center shadow-lg border-none"
                         aria-label="Chat with Michaele on WhatsApp"
                     >
                         <svg
@@ -52,8 +52,8 @@ export const WhatsAppChat = () => {
                 </SheetTrigger>
                 <SheetContent className="w-[90vw] sm:max-w-sm border-none">
                     <SheetHeader className="pb-4">
-                        <SheetTitle className="text-lg font-normal text-[#E07A5F] flex items-center gap-2">
-                            <div className="bg-[#E07A5F] p-1 rounded-full">
+                        <SheetTitle className="text-lg font-normal text-bark flex items-center gap-2">
+                            <div className="bg-bark p-1 rounded-full">
                                 <svg
                                     viewBox="0 0 24 24"
                                     width="20"
@@ -73,7 +73,7 @@ export const WhatsAppChat = () => {
                             <h3 className="text-base font-medium mb-2">
                                 Hi there 👋
                             </h3>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-t2">
                                 I'm Michaele Kruger, holistic nutritionist based
                                 in Lisbon. Have a question about food sources or
                                 dietary needs? Send me a message and I'll get
@@ -81,7 +81,7 @@ export const WhatsAppChat = () => {
                             </p>
                         </div>
 
-                        <div className="rounded-md bg-gray-50 p-4 mb-4">
+                        <div className="rounded-md bg-cream-mid p-4 mb-4">
                             <Input
                                 placeholder="Type your message here..."
                                 value={message}
@@ -90,7 +90,7 @@ export const WhatsAppChat = () => {
                             />
                             <Button
                                 onClick={openWhatsApp}
-                                className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 w-full"
+                                className="bg-bark hover:bg-soil w-full"
                             >
                                 <svg
                                     viewBox="0 0 24 24"
@@ -106,7 +106,7 @@ export const WhatsAppChat = () => {
                             </Button>
                         </div>
 
-                        <p className="text-xs text-gray-500 mt-2 text-center">
+                        <p className="text-xs text-t3 mt-2 text-center">
                             Messages will be sent directly to Michaele on
                             WhatsApp
                         </p>

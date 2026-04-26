@@ -27,7 +27,7 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
 
     // Create custom shopping basket icon SVG
     const createCustomMarker = (hasAddress: boolean = true) => {
-        const color = hasAddress ? "#E07A5F" : "#9CA3AF"; // Orange for valid, gray for no address
+        const color = hasAddress ? "var(--bark)" : "#9CA3AF"; // Orange for valid, gray for no address
         const el = document.createElement("div");
         el.innerHTML = `
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -202,7 +202,7 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
                  href="${place.instagram.startsWith("http") ? place.instagram : `https://instagram.com/${place.instagram.replace("@", "")}`}"
                  target="_blank"
                  rel="noopener noreferrer"
-                 class="text-xs text-[#E07A5F] hover:text-[#d06851] font-medium"
+                 class="text-xs text-bark hover:text-bark font-medium"
                >
                  📷 Instagram
                </a>
@@ -232,7 +232,7 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
             }
             <button
               onclick="window.viewStoreDetails(${place.id})"
-              class="w-full bg-[#E07A5F] text-white text-xs py-1 px-2 rounded hover:bg-[#d06851] transition-colors"
+              class="w-full bg-bark text-white text-xs py-1 px-2 rounded hover:bg-bark transition-colors"
             >
               View Details
             </button>
@@ -324,7 +324,7 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
             {isLoading && (
                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-lg">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E07A5F] mx-auto mb-2"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bark mx-auto mb-2"></div>
                         <p className="text-gray-600">Loading map...</p>
                     </div>
                 </div>

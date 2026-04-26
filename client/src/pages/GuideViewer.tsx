@@ -97,12 +97,12 @@ export default function GuideViewer() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F9F5F0] flex items-center justify-center">
-        <Card className="border-[#DDB892]/20">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <Card className="border-bark-pale/20">
           <CardContent className="pt-6 pb-6 px-12">
             <div className="flex flex-col items-center gap-4">
-              <Loader2 className="h-12 w-12 animate-spin text-[#94AF9F]" />
-              <p className="text-gray-600">Loading guide...</p>
+              <Loader2 className="h-12 w-12 animate-spin text-sage" />
+              <p className="text-t2 font-outfit">Loading guide...</p>
             </div>
           </CardContent>
         </Card>
@@ -112,7 +112,7 @@ export default function GuideViewer() {
 
   if (error || !hasAccess) {
     return (
-      <div className="min-h-screen bg-[#F9F5F0] py-12">
+      <div className="min-h-screen bg-cream py-12">
         <div className="max-w-2xl mx-auto px-4">
           <Button
             onClick={() => setLocation("/purchases")}
@@ -146,7 +146,7 @@ export default function GuideViewer() {
                     {!hasAccess && (
                       <Button
                         onClick={() => setLocation("/services")}
-                        className="bg-[#94AF9F] hover:bg-[#94AF9F]/90 text-white"
+                        className="bg-sage hover:bg-sage/90 text-white"
                       >
                         Browse Services
                       </Button>
@@ -162,20 +162,20 @@ export default function GuideViewer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F5F0] py-8">
+    <div className="min-h-screen bg-cream py-8">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
           <Button
             onClick={() => setLocation("/purchases")}
             variant="ghost"
-            className="text-gray-600 hover:text-gray-900"
+            className="text-t2 font-outfit hover:text-gray-900"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to My Guides
           </Button>
 
-          <h1 className="text-2xl md:text-3xl font-montserrat font-light text-[#94AF9F]">
+          <h1 className="text-2xl md:text-3xl font-montserrat font-light text-sage">
             {slug ? formatGuideName(slug) : "Guide"}
           </h1>
 

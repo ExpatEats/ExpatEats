@@ -104,14 +104,14 @@ const Shop = () => {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="text-center mb-8">
-                <div className="inline-flex items-center bg-[#94AF9F] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+                <div className="inline-flex items-center bg-sage text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
                     <MapPin className="h-4 w-4 mr-1.5" />
                     <span>LISBON METRO AREA</span>
                 </div>
-                <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-bold mb-3">
                     Shop Sustainably
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xl text-t2 font-outfit max-w-2xl mx-auto">
                     Find sustainable, organic, and local options in the Lisbon
                     metropolitan area
                 </p>
@@ -121,12 +121,12 @@ const Shop = () => {
             <Card className="mb-8">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-[#94AF9F]" />
+                        <MapPin className="h-5 w-5 text-sage" />
                         Step 1: Select Your Location(s)
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-t2 font-outfit mb-4">
                         Choose one or multiple locations in the Lisbon area:
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -137,8 +137,8 @@ const Shop = () => {
                   flex items-center space-x-3 p-4 rounded-lg border transition-colors cursor-pointer
                   ${
                       selectedLocations.includes(location.id)
-                          ? "border-[#94AF9F] bg-[#94AF9F]/5"
-                          : "border-gray-200 hover:border-[#94AF9F]/50"
+                          ? "border-sage bg-sage/5"
+                          : "border-mist hover:border-sage/50"
                   }
                 `}
                                 onClick={() => toggleLocation(location.id)}
@@ -166,7 +166,7 @@ const Shop = () => {
             <Card className="mb-8">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <ShoppingCart className="h-5 w-5 text-[#94AF9F]" />
+                        <ShoppingCart className="h-5 w-5 text-sage" />
                         Step 2: Choose Shopping Category
                     </CardTitle>
                 </CardHeader>
@@ -179,8 +179,8 @@ const Shop = () => {
                   p-6 rounded-lg border transition-all cursor-pointer
                   ${
                       selectedCategory === category.id
-                          ? "border-[#94AF9F] bg-[#94AF9F]/10 shadow-md"
-                          : "border-gray-200 hover:border-[#94AF9F]/50 hover:shadow-sm"
+                          ? "border-sage bg-sage/10 shadow-md"
+                          : "border-mist hover:border-sage/50 hover:shadow-sm"
                   }
                 `}
                                 onClick={() =>
@@ -188,14 +188,14 @@ const Shop = () => {
                                 }
                             >
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="text-[#94AF9F]">
+                                    <div className="text-sage">
                                         {category.icon}
                                     </div>
                                     <h3 className="text-xl font-semibold">
                                         {category.name}
                                     </h3>
                                 </div>
-                                <p className="text-gray-600 text-sm">
+                                <p className="text-t2 font-outfit text-sm">
                                     {category.id === "food-nutrition"
                                         ? "Organic, local, grass-fed, alternative diet friendly, sustainable food options and quality supplements"
                                         : "Sustainable stores offering organic clothing, non-toxic cleaners, furniture, and wellness products"}
@@ -225,8 +225,8 @@ const Shop = () => {
                     p-4 rounded-lg border transition-all cursor-pointer
                     ${
                         selectedSubcategory === subcategory.id
-                            ? "border-[#E07A5F] bg-[#E07A5F]/10"
-                            : "border-gray-200 hover:border-[#E07A5F]/50"
+                            ? "border-bark-lt bg-bark-lt/10"
+                            : "border-mist hover:border-bark-lt/50"
                     }
                   `}
                                         onClick={() =>
@@ -238,33 +238,33 @@ const Shop = () => {
                                         <div className="flex items-center gap-2 mb-2">
                                             {subcategory.id ===
                                                 "grocery-market" && (
-                                                <ShoppingCart className="h-4 w-4 text-[#E07A5F]" />
+                                                <ShoppingCart className="h-4 w-4 text-bark-lt" />
                                             )}
                                             {subcategory.id ===
                                                 "supplements" && (
-                                                <Leaf className="h-4 w-4 text-[#E07A5F]" />
+                                                <Leaf className="h-4 w-4 text-bark-lt" />
                                             )}
                                             {subcategory.id === "beauty" && (
-                                                <Sparkles className="h-4 w-4 text-[#E07A5F]" />
+                                                <Sparkles className="h-4 w-4 text-bark-lt" />
                                             )}
                                             {subcategory.id === "cleaning" && (
-                                                <Home className="h-4 w-4 text-[#E07A5F]" />
+                                                <Home className="h-4 w-4 text-bark-lt" />
                                             )}
                                             {subcategory.id ===
                                                 "housewares" && (
-                                                <Home className="h-4 w-4 text-[#E07A5F]" />
+                                                <Home className="h-4 w-4 text-bark-lt" />
                                             )}
                                             {subcategory.id === "clothing" && (
-                                                <Shirt className="h-4 w-4 text-[#E07A5F]" />
+                                                <Shirt className="h-4 w-4 text-bark-lt" />
                                             )}
                                             {subcategory.id === "wellness" && (
-                                                <Heart className="h-4 w-4 text-[#E07A5F]" />
+                                                <Heart className="h-4 w-4 text-bark-lt" />
                                             )}
                                             <h4 className="font-medium">
                                                 {subcategory.name}
                                             </h4>
                                         </div>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-t2 font-outfit">
                                             {subcategory.id === "supplements" &&
                                                 "Quality supplements including online resources that ship to Portugal"}
                                             {subcategory.id ===
@@ -296,7 +296,7 @@ const Shop = () => {
                     disabled={
                         selectedLocations.length === 0 || !selectedSubcategory
                     }
-                    className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white px-8 py-3 text-lg font-medium"
+                    className="bg-bark-lt hover:bg-bark-lt/90 text-white px-8 py-3 text-lg font-medium"
                 >
                     Find{" "}
                     {selectedSubcategory

@@ -348,7 +348,7 @@ export const EditLocationModal = ({
                                 </div>
 
                                 {place.latitude && place.longitude && (
-                                    <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
+                                    <div className="text-xs text-t3 bg-cream-mid p-3 rounded">
                                         <p className="font-medium mb-1">Current Coordinates:</p>
                                         <p>{place.latitude}, {place.longitude}</p>
                                     </div>
@@ -426,7 +426,7 @@ export const EditLocationModal = ({
                                         placeholder="organic, local, sustainable"
                                         disabled={isLoading}
                                     />
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-t3">
                                         Separate multiple tags with commas
                                     </p>
                                 </div>
@@ -477,7 +477,7 @@ export const EditLocationModal = ({
                                             </SelectItem>
                                             <SelectItem value="approved">
                                                 <div className="flex items-center gap-2">
-                                                    <Badge variant="outline" className="text-green-600 border-green-600">
+                                                    <Badge variant="outline" className="text-sage border-sage">
                                                         <CheckCircle2 className="h-3 w-3 mr-1" />
                                                         Approved
                                                     </Badge>
@@ -553,7 +553,7 @@ export const EditLocationModal = ({
                         type="button"
                         onClick={handleSave}
                         disabled={isLoading || !isFormValid}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-bark hover:bg-soil"
                     >
                         {isLoading ? (
                             <>

@@ -67,10 +67,10 @@ export default function NewServices() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
             <div className="text-center mb-12">
-                <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-bold mb-3">
                     Our Services
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xl text-t2 font-outfit max-w-2xl mx-auto">
                     Personalized support for healthy, sustainable living as an expat in
                     Portugal.
                 </p>
@@ -81,7 +81,7 @@ export default function NewServices() {
                     <Link key={service.id} href={service.path}>
                         <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
                             <CardHeader className="text-center">
-                                <div className="mx-auto mb-4 p-4 bg-[#94AF9F]/10 rounded-full text-[#94AF9F] group-hover:bg-[#94AF9F] group-hover:text-white transition-colors">
+                                <div className="mx-auto mb-4 p-4 bg-sage/10 rounded-full text-sage group-hover:bg-sage group-hover:text-white transition-colors">
                                     {service.icon}
                                 </div>
                                 <CardTitle className="text-xl">
@@ -89,7 +89,7 @@ export default function NewServices() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-gray-600">
+                                <p className="text-t2 font-outfit">
                                     {service.description}
                                 </p>
                             </CardContent>
@@ -99,17 +99,17 @@ export default function NewServices() {
             </div>
 
             <div className="mt-16 text-center">
-                <div className="bg-[#94AF9F]/10 rounded-lg p-8">
+                <div className="bg-sage/10 rounded-lg p-8">
                     <h3 className="text-2xl font-semibold mb-4">
                         Need Personalized Help?
                     </h3>
-                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    <p className="text-t2 font-outfit mb-6 max-w-2xl mx-auto">
                         Can't find exactly what you're looking for? Get
                         personalized assistance from Michaele, our nutrition
                         expert based in Lisbon.
                     </p>
                     <Link href="/contact">
-                        <Button className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white px-8 py-3">
+                        <Button className="bg-bark-lt hover:bg-bark-lt/90 text-white px-8 py-3">
                             Get Personal Consultation
                         </Button>
                     </Link>

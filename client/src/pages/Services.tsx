@@ -218,10 +218,10 @@ export default function Services() {
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">
+            <h1 className="text-3xl md:text-4xl font-cormorant font-medium mb-2 text-center text-soil">
                 Non-Toxic Household & Personal Care
             </h1>
-            <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-center text-t2 font-outfit mb-8 max-w-2xl mx-auto">
                 Discover local businesses offering non-toxic alternatives for
                 household and personal care products to create a healthier
                 living environment.
@@ -273,7 +273,7 @@ export default function Services() {
                         value={category}
                         className="mt-6"
                     >
-                        <h2 className="text-2xl font-semibold mb-6 capitalize">
+                        <h2 className="text-2xl font-cormorant font-medium mb-6 capitalize text-soil">
                             {category} Services
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -286,10 +286,10 @@ export default function Services() {
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent className="flex flex-col h-full">
-                                            <p className="text-gray-600 mb-4 flex-grow">
+                                            <p className="text-t2 font-outfit mb-4 flex-grow">
                                                 {service.description}
                                             </p>
-                                            <p className="text-sm text-gray-700 mb-4">
+                                            <p className="text-sm text-t1 font-outfit mb-4">
                                                 📍 {service.address}
                                             </p>
                                             <div className="flex flex-wrap gap-2 mb-4">
@@ -322,8 +322,8 @@ export default function Services() {
                 ))}
             </Tabs>
 
-            <div className="mt-8 pt-4 border-t border-gray-100 text-center">
-                <p className="text-xs text-gray-400">
+            <div className="mt-8 pt-4 border-t border-mist text-center">
+                <p className="text-xs text-t3 font-outfit">
                     Copyright Cerejaperaltada Unipessoal 2025 all rights
                     reserved
                 </p>

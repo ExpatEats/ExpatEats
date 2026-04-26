@@ -252,19 +252,19 @@ const Community: React.FC = () => {
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="mb-8 text-center">
-                        <h1 className="font-montserrat text-3xl font-bold mb-2">Community</h1>
-                        <p className="text-gray-600 max-w-3xl mx-auto">
+                        <h1 className="font-cormorant text-3xl font-medium mb-2 text-soil">Community</h1>
+                        <p className="text-t2 font-outfit max-w-3xl mx-auto">
                             Connect with fellow expats, share local knowledge, and discover healthy food and wellness resources together.
                         </p>
                     </div>
 
                     {/* About this Community */}
-                    <div className="mb-8 bg-[#F7F4EF] rounded-lg p-6 max-w-4xl mx-auto">
-                        <h2 className="text-xl font-semibold mb-3 text-center">About this Community</h2>
-                        <p className="text-gray-700 text-center mb-3">
+                    <div className="mb-8 bg-cream-mid rounded-lg p-6 max-w-4xl mx-auto">
+                        <h2 className="text-xl font-outfit font-semibold mb-3 text-center text-soil">About this Community</h2>
+                        <p className="text-t1 font-outfit text-center mb-3">
                             This is a welcoming space for expats in Portugal to ask questions, share recommendations, and help each other navigate food, wellness, and everyday life.
                         </p>
-                        <p className="text-gray-600 text-center text-sm">
+                        <p className="text-t2 font-outfit text-center text-sm">
                             Discussions are moderated to keep things supportive, helpful, and aligned with Expat Eats values.
                         </p>
                     </div>
@@ -281,14 +281,14 @@ const Community: React.FC = () => {
                                         <button
                                             key={section.id}
                                             onClick={() => setActiveSection(section.id)}
-                                            className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                            className={`w-full text-left p-3 rounded-lg transition-elegant font-outfit ${
                                                 activeSection === section.id
                                                     ? "bg-primary/10 text-primary border border-primary/20"
-                                                    : "hover:bg-gray-100 text-gray-700"
+                                                    : "hover:bg-bark-pale text-t1"
                                             }`}
                                         >
                                             <div className="font-medium">{section.name}</div>
-                                            <div className="text-sm text-gray-500 mt-1">
+                                            <div className="text-sm text-t3 mt-1">
                                                 {section.description}
                                             </div>
                                         </button>
@@ -302,7 +302,7 @@ const Community: React.FC = () => {
                         <div className="lg:col-span-3">
                             {/* Section Header */}
                             <div className="mb-6">
-                                <p className="text-gray-600 text-center mb-4">
+                                <p className="text-t2 font-outfit text-center mb-4">
                                     Ask a question, share a recommendation, or help another expat find what they are looking for.
                                 </p>
                                 <div className="flex items-center justify-between">
@@ -323,9 +323,9 @@ const Community: React.FC = () => {
                                         {[1, 2, 3].map((i) => (
                                             <Card key={i} className="animate-pulse">
                                                 <CardContent className="p-6">
-                                                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                                                    <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                                                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                                                    <div className="h-4 bg-mist rounded w-3/4 mb-4"></div>
+                                                    <div className="h-3 bg-mist rounded w-full mb-2"></div>
+                                                    <div className="h-3 bg-mist rounded w-2/3"></div>
                                                 </CardContent>
                                             </Card>
                                         ))}
@@ -339,9 +339,9 @@ const Community: React.FC = () => {
                                 ) : postsData?.posts.length === 0 ? (
                                     <Card>
                                         <CardContent className="p-6 text-center">
-                                            <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                            <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
-                                            <p className="text-gray-500 mb-4">
+                                            <MessageSquare className="h-12 w-12 text-t3 mx-auto mb-4" />
+                                            <h3 className="text-lg font-outfit font-medium text-soil mb-2">No posts yet</h3>
+                                            <p className="text-t2 font-outfit mb-4">
                                                 Be the first to start a conversation in this section!
                                             </p>
                                             <Button onClick={() => setLocation(`/community/create/${activeSection}`)}>
@@ -365,7 +365,7 @@ const Community: React.FC = () => {
                                                             </AvatarFallback>
                                                         </Avatar>
                                                         <div>
-                                                            <div className="font-medium text-gray-900 flex items-center gap-2">
+                                                            <div className="font-outfit font-medium text-soil flex items-center gap-2">
                                                                 {post.username}
                                                                 {post.userRole === "superadmin" && (
                                                                     <Badge variant="default" className="bg-purple-600 hover:bg-purple-700 text-xs">
@@ -378,7 +378,7 @@ const Community: React.FC = () => {
                                                                     </Badge>
                                                                 )}
                                                             </div>
-                                                            <div className="text-sm text-gray-500 flex items-center">
+                                                            <div className="text-sm text-t3 font-outfit flex items-center">
                                                                 <Calendar className="h-3 w-3 mr-1" />
                                                                 {formatTimeAgo(post.createdAt)}
                                                             </div>
@@ -410,23 +410,23 @@ const Community: React.FC = () => {
 
                                                 {/* Post Content */}
                                                 <div className="mb-4">
-                                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                                    <h3 className="text-lg font-outfit font-semibold text-soil mb-2">
                                                         {truncateText(post.title, 100)}
                                                     </h3>
-                                                    <p className="text-gray-700 leading-relaxed">
+                                                    <p className="text-t1 font-outfit leading-relaxed">
                                                         {truncateText(post.body, 300)}
                                                     </p>
                                                 </div>
 
                                                 {/* Post Actions */}
-                                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                                <div className="flex items-center justify-between pt-4 border-t border-mist">
                                                     <div className="flex items-center space-x-6">
                                                         <button
                                                             onClick={(e) => handleLikePost(post.id, e)}
-                                                            className={`flex items-center space-x-2 text-sm transition-colors ${
+                                                            className={`flex items-center space-x-2 text-sm font-outfit transition-elegant ${
                                                                 post.isLikedByUser
                                                                     ? "text-red-600 hover:text-red-700"
-                                                                    : "text-gray-500 hover:text-red-600"
+                                                                    : "text-t3 hover:text-red-600"
                                                             }`}
                                                         >
                                                             <Heart
@@ -436,7 +436,7 @@ const Community: React.FC = () => {
                                                             />
                                                             <span>{post.likesCount}</span>
                                                         </button>
-                                                        <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                                        <div className="flex items-center space-x-2 text-sm text-t3 font-outfit">
                                                             <MessageSquare className="h-4 w-4" />
                                                             <span>{post.commentsCount} comments</span>
                                                         </div>
@@ -471,7 +471,7 @@ const Community: React.FC = () => {
 
                     {/* Moderation Note */}
                     <div className="mt-8 text-center">
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-t3 font-outfit">
                             Community discussions are moderated by local wellness ambassadors to ensure accuracy, kindness, and relevance.
                         </p>
                     </div>

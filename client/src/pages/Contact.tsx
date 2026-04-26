@@ -87,13 +87,13 @@ const Contact = () => {
             <div className="container mx-auto px-4 py-12 max-w-4xl">
                 <Card className="border shadow-lg">
                     <CardContent className="pt-8 pb-8 px-6 text-center">
-                        <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-green-100 rounded-full">
-                            <CheckCircle className="h-8 w-8 text-green-600" />
+                        <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-sage-lt rounded-full">
+                            <CheckCircle className="h-8 w-8 text-sage" />
                         </div>
-                        <h2 className="text-2xl font-bold font-montserrat mb-4">
+                        <h2 className="text-2xl font-bold font-cormorant mb-4">
                             Thank You!
                         </h2>
-                        <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+                        <p className="text-t2 font-outfit mb-6 max-w-lg mx-auto">
                             Your meal planning consultation request has been
                             submitted. Our holistic nutritionist will contact
                             you shortly to help you build a pantry and plan
@@ -114,10 +114,10 @@ const Contact = () => {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="text-center mb-8">
-                <h1 className="font-montserrat text-3xl md:text-4xl font-bold mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-bold mb-3">
                     Holistic Pantry & Meal Planning Support
                 </h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-lg text-t2 font-outfit max-w-2xl mx-auto">
                     We know how hard it is to eat well when you relocate. Let
                     our in-house holistic nutritionist help you build a pantry
                     and plan meals aligned with your diet.
@@ -128,7 +128,7 @@ const Contact = () => {
                 <div className="md:col-span-5">
                     <Card className="h-full">
                         <CardContent className="p-6">
-                            <h2 className="text-xl font-bold font-montserrat mb-4">
+                            <h2 className="text-xl font-bold font-cormorant mb-4">
                                 Our Services Include:
                             </h2>
 
@@ -141,7 +141,7 @@ const Contact = () => {
                                         <h3 className="font-medium mb-1">
                                             Pantry Setup Guide
                                         </h3>
-                                        <p className="text-gray-600 text-sm">
+                                        <p className="text-t2 font-outfit text-sm">
                                             Personalized recommendations for
                                             stocking your kitchen based on your
                                             dietary needs and local
@@ -158,7 +158,7 @@ const Contact = () => {
                                         <h3 className="font-medium mb-1">
                                             Weekly Meal Plans
                                         </h3>
-                                        <p className="text-gray-600 text-sm">
+                                        <p className="text-t2 font-outfit text-sm">
                                             Customized meal plans that
                                             incorporate local ingredients while
                                             meeting your family's dietary
@@ -175,7 +175,7 @@ const Contact = () => {
                                         <h3 className="font-medium mb-1">
                                             Shopping Guidance
                                         </h3>
-                                        <p className="text-gray-600 text-sm">
+                                        <p className="text-t2 font-outfit text-sm">
                                             Virtual or in-person shopping
                                             assistance to help you navigate
                                             local markets and stores
@@ -191,7 +191,7 @@ const Contact = () => {
                                 <h3 className="font-medium mb-2">
                                     Why Choose Our Service?
                                 </h3>
-                                <ul className="space-y-2 text-sm text-gray-600">
+                                <ul className="space-y-2 text-sm text-t2 font-outfit">
                                     <li className="flex items-start">
                                         <span className="text-primary mr-2">
                                             •
@@ -280,7 +280,7 @@ const Contact = () => {
                                         <h3 className="text-sm font-medium mb-3">
                                             Dietary Preferences
                                         </h3>
-                                        <p className="text-gray-500 text-sm mb-3">
+                                        <p className="text-t3 font-outfit text-sm mb-3">
                                             {savedPreferences.length > 0
                                                 ? "These are based on your profile. Adjust if needed."
                                                 : "Select all that apply:"}
@@ -347,7 +347,7 @@ const Contact = () => {
                                         <h3 className="text-sm font-medium mb-3">
                                             Services Needed
                                         </h3>
-                                        <p className="text-gray-500 text-sm mb-3">
+                                        <p className="text-t3 font-outfit text-sm mb-3">
                                             Select the services you're
                                             interested in:
                                         </p>
@@ -430,7 +430,7 @@ const Contact = () => {
             {/* Nutritionist Profile Section */}
             <div className="mt-16 mb-10">
                 <div className="text-center mb-8">
-                    <h2 className="font-montserrat text-2xl md:text-3xl font-bold mb-3">
+                    <h2 className="font-cormorant text-2xl md:text-3xl font-bold mb-3">
                         Meet Our Lisbon-Based Holistic Nutritionist
                     </h2>
                     <div className="w-24 h-1 bg-primary mx-auto mb-4"></div>
@@ -446,14 +446,14 @@ const Contact = () => {
                             />
                         </div>
                         <div className="md:w-2/3 p-8">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                            <h3 className="text-2xl font-bold text-soil font-outfit mb-2">
                                 Michaele Kruger
                             </h3>
                             <p className="text-primary font-semibold mb-4">
                                 Holistic Nutritionist based in Lisbon
                             </p>
 
-                            <p className="text-gray-600 mb-4">
+                            <p className="text-t2 font-outfit mb-4">
                                 Michaele is a holistic nutritionist who
                                 specializes in helping expats adapt to the local
                                 food environment. With extensive knowledge of
@@ -463,7 +463,7 @@ const Contact = () => {
                                 requirements.
                             </p>
 
-                            <p className="text-gray-600 mb-6">
+                            <p className="text-t2 font-outfit mb-6">
                                 Her holistic approach focuses on overall
                                 wellness, connecting nutritional choices with
                                 physical health and emotional wellbeing.
@@ -477,7 +477,7 @@ const Contact = () => {
                                     <span className="font-semibold w-32">
                                         Specialties:
                                     </span>
-                                    <span className="text-gray-600">
+                                    <span className="text-t2 font-outfit">
                                         Holistic Nutrition, Food Intolerances,
                                         Digestive Health
                                     </span>
@@ -486,7 +486,7 @@ const Contact = () => {
                                     <span className="font-semibold w-32">
                                         Languages:
                                     </span>
-                                    <span className="text-gray-600">
+                                    <span className="text-t2 font-outfit">
                                         English
                                     </span>
                                 </div>

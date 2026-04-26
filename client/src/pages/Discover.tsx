@@ -92,12 +92,12 @@ const Discover: React.FC = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                <h1 className="font-montserrat text-3xl font-bold">
+                <h1 className="font-cormorant text-3xl font-medium text-soil">
                     Discover Food Places
                 </h1>
                 <SubmissionForm
                     type="location"
-                    buttonClassName="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white mt-4 sm:mt-0"
+                    buttonClassName="bg-bark-lt hover:bg-bark text-white mt-4 sm:mt-0"
                 />
             </div>
 
@@ -106,16 +106,16 @@ const Discover: React.FC = () => {
                 <div className="hidden lg:block col-span-1">
                     <Card className="sticky top-24">
                         <CardContent className="p-6">
-                            <h3 className="font-semibold text-lg mb-4">
+                            <h3 className="font-outfit font-semibold text-lg mb-4 text-soil">
                                 Filters
                             </h3>
 
                             {/* Location filter */}
                             <div className="mb-6">
-                                <h4 className="font-medium mb-2">Location</h4>
-                                <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
-                                    <MapPin className="h-4 w-4 text-gray-500" />
-                                    <p className="text-sm">
+                                <h4 className="font-outfit font-medium mb-2 text-soil">Location</h4>
+                                <div className="flex items-center gap-2 bg-cream-mid p-2 rounded-lg">
+                                    <MapPin className="h-4 w-4 text-t3" />
+                                    <p className="text-sm font-outfit">
                                         {selectedCity
                                             ? selectedCity
                                             : "All locations"}
@@ -125,7 +125,7 @@ const Discover: React.FC = () => {
 
                             {/* Category filter */}
                             <div className="mb-6">
-                                <h4 className="font-medium mb-2">Category</h4>
+                                <h4 className="font-outfit font-medium mb-2 text-soil">Category</h4>
                                 <div className="space-y-2">
                                     {[
                                         "market",
@@ -165,7 +165,7 @@ const Discover: React.FC = () => {
 
                             {/* Dietary preferences */}
                             <div className="mb-6">
-                                <h4 className="font-medium mb-2">
+                                <h4 className="font-outfit font-medium mb-2 text-soil">
                                     Dietary Preferences
                                 </h4>
                                 <div className="space-y-2">
@@ -196,7 +196,7 @@ const Discover: React.FC = () => {
 
                             {/* Cuisine types */}
                             <div className="mb-6">
-                                <h4 className="font-medium mb-2">Cuisine</h4>
+                                <h4 className="font-outfit font-medium mb-2 text-soil">Cuisine</h4>
                                 <div className="space-y-2">
                                     {cuisineTags.map((tag) => (
                                         <div
@@ -265,7 +265,7 @@ const Discover: React.FC = () => {
                         {showFilters && (
                             <div className="mt-4 p-4 bg-white rounded-lg shadow-md lg:hidden">
                                 {/* Category filter */}
-                                <h4 className="font-medium mb-2">Category</h4>
+                                <h4 className="font-outfit font-medium mb-2 text-soil">Category</h4>
                                 <div className="flex flex-wrap gap-2 mb-4">
                                     {[
                                         "market",
@@ -298,7 +298,7 @@ const Discover: React.FC = () => {
                                 <Separator className="my-4" />
 
                                 {/* Dietary preferences */}
-                                <h4 className="font-medium mb-2">
+                                <h4 className="font-outfit font-medium mb-2 text-soil">
                                     Dietary Preferences
                                 </h4>
                                 <div className="flex flex-wrap gap-2 mb-4">
@@ -323,7 +323,7 @@ const Discover: React.FC = () => {
                                 <Separator className="my-4" />
 
                                 {/* Cuisine types */}
-                                <h4 className="font-medium mb-2">Cuisine</h4>
+                                <h4 className="font-outfit font-medium mb-2 text-soil">Cuisine</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {cuisineTags.map((tag) => (
                                         <Button
@@ -384,7 +384,7 @@ const Discover: React.FC = () => {
                                 </div>
                             ) : isError ? (
                                 <div className="text-center py-12">
-                                    <p className="text-lg text-gray-600 mb-4">
+                                    <p className="text-lg text-t2 font-outfit mb-4">
                                         Failed to load places. Please try again.
                                     </p>
                                     <Button
@@ -395,18 +395,18 @@ const Discover: React.FC = () => {
                                 </div>
                             ) : places.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <h3 className="text-xl font-semibold mb-2">
+                                    <h3 className="text-xl font-outfit font-semibold mb-2 text-soil">
                                         No places found
                                     </h3>
                                     {selectedCity ||
                                     selectedCategory ||
                                     selectedTags.length > 0 ? (
-                                        <p className="text-gray-600 mb-4">
+                                        <p className="text-t2 font-outfit mb-4">
                                             Try adjusting your filters or add a
                                             new place to our database.
                                         </p>
                                     ) : (
-                                        <p className="text-gray-600 mb-4">
+                                        <p className="text-t2 font-outfit mb-4">
                                             Search for a city or select a
                                             category to find food places.
                                         </p>
@@ -432,7 +432,7 @@ const Discover: React.FC = () => {
 
                         <TabsContent value="upload">
                             <div className="max-w-2xl mx-auto">
-                                <p className="text-lg mb-6">
+                                <p className="text-lg font-outfit text-t1 mb-6">
                                     Help our expat community by adding a new
                                     food place you've discovered. Your
                                     contributions make it easier for others to

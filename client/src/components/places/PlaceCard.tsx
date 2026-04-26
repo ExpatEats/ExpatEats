@@ -60,15 +60,15 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ place, onClick }) => {
             case "grocery store":
                 return "from-teal-500 to-green-500";
             case "supermarket":
-                return "from-[#6D9075] to-emerald-500";
+                return "from-sage to-emerald-500";
             case "health food store":
-                return "from-[#6D9075] to-[#E8B4B8]";
+                return "from-sage to-[#E8B4B8]";
             case "bakery":
                 return "from-amber-400 to-orange-500";
             case "bulk store":
                 return "from-purple-400 to-indigo-500";
             default:
-                return "from-[#6D9075] to-[#E8B4B8]";
+                return "from-sage to-[#E8B4B8]";
         }
     };
 

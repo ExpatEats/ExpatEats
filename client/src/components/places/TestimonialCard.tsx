@@ -20,7 +20,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
     };
 
     return (
-        <Card className="bg-[#F9F5F0] rounded-xl">
+        <Card className="bg-cream rounded-xl">
             <CardContent className="pt-6">
                 <div className="flex items-center mb-4">
                     <Rating value={rating} readOnly />

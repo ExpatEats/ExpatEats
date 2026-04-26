@@ -101,7 +101,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
                         cities.map((city: any) => (
                             <Badge
                                 key={city.id}
-                                className="bg-[#F9F5F0] hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
+                                className="bg-cream hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
                                 onClick={() => handleCityClick(city.name)}
                             >
                                 {city.name}
@@ -110,31 +110,31 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
                     ) : (
                         <>
                             <Badge
-                                className="bg-[#F9F5F0] hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
+                                className="bg-cream hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
                                 onClick={() => handleCityClick("Lisbon")}
                             >
                                 Lisbon
                             </Badge>
                             <Badge
-                                className="bg-[#F9F5F0] hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
+                                className="bg-cream hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
                                 onClick={() => handleCityClick("Barcelona")}
                             >
                                 Barcelona
                             </Badge>
                             <Badge
-                                className="bg-[#F9F5F0] hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
+                                className="bg-cream hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
                                 onClick={() => handleCityClick("Berlin")}
                             >
                                 Berlin
                             </Badge>
                             <Badge
-                                className="bg-[#F9F5F0] hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
+                                className="bg-cream hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
                                 onClick={() => handleCityClick("Amsterdam")}
                             >
                                 Amsterdam
                             </Badge>
                             <Badge
-                                className="bg-[#F9F5F0] hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
+                                className="bg-cream hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm cursor-pointer"
                                 onClick={() => handleCityClick("London")}
                             >
                                 London

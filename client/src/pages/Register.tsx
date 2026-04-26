@@ -181,7 +181,7 @@ const Register = () => {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="text-center mb-6">
-                <div className="inline-flex items-center bg-[#6D9075] text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+                <div className="inline-flex items-center bg-sage text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-4 w-4 mr-1.5"
@@ -204,10 +204,10 @@ const Register = () => {
                     </svg>
                     <span>PORTUGAL</span>
                 </div>
-                <h1 className="font-montserrat text-3xl md:text-4xl font-light tracking-wide mb-3">
+                <h1 className="font-cormorant text-3xl md:text-4xl font-light tracking-wide mb-3">
                     Welcome to Expat Eats
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xl text-t2 font-outfit max-w-2xl mx-auto">
                     Your Guide to Sustainable Living Abroad
                 </p>
             </div>
@@ -220,7 +220,7 @@ const Register = () => {
                 </CardHeader>
 
                 <CardContent className="p-6">
-                    <p className="mb-6 text-center text-gray-600">
+                    <p className="mb-6 text-center text-t2 font-outfit">
                         Register to access our complete guides to food and
                         shopping in your new home and join our community of
                         expats.
@@ -272,10 +272,10 @@ const Register = () => {
                                                 />
                                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                                     {validationState.usernameChecking && (
-                                                        <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                                                        <Loader2 className="h-4 w-4 animate-spin text-t3 font-outfit" />
                                                     )}
                                                     {!validationState.usernameChecking && validationState.usernameAvailable === true && (
-                                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        <CheckCircle className="h-4 w-4 text-sage" />
                                                     )}
                                                     {!validationState.usernameChecking && validationState.usernameAvailable === false && (
                                                         <X className="h-4 w-4 text-red-500" />
@@ -288,7 +288,7 @@ const Register = () => {
                                             <p className="text-sm text-red-600">Username is already taken</p>
                                         )}
                                         {validationState.usernameAvailable === true && (
-                                            <p className="text-sm text-green-600">Username is available</p>
+                                            <p className="text-sm text-sage">Username is available</p>
                                         )}
                                     </FormItem>
                                 )}
@@ -313,10 +313,10 @@ const Register = () => {
                                                 />
                                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                                     {validationState.emailChecking && (
-                                                        <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                                                        <Loader2 className="h-4 w-4 animate-spin text-t3 font-outfit" />
                                                     )}
                                                     {!validationState.emailChecking && validationState.emailAvailable === true && (
-                                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        <CheckCircle className="h-4 w-4 text-sage" />
                                                     )}
                                                     {!validationState.emailChecking && validationState.emailAvailable === false && (
                                                         <X className="h-4 w-4 text-red-500" />
@@ -329,7 +329,7 @@ const Register = () => {
                                             <p className="text-sm text-red-600">Email is already registered</p>
                                         )}
                                         {validationState.emailAvailable === true && (
-                                            <p className="text-sm text-green-600">Email is available</p>
+                                            <p className="text-sm text-sage">Email is available</p>
                                         )}
                                     </FormItem>
                                 )}
@@ -385,7 +385,7 @@ const Register = () => {
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
                                             <FormLabel>Newsletter</FormLabel>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-t3 font-outfit">
                                                 Receive notifications about
                                                 community events and
                                                 food-related news in Lisbon.
@@ -426,7 +426,7 @@ const Register = () => {
                             <div className="flex flex-col items-center pt-4 space-y-4">
                                 <Button
                                     type="submit"
-                                    className="bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white text-lg px-8 py-6 rounded-full font-medium w-full max-w-xs"
+                                    className="bg-bark-lt hover:bg-bark-lt/90 text-white text-lg px-8 py-6 rounded-full font-medium w-full max-w-xs"
                                     size="lg"
                                     disabled={isLoading}
                                 >
@@ -451,7 +451,7 @@ const Register = () => {
                                         // Redirect to home page
                                         navigate("/");
                                     }}
-                                    className="text-gray-600 hover:text-gray-900"
+                                    className="text-t2 font-outfit hover:text-soil font-outfit"
                                 >
                                     I just want to test for now
                                 </Button>

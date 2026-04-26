@@ -123,7 +123,7 @@ export const EditNotesDialog = ({
                         type="button"
                         onClick={handleConfirm}
                         disabled={isLoading}
-                        className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
+                        className="flex-1 bg-bark-lt hover:bg-bark text-white"
                     >
                         {isLoading ? (
                             <>

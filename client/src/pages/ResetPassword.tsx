@@ -146,8 +146,8 @@ export default function ResetPassword() {
                 <div className="max-w-md mx-auto">
                     <Card>
                         <CardContent className="pt-16 pb-16 text-center">
-                            <Loader2 className="h-12 w-12 animate-spin text-[#E07A5F] mx-auto mb-4" />
-                            <p className="text-gray-600">Verifying reset link...</p>
+                            <Loader2 className="h-12 w-12 animate-spin text-bark mx-auto mb-4" />
+                            <p className="text-t2 font-outfit">Verifying reset link...</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -174,11 +174,11 @@ export default function ResetPassword() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
-                                <p className="text-sm text-gray-600 text-center">
+                                <p className="text-sm text-t2 font-outfit text-center">
                                     Password reset links expire after 1 hour for security reasons.
                                 </p>
                                 <Button
-                                    className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                    className="w-full bg-bark hover:bg-soil text-white"
                                     onClick={() => navigate("/")}
                                 >
                                     Return to Home
@@ -198,8 +198,8 @@ export default function ResetPassword() {
                 <div className="max-w-md mx-auto">
                     <Card>
                         <CardHeader>
-                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                                <CheckCircle2 className="h-6 w-6 text-green-600" />
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-sage-lt mb-4">
+                                <CheckCircle2 className="h-6 w-6 text-sage" />
                             </div>
                             <CardTitle className="text-2xl font-light text-center">
                                 Password Reset Successful!
@@ -210,14 +210,14 @@ export default function ResetPassword() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
-                                <p className="text-sm text-gray-600 text-center">
+                                <p className="text-sm text-t2 font-outfit text-center">
                                     You can now login with your new password.
                                 </p>
-                                <p className="text-sm text-gray-500 text-center">
+                                <p className="text-sm text-t3 text-center">
                                     Redirecting you to the homepage...
                                 </p>
                                 <Button
-                                    className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                    className="w-full bg-bark hover:bg-soil text-white"
                                     onClick={() => navigate("/")}
                                 >
                                     Go to Home
@@ -236,8 +236,8 @@ export default function ResetPassword() {
             <div className="max-w-md mx-auto">
                 <Card>
                     <CardHeader>
-                        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#E07A5F]/10 mb-4">
-                            <KeyRound className="h-6 w-6 text-[#E07A5F]" />
+                        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-bark/10 mb-4">
+                            <KeyRound className="h-6 w-6 text-bark" />
                         </div>
                         <CardTitle className="text-2xl font-light text-center">
                             Reset Your Password
@@ -296,7 +296,7 @@ export default function ResetPassword() {
                                 <div className="pt-2">
                                     <Button
                                         type="submit"
-                                        className="w-full bg-[#E07A5F] hover:bg-[#E07A5F]/90 text-white"
+                                        className="w-full bg-bark hover:bg-soil text-white"
                                         disabled={isResetting}
                                     >
                                         {isResetting ? (
@@ -314,7 +314,7 @@ export default function ResetPassword() {
                                     <Button
                                         type="button"
                                         variant="ghost"
-                                        className="text-sm text-gray-600"
+                                        className="text-sm text-t2 font-outfit"
                                         onClick={() => navigate("/")}
                                         disabled={isResetting}
                                     >

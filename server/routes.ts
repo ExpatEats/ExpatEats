@@ -9,6 +9,7 @@ import {
     insertUserSchema,
     insertNutritionSchema,
     insertSavedStoreSchema,
+    insertInterestSubmissionSchema,
     savedStores,
     users,
     posts,
@@ -477,6 +478,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
             console.error("Error fetching places:", error);
             res.status(500).json({ message: "Failed to fetch places" });
+        }
+    });
+
+    // Get random places for featured section
+    app.get("/api/places/random", async (req, res) => {
+        try {
+            const limit = parseInt(req.query.limit as string) || 4;
+            const randomPlaces = await storage.getRandomPlaces({
+                limit,
+                status: "approved"
+            });
+            res.json(randomPlaces);
+        } catch (error) {
+            console.error("Failed to fetch random places:", error);
+            res.status(500).json({ message: "Failed to fetch random places" });
         }
     });
 
@@ -1326,6 +1342,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
             } else {
                 res.status(500).json({
                     message: "Failed to submit consultation request",
+                });
+            }
+        }
+    });
+
+    // Interest form submission
+    app.post("/api/interest", CsrfService.middleware(), async (req, res) => {
+        try {
+            const interestData = insertInterestSubmissionSchema.parse(req.body);
+            const submission = await storage.createInterestSubmission(interestData);
+            res.status(201).json(submission);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({
+                    message: "Invalid interest submission data",
+                    errors: error.errors,
+                });
+            } else {
+                res.status(500).json({
+                    message: "Failed to submit interest form",
                 });
             }
         }
