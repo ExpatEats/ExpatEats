@@ -80,7 +80,7 @@ const Header = () => {
                 </div>
 
                 {/* Center - Navigation */}
-                <nav className="hidden md:flex space-x-5 flex-shrink-0 font-outfit">
+                <nav className="hidden md:flex space-x-5 flex-shrink-0 font-outfit text-[13px]">
                     <div
                         className={`py-2 transition-colors ${
                             isActive("/search")

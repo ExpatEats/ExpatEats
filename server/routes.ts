@@ -9,6 +9,7 @@ import {
     insertUserSchema,
     insertNutritionSchema,
     insertSavedStoreSchema,
+    insertInterestSubmissionSchema,
     savedStores,
     users,
     posts,
@@ -1341,6 +1342,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
             } else {
                 res.status(500).json({
                     message: "Failed to submit consultation request",
+                });
+            }
+        }
+    });
+
+    // Interest form submission
+    app.post("/api/interest", CsrfService.middleware(), async (req, res) => {
+        try {
+            const interestData = insertInterestSubmissionSchema.parse(req.body);
+            const submission = await storage.createInterestSubmission(interestData);
+            res.status(201).json(submission);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({
+                    message: "Invalid interest submission data",
+                    errors: error.errors,
+                });
+            } else {
+                res.status(500).json({
+                    message: "Failed to submit interest form",
                 });
             }
         }

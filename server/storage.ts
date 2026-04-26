@@ -11,6 +11,7 @@ import {
     guides,
     guidePurchases,
     payments,
+    interestSubmissions,
 } from "@shared/schema";
 import {
     InsertPlace,
@@ -23,6 +24,7 @@ import {
     InsertGuide,
     InsertGuidePurchase,
     InsertPayment,
+    InsertInterestSubmission,
     Place,
     User,
     Review,
@@ -33,6 +35,7 @@ import {
     Guide,
     GuidePurchase,
     Payment,
+    InterestSubmission,
 } from "@shared/schema";
 
 interface PlaceFilters {
@@ -58,6 +61,9 @@ interface Storage {
 
     // Nutrition methods
     createNutritionConsultation(nutrition: InsertNutrition): Promise<Nutrition>;
+
+    // Interest submission methods
+    createInterestSubmission(submission: InsertInterestSubmission): Promise<InterestSubmission>;
 
     // Location methods
     getDistinctLocations(): Promise<{id: string, name: string}[]>;
@@ -291,6 +297,15 @@ class DatabaseStorage implements Storage {
             .values(nutritionData)
             .returning();
         return newConsultation;
+    }
+
+    // Interest submission methods
+    async createInterestSubmission(submissionData: InsertInterestSubmission): Promise<InterestSubmission> {
+        const [newSubmission] = await db
+            .insert(interestSubmissions)
+            .values(submissionData)
+            .returning();
+        return newSubmission;
     }
 
     // Location methods

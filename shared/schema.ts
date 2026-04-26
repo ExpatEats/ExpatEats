@@ -323,6 +323,17 @@ export const payments = pgTable("payments", {
     refundedAt: timestamp("refunded_at"), // If refunded
 });
 
+export const interestSubmissions = pgTable("interest_submissions", {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    interest: text("interest").notNull(), // 'healthy-food', 'supplements', 'both', 'exploring'
+    comments: text("comments"), // Optional additional comments
+    status: text("status").default("new"), // 'new', 'contacted', 'resolved'
+    userId: integer("user_id").references(() => users.id), // Optional - if user is logged in
+    createdAt: timestamp("created_at").defaultNow(),
+});
+
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -416,6 +427,11 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
     updatedAt: true,
 });
 
+export const insertInterestSubmissionSchema = createInsertSchema(interestSubmissions).omit({
+    id: true,
+    createdAt: true,
+});
+
 
 // Types
 export type InsertCity = z.infer<typeof insertCitySchema>;
@@ -462,4 +478,7 @@ export type GuidePurchase = typeof guidePurchases.$inferSelect;
 
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type Payment = typeof payments.$inferSelect;
+
+export type InsertInterestSubmission = z.infer<typeof insertInterestSubmissionSchema>;
+export type InterestSubmission = typeof interestSubmissions.$inferSelect;
 

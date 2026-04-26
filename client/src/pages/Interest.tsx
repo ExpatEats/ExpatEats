@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { NotificationDialog } from "@/components/NotificationDialog";
 import { Loader2, Heart } from "lucide-react";
 
@@ -34,6 +35,7 @@ const interestFormSchema = z.object({
             required_error: "Please select an option",
         }
     ),
+    comments: z.string().optional(),
 });
 
 type InterestFormValues = z.infer<typeof interestFormSchema>;
@@ -67,30 +69,61 @@ export default function Interest() {
             name: "",
             email: "",
             interest: undefined,
+            comments: "",
         },
     });
 
     const onSubmit = async (data: InterestFormValues) => {
         setIsSubmitting(true);
 
-        // TODO: Backend integration - for now just show success message
-        console.log("Form submitted:", data);
+        try {
+            // Get CSRF token
+            const csrfResponse = await fetch("/api/csrf-token", {
+                credentials: "include"
+            });
+            if (!csrfResponse.ok) {
+                throw new Error("Failed to get CSRF token");
+            }
+            const { csrfToken } = await csrfResponse.json();
 
-        // Simulate API call delay
-        setTimeout(() => {
+            // Submit interest form
+            const response = await fetch("/api/interest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": csrfToken
+                },
+                credentials: "include",
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to submit interest form");
+            }
+
+            // Success
             setSubmitSuccess(true);
             showNotification(
                 "Thank You!",
                 "We've received your interest. We'll be in touch soon!",
                 "success"
             );
-            setIsSubmitting(false);
 
             // Redirect to home after 3 seconds
             setTimeout(() => {
                 navigate("/");
             }, 3000);
-        }, 500);
+        } catch (error) {
+            console.error("Interest form submission error:", error);
+            showNotification(
+                "Submission Failed",
+                error instanceof Error ? error.message : "Failed to submit interest form. Please try again.",
+                "error"
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const interestOptions = [
@@ -119,7 +152,7 @@ export default function Interest() {
     // Success state
     if (submitSuccess) {
         return (
-            <div className="container mx-auto px-4 py-16 max-w-2xl">
+            <div className="container mx-auto px-4 pt-24 pb-16 max-w-2xl">
                 <Card>
                     <CardHeader>
                         <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-sage/10 mb-4">
@@ -155,7 +188,7 @@ export default function Interest() {
 
     // Interest form
     return (
-        <div className="container mx-auto px-4 py-16 max-w-2xl">
+        <div className="container mx-auto px-4 pt-24 pb-16 max-w-2xl">
             <div className="text-center mb-8">
                 <h1 className="font-cormorant text-4xl font-light mb-3 text-soil">
                     Share Your Interest
@@ -252,6 +285,27 @@ export default function Interest() {
                                                     </div>
                                                 ))}
                                             </RadioGroup>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="comments"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="font-outfit">
+                                            Additional Comments <span className="text-t3 font-normal">(Optional)</span>
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Tell us more about what you're looking for..."
+                                                className="font-outfit resize-none"
+                                                rows={4}
+                                                {...field}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
