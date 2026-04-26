@@ -150,16 +150,35 @@ class DatabaseStorage implements Storage {
                         city.charAt(0).toUpperCase() + city.slice(1).toLowerCase(),
                 );
 
-                if (capitalizedCities.some((city) => city === "Online")) {
+                // City grouping: expand city searches to include related cities
+                const cityGroups: Record<string, string[]> = {
+                    "Ericeira": ["Ericeira", "Mafra", "Ourem"],
+                    "Carcavelos": ["Carcavelos", "Parede"],
+                };
+
+                // Expand cities based on groupings
+                const expandedCities: string[] = [];
+                for (const city of capitalizedCities) {
+                    if (cityGroups[city]) {
+                        expandedCities.push(...cityGroups[city]);
+                    } else {
+                        expandedCities.push(city);
+                    }
+                }
+
+                // Remove duplicates
+                const uniqueCities = [...new Set(expandedCities)];
+
+                if (uniqueCities.some((city) => city === "Online")) {
                     whereConditions.push(
                         or(
-                            inArray(places.city, capitalizedCities),
+                            inArray(places.city, uniqueCities),
                             eq(places.city, "Online"),
                         ) as any,
                     );
                 } else {
                     whereConditions.push(
-                        inArray(places.city, capitalizedCities),
+                        inArray(places.city, uniqueCities),
                     );
                 }
             }
