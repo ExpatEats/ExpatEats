@@ -71,7 +71,7 @@ export default function Resources() {
             const csrfResponse = await fetch("/api/csrf-token", {
                 credentials: "include",
             });
-            const { token: csrfToken } = await csrfResponse.json();
+            const { csrfToken } = await csrfResponse.json();
 
             // Create checkout session
             const response = await fetch(`/api/guides/${guideId}/purchase`, {
