@@ -29,16 +29,9 @@ export default function FindMyFood() {
         [],
     );
 
-    // Fetch locations from API
-    const { data: locations = [], isLoading: locationsLoading } = useQuery<{id: string, name: string}[]>({
-        queryKey: ["locations"],
-        queryFn: async () => {
-            const response = await fetch("/api/locations");
-            if (!response.ok) {
-                throw new Error("Failed to fetch locations");
-            }
-            return response.json();
-        },
+    // Fetch cities from API
+    const { data: cities = [], isLoading: citiesLoading } = useQuery<{id: number, name: string, slug: string, country: string}[]>({
+        queryKey: ["/api/cities"],
     });
 
     const guideTypes = [
@@ -176,11 +169,11 @@ export default function FindMyFood() {
         }
     };
 
-    const toggleLocation = (locationId: string) => {
+    const toggleLocation = (cityName: string) => {
         setSelectedLocations((prev) =>
-            prev.includes(locationId)
-                ? prev.filter((id) => id !== locationId)
-                : [...prev, locationId],
+            prev.includes(cityName)
+                ? prev.filter((name) => name !== cityName)
+                : [...prev, cityName],
         );
     };
 
@@ -272,31 +265,31 @@ export default function FindMyFood() {
                             </p>
                         </CardHeader>
                         <CardContent>
-                            {locationsLoading ? (
-                                <div className="text-center py-4">Loading locations...</div>
+                            {citiesLoading ? (
+                                <div className="text-center py-4">Loading cities...</div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    {locations.map((location) => (
+                                    {cities.map((city) => (
                                     <div
-                                        key={location.id}
+                                        key={city.id}
                                         className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors"
                                     >
                                         <div className="flex items-center space-x-3">
                                             <Checkbox
-                                                id={`location-${location.id}`}
+                                                id={`city-${city.id}`}
                                                 checked={selectedLocations.includes(
-                                                    location.id,
+                                                    city.name,
                                                 )}
                                                 onCheckedChange={() =>
-                                                    toggleLocation(location.id)
+                                                    toggleLocation(city.name)
                                                 }
                                                 className="h-5 w-5"
                                             />
                                             <Label
-                                                htmlFor={`location-${location.id}`}
+                                                htmlFor={`city-${city.id}`}
                                                 className="text-base font-medium cursor-pointer"
                                             >
-                                                {location.name}
+                                                {city.name}
                                             </Label>
                                         </div>
                                     </div>
