@@ -291,7 +291,7 @@ export const payments = pgTable("payments", {
     id: serial("id").primaryKey(),
 
     // Stripe identifiers
-    stripePaymentIntentId: text("stripe_payment_intent_id").unique().notNull(),
+    stripePaymentIntentId: text("stripe_payment_intent_id").unique(),
     stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
     stripeCustomerId: text("stripe_customer_id"),
 

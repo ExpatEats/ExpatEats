@@ -1,6 +1,6 @@
 CREATE TABLE "payments" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"stripe_payment_intent_id" text NOT NULL,
+	"stripe_payment_intent_id" text,
 	"stripe_checkout_session_id" text,
 	"stripe_customer_id" text,
 	"user_id" integer NOT NULL,
