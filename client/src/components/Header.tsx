@@ -68,7 +68,7 @@ const Header = () => {
                 {/* Left side - Logo */}
                 <div className="flex items-center flex-1">
                     <Link href="/">
-                        <div className="font-cormorant text-2xl tracking-wide">
+                        <div className="font-cormorant text-3xl md:text-2xl tracking-wide">
                             <span className="font-semibold text-soil">
                                 Expat
                             </span>
@@ -199,7 +199,7 @@ const Header = () => {
                                 size="icon"
                                 className="lg:hidden text-t2 hover:text-soil hover:bg-bark/10"
                             >
-                                <Menu className="h-6 w-6" />
+                                <Menu className="h-7 w-7" />
                             </Button>
                         </SheetTrigger>
                         <SheetContent className="w-[300px] sm:w-[400px]">

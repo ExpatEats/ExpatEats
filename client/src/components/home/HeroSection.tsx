@@ -10,7 +10,7 @@ export function HeroSection() {
             </div>
 
             {/* Hero content */}
-            <div className="flex-1 max-w-[1100px] mx-auto w-full px-11 pt-[calc(42px+64px+24px)] pb-[68px]">
+            <div className="flex-1 max-w-[1100px] mx-auto w-full px-11 pt-[65px] md:pt-[calc(42px+64px+24px)] pb-[68px]">
                 <div className="grid md:grid-cols-2 gap-[52px] items-center py-[52px]">
                     {/* Left column */}
                     <div>
@@ -36,17 +36,9 @@ export function HeroSection() {
                         </h1>
 
                         {/* Paragraph */}
-                        <p className="text-[15px] font-outfit font-light leading-[1.8] text-t2 max-w-[400px] mb-7">
+                        <p className="text-[15px] font-outfit font-light leading-[1.8] text-t2 max-w-[400px]">
                             We did the confusing label-reading, the disappointing detours, and the Google-Translate grocery runs – so your healthy life picks up exactly where it left off.
                         </p>
-
-                        {/* Honest card */}
-                        <div className="flex items-start gap-[10px] bg-white border border-mist border-l-[3px] border-l-bark rounded-lg p-[13px_16px] max-w-[420px]">
-                            <span className="text-[15px] flex-shrink-0 mt-[1px]">🌱</span>
-                            <span className="text-[13px] font-outfit font-light text-t2 leading-[1.6]">
-                                <strong className="font-medium text-soil">We're just getting started – and that's a feature.</strong> The food guide is live in Greater Lisbon. Restaurants and sustainable living shaped by people like you are coming next.
-                            </span>
-                        </div>
                     </div>
 
                     {/* Right column - Search card */}

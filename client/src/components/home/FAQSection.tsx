@@ -5,28 +5,48 @@ export function FAQSection() {
 
     const faqs = [
         {
-            question: "Is it free to use?",
-            answer: "Browsing the guide is free. Creating an account to save favourites, add listings, or contribute as an ambassador is also free during our early access period. We plan to introduce a premium tier with advanced features – founding members lock in the lowest price it'll ever be."
+            question: "What is ExpatEats?",
+            answer: "A discovery platform built for expats in Portugal. Find healthy grocery stores, supplement shops, and conscious living resources, filtered by your dietary needs and location. Everything is community-curated and vetted, so the guide gets better every time a member adds a spot."
         },
         {
-            question: "How are listings verified?",
-            answer: "Every listing is added by a community ambassador – an expat who actually lives in the city, shops at the location regularly, and can vouch for it. We don't accept self-submissions from businesses, and there are no paid placements. Ambassadors can update or remove listings when things change."
+            question: "I just arrived in Portugal — where do I start?",
+            answer: "Head to the Food Discovery guide, choose your location, and filter by what matters to you: organic, gluten-free, vegan, and more. You'll get a curated list of vetted spots instantly. If you want a more guided experience, our Arrival Packages and Personal Consultation are designed exactly for this moment."
         },
         {
-            question: "Can I add a place I've discovered?",
-            answer: "Yes – that's the whole idea. Create a free account and apply to be an ambassador. Once approved, you can add and manage listings in your city. The guide grows because people like you care enough to contribute."
+            question: "Do I need to already be living in Portugal?",
+            answer: "Not at all. Many members start exploring before they move. It's a great way to understand what your healthy lifestyle will look like on the ground, and arrive feeling prepared rather than overwhelmed."
         },
         {
-            question: "Which cities are covered?",
-            answer: "Greater Lisbon are live now with 180+ verified listings. Porto and the Algarve are next – we're activating ambassadors in those regions now. If you live somewhere we haven't covered yet and want to help us get there faster, reach out."
+            question: "Which areas are covered?",
+            answer: "ExpatEats currently has 180+ verified listings in the greater Lisbon area. Porto and the Algarve are coming next. You can help us get there faster by submitting locations we've missed."
         },
         {
-            question: "What does \"organic\" or \"gluten-free\" actually mean in your filters?",
-            answer: "Our filters reflect what ambassadors have verified in person – meaning the shop stocks a meaningful range of those products, not just one shelf. We don't make health claims or certify businesses. If something changes, ambassadors update the listing. We trust people over algorithms."
+            question: "Does it cover supplements?",
+            answer: "Yes, and it's one of our most-used features. The Supplement Finder covers both local retailers and trusted online suppliers, so you never have to compromise on quality just because you've moved countries."
         },
         {
-            question: "Does it work with Waze and Google Maps?",
-            answer: "Yes. Every listing on the map opens directly in Waze or Google Maps with one tap – no address copying, no screenshot chaos. It works on any device, in any browser, without downloading an app."
+            question: "How do listings get verified and stay accurate?",
+            answer: "Every listing is verified by a local ambassador who lives and shops there. Many of our spots are the kind of places you'd only discover if you knew someone; small, hard-to-find businesses with no marketing budget but exceptional quality. That's exactly why they're here."
+        },
+        {
+            question: "Can I add a location?",
+            answer: "Yes, and it's one of the most valuable things you can do. If you know a great spot that isn't listed yet, submit it via the Add Location tab. Our team reviews every submission before it goes live, so quality stays high while the community keeps growing."
+        },
+        {
+            question: "Is it free?",
+            answer: "Browsing the guide is completely free. For expats who want more hands-on support, we offer paid services including Personalized Meal Plans, Grocery and Shopping Tours, and our VIP Arrival Package, which includes a curated pantry setup. You can also book personal consultations directly with our nutrition experts based in Lisbon."
+        },
+        {
+            question: "What dietary needs do you cover?",
+            answer: "Gluten-free, dairy-free, vegan, vegetarian, organic, low-tox, zero-waste, farm-raised, and kid-friendly, with more being added as the community grows."
+        },
+        {
+            question: "I own a health-conscious business in Portugal — can I be listed?",
+            answer: "We'd love to hear about you. Head to Add a Location in the top menu and tell us about your business. Our team reviews every submission personally. We're always looking for the kind of hidden gems our community can't find anywhere else."
+        },
+        {
+            question: "Who is behind ExpatEats?",
+            answer: "ExpatEats was founded by a clinician and expat who experienced firsthand how disorienting it is to maintain a health-conscious lifestyle after relocating. Everything we build reflects that lived experience: practical, honest, and designed for people who actually care about what they put in their bodies."
         }
     ];
 
@@ -79,7 +99,7 @@ export function FAQSection() {
                                     openIndex === index ? "max-h-96" : "max-h-0"
                                 }`}
                             >
-                                <div className="p-[0_24px_20px_24px] text-[14px] font-outfit font-light text-t2 leading-[1.7]">
+                                <div className="p-[12px_24px_20px_24px] text-[14px] font-outfit font-light text-t2 leading-[1.7]">
                                     {faq.answer}
                                 </div>
                             </div>
