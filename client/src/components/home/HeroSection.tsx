@@ -10,7 +10,7 @@ export function HeroSection() {
             </div>
 
             {/* Hero content */}
-            <div className="flex-1 max-w-[1100px] mx-auto w-full px-11 pt-[65px] md:pt-[calc(42px+64px+24px)] pb-[68px]">
+            <div className="flex-1 max-w-[1100px] mx-auto w-full px-4 md:px-11 pt-[calc(64px+36px+16px)] sm:pt-[calc(64px+38px+20px)] md:pt-[calc(64px+42px+24px)] pb-[68px]">
                 <div className="grid md:grid-cols-2 gap-[52px] items-center py-[52px]">
                     {/* Left column */}
                     <div>
@@ -18,7 +18,7 @@ export function HeroSection() {
                         <div className="flex items-center gap-2 mb-5">
                             <div className="w-2 h-2 rounded-full bg-sage"></div>
                             <span className="text-[11px] font-outfit font-medium tracking-[2px] uppercase text-bark">
-                                Greater Lisbon · Live now
+                                Greater Lisbon – Live now
                             </span>
                         </div>
 

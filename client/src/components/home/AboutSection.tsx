@@ -3,7 +3,7 @@ export function AboutSection() {
         { number: "180", suffix: "+", label: "verified listings" },
         { number: "2", suffix: "", label: "cities live now" },
         { number: "12", suffix: "+", label: "dietary filters" },
-        { number: "0", suffix: "", label: "businesses pay to appear" }
+        { number: "4", suffix: "", label: "guides available now" }
     ];
 
     return (

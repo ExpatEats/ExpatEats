@@ -36,8 +36,8 @@ export function TestimonialsSection() {
     };
 
     return (
-        <section className="bg-white py-[88px] px-11">
-            <div className="max-w-[1100px] mx-auto">
+        <section className="bg-white py-[72px] md:py-[88px] px-4 sm:px-6 md:px-11">
+            <div className="max-w-[1100px] mx-auto w-full">
                 {/* Eyebrow badge */}
                 <div className="flex items-center gap-2 mb-5">
                     <div className="w-2 h-2 rounded-full bg-sage"></div>
@@ -47,21 +47,21 @@ export function TestimonialsSection() {
                 </div>
 
                 {/* Section heading */}
-                <h2 className="font-cormorant text-[clamp(36px,4.5vw,54px)] font-light leading-[1.1] text-soil">
+                <h2 className="font-cormorant text-[clamp(32px,4.5vw,54px)] font-light leading-[1.1] text-soil">
                     They moved.
                     <br />
                     <em className="italic text-bark">They didn't settle.</em>
                 </h2>
 
                 {/* Description */}
-                <p className="text-[15px] font-outfit font-light leading-[1.8] text-t2 max-w-[420px] mt-5 mb-0">
+                <p className="text-[14px] sm:text-[15px] font-outfit font-light leading-[1.8] text-t2 max-w-[420px] mt-4 sm:mt-5 mb-0">
                     From day-one arrivals to long-timers still refining their routine – this is what finding your footing actually feels like.
                 </p>
 
                 {/* Carousel wrapper */}
-                <div className="mt-[44px] relative">
+                <div className="mt-[44px] relative w-full">
                     {/* Slides track */}
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden w-full max-w-[720px] mx-auto">
                         <div
                             className="flex transition-transform duration-500 ease-in-out"
                             style={{ transform: `translateX(-${activeSlide * 100}%)` }}
@@ -69,10 +69,10 @@ export function TestimonialsSection() {
                             {testimonials.map((testimonial, index) => (
                                 <div
                                     key={index}
-                                    className="min-w-full flex-shrink-0"
+                                    className="w-full flex-shrink-0"
                                 >
                                     <div
-                                        className={`rounded-2xl p-[44px_48px] max-w-[720px] mx-auto ${
+                                        className={`rounded-2xl p-[20px] sm:p-[28px] md:p-[44px_48px] ${
                                             testimonial.theme === "light"
                                                 ? "bg-cream border border-mist"
                                                 : "bg-soil border border-bark"
@@ -80,7 +80,7 @@ export function TestimonialsSection() {
                                     >
                                         {/* Quote */}
                                         <div
-                                            className={`text-[18px] font-outfit font-light leading-[1.7] mb-7 ${
+                                            className={`text-[15px] sm:text-[16px] md:text-[18px] font-outfit font-light leading-[1.7] mb-5 md:mb-7 ${
                                                 testimonial.theme === "light"
                                                     ? "text-t1"
                                                     : "text-white/80"
@@ -101,9 +101,9 @@ export function TestimonialsSection() {
                                         </div>
 
                                         {/* Person */}
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-2 sm:gap-3">
                                             <div
-                                                className={`w-12 h-12 rounded-full flex items-center justify-center text-[20px] flex-shrink-0 ${
+                                                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-[18px] sm:text-[20px] flex-shrink-0 ${
                                                     testimonial.theme === "light"
                                                         ? "bg-white border border-mist"
                                                         : "bg-bark"
@@ -113,7 +113,7 @@ export function TestimonialsSection() {
                                             </div>
                                             <div>
                                                 <div
-                                                    className={`text-[14px] font-outfit font-medium ${
+                                                    className={`text-[13px] sm:text-[14px] font-outfit font-medium ${
                                                         testimonial.theme === "light"
                                                             ? "text-soil"
                                                             : "text-white"
@@ -122,7 +122,7 @@ export function TestimonialsSection() {
                                                     {testimonial.name}
                                                 </div>
                                                 <div
-                                                    className={`text-[12px] font-outfit ${
+                                                    className={`text-[11px] sm:text-[12px] font-outfit ${
                                                         testimonial.theme === "light"
                                                             ? "text-t3"
                                                             : "text-white/40"
@@ -139,10 +139,10 @@ export function TestimonialsSection() {
                     </div>
 
                     {/* Navigation */}
-                    <div className="flex items-center justify-center gap-6 mt-8">
+                    <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                         <button
                             onClick={handlePrev}
-                            className="w-10 h-10 rounded-full border border-mist bg-white text-bark text-[20px] flex items-center justify-center cursor-pointer transition-all hover:border-bark hover:bg-cream"
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-mist bg-white text-bark text-[18px] sm:text-[20px] flex items-center justify-center cursor-pointer transition-all hover:border-bark hover:bg-cream"
                         >
                             ‹
                         </button>
@@ -153,7 +153,7 @@ export function TestimonialsSection() {
                                     onClick={() => setActiveSlide(index)}
                                     className={`w-2 h-2 rounded-full cursor-pointer transition-all ${
                                         index === activeSlide
-                                            ? "bg-bark w-6"
+                                            ? "bg-bark w-5 sm:w-6"
                                             : "bg-mist hover:bg-bark/30"
                                     }`}
                                 ></div>
@@ -161,34 +161,18 @@ export function TestimonialsSection() {
                         </div>
                         <button
                             onClick={handleNext}
-                            className="w-10 h-10 rounded-full border border-mist bg-white text-bark text-[20px] flex items-center justify-center cursor-pointer transition-all hover:border-bark hover:bg-cream"
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-mist bg-white text-bark text-[18px] sm:text-[20px] flex items-center justify-center cursor-pointer transition-all hover:border-bark hover:bg-cream"
                         >
                             ›
                         </button>
                     </div>
                 </div>
 
-                {/* Quote bar */}
-                <div className="flex items-center gap-8 bg-bark-pale border border-mist rounded-xl p-[24px_28px] mt-[44px] max-w-[720px] mx-auto">
-                    <div className="text-[64px] font-cormorant font-light text-bark leading-none flex-shrink-0">
-                        "
-                    </div>
-                    <div>
-                        <div className="text-[15px] font-outfit font-light text-t1 leading-[1.7] mb-2">
-                            The Facebook group questions stopped on day one. I didn't even know I could feel this relieved{" "}
-                            <em className="italic">about a grocery run.</em>
-                        </div>
-                        <div className="text-[12px] font-outfit text-t3">
-                            – Léa M., Amsterdam → Lisbon · Founding member
-                        </div>
-                    </div>
-                </div>
-
                 {/* CTA */}
-                <div className="flex justify-center mt-[44px]">
+                <div className="flex justify-center mt-[36px] sm:mt-[44px]">
                     <a
                         href="#about"
-                        className="font-outfit text-[14px] font-medium text-bark border-2 border-bark rounded-lg px-[28px] py-[13px] transition-all hover:bg-bark hover:text-white"
+                        className="font-outfit text-[13px] sm:text-[14px] font-medium text-bark border-2 border-bark rounded-lg px-[24px] sm:px-[28px] py-[12px] sm:py-[13px] transition-all hover:bg-bark hover:text-white"
                     >
                         Read our story →
                     </a>
