@@ -373,7 +373,7 @@ const Community: React.FC = () => {
                                                                     </Badge>
                                                                 )}
                                                                 {post.userRole === "admin" && (
-                                                                    <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
+                                                                    <Badge variant="default" className="bg-sage hover:bg-sage/90 text-xs">
                                                                         City Ambassador
                                                                     </Badge>
                                                                 )}

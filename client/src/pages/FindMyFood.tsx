@@ -272,7 +272,8 @@ export default function FindMyFood() {
                                     {cities.map((city) => (
                                     <div
                                         key={city.id}
-                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors"
+                                        onClick={() => toggleLocation(city.name)}
+                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors cursor-pointer"
                                     >
                                         <div className="flex items-center space-x-3">
                                             <Checkbox
@@ -283,11 +284,11 @@ export default function FindMyFood() {
                                                 onCheckedChange={() =>
                                                     toggleLocation(city.name)
                                                 }
-                                                className="h-5 w-5"
+                                                className="h-5 w-5 pointer-events-none"
                                             />
                                             <Label
                                                 htmlFor={`city-${city.id}`}
-                                                className="text-base font-medium cursor-pointer"
+                                                className="text-base font-medium cursor-pointer pointer-events-none"
                                             >
                                                 {city.name}
                                             </Label>
@@ -314,7 +315,8 @@ export default function FindMyFood() {
                                 {guideTypes.map((guide) => (
                                     <div
                                         key={guide.id}
-                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors"
+                                        onClick={() => toggleGuideType(guide.id)}
+                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors cursor-pointer"
                                     >
                                         <div className="flex items-start space-x-3">
                                             <Checkbox
@@ -326,9 +328,9 @@ export default function FindMyFood() {
                                                 onCheckedChange={() =>
                                                     toggleGuideType(guide.id)
                                                 }
-                                                className="h-5 w-5 mt-0.5"
+                                                className="h-5 w-5 mt-0.5 pointer-events-none"
                                             />
-                                            <div className="flex-1">
+                                            <div className="flex-1 pointer-events-none">
                                                 <Label
                                                     htmlFor={`guide-${guide.id}`}
                                                     className="text-base font-medium cursor-pointer block mb-1"
@@ -361,7 +363,8 @@ export default function FindMyFood() {
                                 {getDietaryPreferences().map((preference) => (
                                     <div
                                         key={preference.id}
-                                        className="border border-mist rounded-lg p-3 hover:border-sage/50 transition-colors"
+                                        onClick={() => togglePreference(preference.id)}
+                                        className="border border-mist rounded-lg p-3 hover:border-sage/50 transition-colors cursor-pointer"
                                     >
                                         <div className="flex items-start space-x-2">
                                             <Checkbox
@@ -374,11 +377,11 @@ export default function FindMyFood() {
                                                         preference.id,
                                                     )
                                                 }
-                                                className="h-4 w-4 mt-1 flex-shrink-0"
+                                                className="h-4 w-4 mt-1 flex-shrink-0 pointer-events-none"
                                             />
                                             <Label
                                                 htmlFor={`pref-${preference.id}`}
-                                                className="text-sm font-medium cursor-pointer flex items-start gap-2 flex-1"
+                                                className="text-sm font-medium cursor-pointer flex items-start gap-2 flex-1 pointer-events-none"
                                             >
                                                 <span className="flex-shrink-0 mt-0.5">
                                                     {preference.icon}

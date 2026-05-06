@@ -27,7 +27,7 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
 
     // Create custom shopping basket icon SVG
     const createCustomMarker = (hasAddress: boolean = true) => {
-        const color = hasAddress ? "var(--bark)" : "#9CA3AF"; // Orange for valid, gray for no address
+        const color = hasAddress ? "#2C1F0F" : "#9CA3AF"; // Dark brown (soil) for valid, gray for no address
         const el = document.createElement("div");
         el.innerHTML = `
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
