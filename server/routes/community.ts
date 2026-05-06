@@ -12,7 +12,7 @@ import { eq, desc, asc, and, sql, count } from "drizzle-orm";
 const createPostSchema = z.object({
     title: z.string().min(1, "Title is required").max(200, "Title too long"),
     body: z.string().min(1, "Body is required").max(5000, "Body too long"),
-    section: z.enum(["general", "where-to-find", "product-swaps"], {
+    section: z.enum(["general", "where-to-find", "product-swaps", "local-favorites"], {
         errorMap: () => ({ message: "Invalid section" })
     })
 });
@@ -24,7 +24,7 @@ const createCommentSchema = z.object({
 const paginationSchema = z.object({
     limit: z.coerce.number().min(1).max(50).default(20),
     offset: z.coerce.number().min(0).default(0),
-    section: z.enum(["general", "where-to-find", "product-swaps"]).optional()
+    section: z.enum(["general", "where-to-find", "product-swaps", "local-favorites"]).optional()
 });
 
 // Types for API responses

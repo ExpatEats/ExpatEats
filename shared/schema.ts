@@ -168,7 +168,7 @@ export const posts = pgTable("posts", {
     userId: integer("user_id")
         .references(() => users.id)
         .notNull(),
-    section: text("section").notNull(), // 'general', 'where-to-find', 'product-swaps'
+    section: text("section").notNull(), // 'general', 'where-to-find', 'product-swaps', 'local-favorites'
     status: text("status").default("active"), // 'active', 'hidden', 'deleted'
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

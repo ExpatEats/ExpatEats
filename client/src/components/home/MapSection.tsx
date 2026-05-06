@@ -48,13 +48,15 @@ export function MapSection() {
                         </Link>
                     </div>
 
-                    {/* Right side - Map placeholder */}
+                    {/* Right side - Map preview */}
                     <div className="relative">
-                        <div className="bg-[#261C10] rounded-2xl overflow-hidden aspect-[4/3] border border-white/[0.07] relative flex items-center justify-center">
-                            {/* Map placeholder */}
-                            <div className="text-white/20 font-outfit text-sm">
-                                Interactive map preview
-                            </div>
+                        <div className="bg-[#261C10] rounded-2xl overflow-hidden aspect-[4/3] border border-white/[0.07] relative">
+                            {/* Map preview image */}
+                            <img
+                                src="/images/Map-preview.png"
+                                alt="Interactive map showing verified food locations in Greater Lisbon"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
 
                         {/* Map badge */}

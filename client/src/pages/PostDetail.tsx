@@ -361,7 +361,11 @@ const PostDetail: React.FC = () => {
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-red-600">Invalid Post</h1>
                         <p className="text-t2 font-outfit mb-4">The post you're looking for doesn't exist.</p>
-                        <Button onClick={() => setLocation("/community")}>
+                        <Button
+                            onClick={() => setLocation("/community")}
+                            className="bg-bark hover:bg-soil text-white"
+                        >
+                            <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Community
                         </Button>
                     </div>
@@ -396,7 +400,11 @@ const PostDetail: React.FC = () => {
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-red-600">Error Loading Post</h1>
                         <p className="text-t2 font-outfit mb-4">Failed to load the post. Please try again.</p>
-                        <Button onClick={() => setLocation("/community")}>
+                        <Button
+                            onClick={() => setLocation("/community")}
+                            className="bg-bark hover:bg-soil text-white"
+                        >
+                            <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Community
                         </Button>
                     </div>
@@ -416,9 +424,9 @@ const PostDetail: React.FC = () => {
                     {/* Header */}
                     <div className="mb-6">
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             onClick={() => setLocation("/community")}
-                            className="mb-4"
+                            className="mb-4 border-bark/20 text-bark hover:bg-bark hover:text-white transition-colors"
                         >
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Community
@@ -448,7 +456,7 @@ const PostDetail: React.FC = () => {
                                                 </Badge>
                                             )}
                                             {post.userRole === "admin" && (
-                                                <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
+                                                <Badge variant="default" className="bg-sage hover:bg-sage/90 text-xs">
                                                     City Ambassador
                                                 </Badge>
                                             )}
@@ -594,7 +602,7 @@ const PostDetail: React.FC = () => {
                                                                 </Badge>
                                                             )}
                                                             {comment.userRole === "admin" && (
-                                                                <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-xs">
+                                                                <Badge variant="default" className="bg-sage hover:bg-sage/90 text-xs">
                                                                     City Ambassador
                                                                 </Badge>
                                                             )}

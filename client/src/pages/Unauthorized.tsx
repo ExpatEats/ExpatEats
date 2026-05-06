@@ -19,7 +19,7 @@ const Unauthorized = () => {
     }, [isAuthenticated, setLocation]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-cream-mid px-4">
+        <div className="min-h-[calc(100vh-64px-36px)] sm:min-h-[calc(100vh-64px-38px)] md:min-h-[calc(100vh-64px-42px)] flex items-center justify-center bg-cream-mid px-4 py-8">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center pb-4">
                     <div className="mx-auto w-16 h-16 bg-bark-lt/10 rounded-full flex items-center justify-center mb-4">
