@@ -14,7 +14,8 @@ import { NotificationDialog } from "@/components/NotificationDialog";
 const SECTIONS = [
     { id: "general", name: "General", description: "General discussions and community topics" },
     { id: "where-to-find", name: "Where to find", description: "Help finding specific products and ingredients" },
-    { id: "product-swaps", name: "Product Swaps", description: "Share alternatives and substitutions" }
+    { id: "product-swaps", name: "Product Swaps", description: "Share alternatives and substitutions" },
+    { id: "local-favorites", name: "Local Favorites", description: "Share your favorite stores, markets, cafes, and practitioners" }
 ] as const;
 
 interface CreatePostFormData {

@@ -121,8 +121,50 @@ export function registerCommunityRoutes(app: Express) {
 
             const [{ count: totalCount }] = await countQuery;
 
+            // Fetch recent comments for each post (max 3 per post)
+            const postIds = postsData.map(p => p.id);
+            let recentCommentsMap: { [postId: number]: CommentWithUser[] } = {};
+
+            if (postIds.length > 0) {
+                const recentComments = await db
+                    .select({
+                        id: comments.id,
+                        postId: comments.postId,
+                        userId: comments.userId,
+                        username: users.username,
+                        userRole: users.role,
+                        body: comments.body,
+                        status: comments.status,
+                        createdAt: comments.createdAt,
+                        updatedAt: comments.updatedAt,
+                    })
+                    .from(comments)
+                    .innerJoin(users, eq(comments.userId, users.id))
+                    .where(and(
+                        sql`${comments.postId} IN (${sql.join(postIds, sql`, `)})`,
+                        eq(comments.status, "active")
+                    ))
+                    .orderBy(desc(comments.createdAt));
+
+                // Group comments by post ID and take only the 3 most recent
+                for (const comment of recentComments) {
+                    if (!recentCommentsMap[comment.postId]) {
+                        recentCommentsMap[comment.postId] = [];
+                    }
+                    if (recentCommentsMap[comment.postId].length < 3) {
+                        recentCommentsMap[comment.postId].push(comment);
+                    }
+                }
+            }
+
+            // Add recent comments to posts
+            const postsWithComments = postsData.map(post => ({
+                ...post,
+                recentComments: recentCommentsMap[post.id] || []
+            }));
+
             res.json({
-                posts: postsData,
+                posts: postsWithComments,
                 pagination: {
                     limit,
                     offset,

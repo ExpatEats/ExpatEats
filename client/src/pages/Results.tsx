@@ -182,11 +182,21 @@ const Results = () => {
     };
 
     const getLocationName = () => {
-        if (city === "lisbon") return "Lisbon";
-        if (city === "oeiras") return "Oeiras";
-        if (city === "cascais") return "Cascais";
-        if (city === "sintra") return "Sintra";
-        return city.charAt(0).toUpperCase() + city.slice(1);
+        if (!city) return "";
+
+        // Handle multiple cities separated by commas
+        const cities = city.split(",").map(c => c.trim());
+
+        const formatCityName = (cityName: string) => {
+            if (cityName === "lisbon") return "Lisbon";
+            if (cityName === "oeiras") return "Oeiras";
+            if (cityName === "cascais") return "Cascais";
+            if (cityName === "sintra") return "Sintra";
+            if (cityName === "online") return "Online";
+            return cityName.charAt(0).toUpperCase() + cityName.slice(1);
+        };
+
+        return cities.map(formatCityName).join(", ");
     };
 
     const getResultsDescription = () => {
