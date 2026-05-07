@@ -99,23 +99,13 @@ const Header = () => {
                     >
                         <Link href="/services">Services</Link>
                     </div>
-                    <div
-                        className={`py-2 transition-colors ${
-                            isActive("/events")
-                                ? "text-soil border-b-2 border-bark"
-                                : "text-t2 hover:text-soil"
-                        }`}
-                    >
-                        <Link href="/events">Events</Link>
+                    <div className="py-2 text-gray-400 cursor-not-allowed flex items-center gap-2">
+                        <span>Events</span>
+                        <span className="text-[10px] italic">coming soon</span>
                     </div>
-                    <div
-                        className={`py-2 transition-colors ${
-                            isActive("/resources")
-                                ? "text-soil border-b-2 border-bark"
-                                : "text-t2 hover:text-soil"
-                        }`}
-                    >
-                        <Link href="/resources">Resources</Link>
+                    <div className="py-2 text-gray-400 cursor-not-allowed flex items-center gap-2">
+                        <span>Resources</span>
+                        <span className="text-[10px] italic">coming soon</span>
                     </div>
                     <div
                         className={`py-2 transition-colors ${
@@ -228,17 +218,13 @@ const Header = () => {
                                 >
                                     <Link href="/services">Services</Link>
                                 </div>
-                                <div
-                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/events") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
-                                    onClick={handleNavClick}
-                                >
-                                    <Link href="/events">Events</Link>
+                                <div className="py-2 px-4 rounded-lg text-gray-400 cursor-not-allowed flex items-center gap-2">
+                                    <span>Events</span>
+                                    <span className="text-[10px] italic">coming soon</span>
                                 </div>
-                                <div
-                                    className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/resources") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}
-                                    onClick={handleNavClick}
-                                >
-                                    <Link href="/resources">Resources</Link>
+                                <div className="py-2 px-4 rounded-lg text-gray-400 cursor-not-allowed flex items-center gap-2">
+                                    <span>Resources</span>
+                                    <span className="text-[10px] italic">coming soon</span>
                                 </div>
                                 <div
                                     className={`py-2 px-4 rounded-lg transition-elegant ${isActive("/community") ? "bg-primary/10 text-primary font-semibold" : "text-t2 hover:bg-primary/5"}`}

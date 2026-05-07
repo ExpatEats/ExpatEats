@@ -1,3 +1,4 @@
+import React from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -12,9 +13,7 @@ import Shop from "./pages/Shop";
 import Results from "./pages/Results";
 import Contact from "./pages/Contact";
 import GeneralContact from "./pages/GeneralContact";
-import Resources from "./pages/Resources";
 import NewServices from "./pages/NewServices";
-import Events from "./pages/Events";
 import Community from "./pages/Community";
 import CreatePost from "./pages/CreatePost";
 import PostDetail from "./pages/PostDetail";
@@ -100,7 +99,11 @@ function Router() {
                     <RequireAuth component={Contact} redirectTo="/unauthorized" />
                 </Route>
                 <Route path="/resources">
-                    <RequireAuth component={Resources} redirectTo="/unauthorized" />
+                    {() => {
+                        const [, setLocation] = useLocation();
+                        React.useEffect(() => setLocation("/"), []);
+                        return null;
+                    }}
                 </Route>
                 <Route path="/services" component={NewServices} />
                 <Route path="/meal-plans" component={PersonalizedMealPlans} />
@@ -110,7 +113,11 @@ function Router() {
                 <Route path="/services/grocery-tour" component={GroceryTour} />
                 <Route path="/services/vip-experience" component={VIPExperience} />
                 <Route path="/events">
-                    <RequireAuth component={Events} redirectTo="/unauthorized" />
+                    {() => {
+                        const [, setLocation] = useLocation();
+                        React.useEffect(() => setLocation("/"), []);
+                        return null;
+                    }}
                 </Route>
                 <Route path="/add-location">
                     <RequireAuth component={AddLocation} redirectTo="/unauthorized" />

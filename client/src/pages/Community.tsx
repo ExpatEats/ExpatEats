@@ -52,6 +52,7 @@ interface Post {
     likesCount: number;
     commentsCount: number;
     isLikedByUser: boolean;
+    recentComments?: PostComment[];
 }
 
 interface PostsResponse {
@@ -417,6 +418,40 @@ const Community: React.FC = () => {
                                                         {truncateText(post.body, 300)}
                                                     </p>
                                                 </div>
+
+                                                {/* Recent Comments Preview */}
+                                                {post.recentComments && post.recentComments.length > 0 && (
+                                                    <div className="mb-4 space-y-3 bg-cream-mid/30 rounded-lg p-4 border border-mist/50">
+                                                        <div className="text-xs font-outfit font-medium text-t3 uppercase tracking-wide">
+                                                            Recent Comments
+                                                        </div>
+                                                        {post.recentComments.map((comment) => (
+                                                            <div key={comment.id} className="border-l-2 border-bark/20 pl-3">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="text-xs font-outfit font-medium text-soil">
+                                                                        {comment.username}
+                                                                    </span>
+                                                                    {comment.userRole === "superadmin" && (
+                                                                        <Badge variant="default" className="bg-purple-600 text-[10px] px-1.5 py-0">
+                                                                            Team
+                                                                        </Badge>
+                                                                    )}
+                                                                    {comment.userRole === "admin" && (
+                                                                        <Badge variant="default" className="bg-sage text-[10px] px-1.5 py-0">
+                                                                            Ambassador
+                                                                        </Badge>
+                                                                    )}
+                                                                    <span className="text-[10px] text-t3 font-outfit">
+                                                                        · {formatTimeAgo(comment.createdAt)}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-sm text-t2 font-outfit leading-snug">
+                                                                    {truncateText(comment.body, 150)}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
 
                                                 {/* Post Actions */}
                                                 <div className="flex items-center justify-between pt-4 border-t border-mist">
