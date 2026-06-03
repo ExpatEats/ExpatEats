@@ -124,7 +124,10 @@ class DatabaseStorage implements Storage {
 
     // Place methods
     async getPlaces(filters?: PlaceFilters): Promise<Place[]> {
-        let whereConditions = [eq(places.status, "approved")];
+        let whereConditions = [
+            eq(places.status, "approved"),
+            eq(places.deleted, false)
+        ];
 
         // Determine if this is a supplements search based on category filter
         const isSupplementsSearch = filters?.category?.includes("Health Food Store") ||
@@ -270,7 +273,14 @@ class DatabaseStorage implements Storage {
     }
 
     async getPlace(id: number): Promise<Place | null> {
-        const [place] = await db.select().from(places).where(eq(places.id, id));
+        const [place] = await db
+            .select()
+            .from(places)
+            .where(and(
+                eq(places.id, id),
+                eq(places.status, "approved"),
+                eq(places.deleted, false)
+            ));
         return place || null;
     }
 
@@ -330,7 +340,10 @@ class DatabaseStorage implements Storage {
     // Location methods
     async getDistinctLocations(): Promise<{id: string, name: string}[]> {
         // Get distinct cities from places table
-        const placeCities = await db.selectDistinct({ city: places.city }).from(places);
+        const placeCities = await db
+            .selectDistinct({ city: places.city })
+            .from(places)
+            .where(eq(places.deleted, false));
 
         // Combine and dedupe
         const allLocations = new Set<string>();
@@ -412,6 +425,15 @@ class DatabaseStorage implements Storage {
                 status: "rejected",
                 adminNotes,
                 reviewedAt: new Date(),
+            })
+            .where(eq(places.id, placeId));
+    }
+
+    async markPlaceAsDeleted(placeId: number): Promise<void> {
+        await db
+            .update(places)
+            .set({
+                deleted: true,
             })
             .where(eq(places.id, placeId));
     }

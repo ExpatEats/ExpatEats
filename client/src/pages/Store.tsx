@@ -23,12 +23,14 @@ import {
     ExternalLink,
     Award,
     MessageSquare,
-    Edit
+    Edit,
+    CircleX
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { NotificationDialog } from "@/components/NotificationDialog";
 import { EditNotesDialog } from "@/components/EditNotesDialog";
 import { EditLocationModal } from "@/components/EditLocationModal";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { MapView } from "@/components/MapView";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -124,6 +126,7 @@ export default function Store() {
     const [notificationOpen, setNotificationOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [editLocationModalOpen, setEditLocationModalOpen] = useState(false);
+    const [closeLocationDialogOpen, setCloseLocationDialogOpen] = useState(false);
     const [notificationConfig, setNotificationConfig] = useState<{
         title: string;
         description?: string;
@@ -264,6 +267,43 @@ export default function Store() {
         },
     });
 
+    const closeLocationMutation = useMutation({
+        mutationFn: async () => {
+            const csrfResponse = await fetch("/api/csrf-token", {
+                credentials: "include"
+            });
+            if (!csrfResponse.ok) throw new Error("Failed to get CSRF token");
+            const { csrfToken } = await csrfResponse.json();
+
+            const response = await fetch(`/api/admin/mark-place-deleted/${storeId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": csrfToken
+                },
+                credentials: "include"
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Failed to mark location as closed");
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            showNotification("Success", "Location marked as closed successfully", "success");
+            setCloseLocationDialogOpen(false);
+            // Redirect to search page after 1.5 seconds
+            setTimeout(() => {
+                setLocation("/search");
+            }, 1500);
+        },
+        onError: (error: Error) => {
+            showNotification("Error", error.message, "error");
+        }
+    });
+
     const handleUpdateFullPlace = (updatedPlace: Partial<Place>) => {
         updateFullPlaceMutation.mutate(updatedPlace);
     };
@@ -357,6 +397,15 @@ export default function Store() {
                                 >
                                     <Edit className="h-4 w-4 mr-1" />
                                     Edit Notes & Rating
+                                </Button>
+                                <Button
+                                    onClick={() => setCloseLocationDialogOpen(true)}
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-red-600 text-red-700 hover:bg-red-600 hover:text-white"
+                                >
+                                    <CircleX className="h-4 w-4 mr-1" />
+                                    Mark Closed
                                 </Button>
                             </>
                         )}
@@ -686,6 +735,17 @@ export default function Store() {
                 place={store || null}
                 onSaveAndRetry={handleUpdateFullPlace}
                 isLoading={updateFullPlaceMutation.isPending}
+            />
+            <ConfirmDialog
+                open={closeLocationDialogOpen}
+                onOpenChange={setCloseLocationDialogOpen}
+                title="Mark Location as Closed"
+                description="Are you sure you want to mark this location as closed? This will hide it from all public searches and the location will no longer be visible to users."
+                confirmText="Mark Closed"
+                cancelText="Cancel"
+                variant="destructive"
+                isLoading={closeLocationMutation.isPending}
+                onConfirm={() => closeLocationMutation.mutate()}
             />
         </div>
     );
