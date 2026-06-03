@@ -121,6 +121,7 @@ export const places = pgTable("places", {
     softRating: text("soft_rating"), // 'Gold Standard', 'Great Choice', 'This Will Do in a Pinch', or empty string
     michaelesNotes: text("michaeles_notes"), // Michaele's personal notes about the location
     reviewedAt: timestamp("reviewed_at"),
+    deleted: boolean("deleted").default(false).notNull(), // Soft-delete flag for closed locations
     createdAt: timestamp("created_at").defaultNow(),
 });
 

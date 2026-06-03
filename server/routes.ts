@@ -503,7 +503,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const place = await storage.getPlace(id);
 
             if (!place) {
-                return res.status(404).json({ message: "Place not found" });
+                return res.status(404).json({ message: "Location not found or has been closed" });
             }
 
             res.json(place);
@@ -857,6 +857,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
             console.error("Error rejecting place:", error);
             res.status(500).json({ message: "Failed to reject place" });
+        }
+    });
+
+    // Admin: Mark place as deleted/closed
+    app.patch("/api/admin/mark-place-deleted/:id", CsrfService.middleware(), requireAdmin, async (req: AuthenticatedRequest, res) => {
+        try {
+            const placeId = parseInt(req.params.id);
+
+            if (!placeId || isNaN(placeId)) {
+                return res.status(400).json({ message: "Invalid place ID" });
+            }
+
+            // Mark place as deleted
+            await storage.markPlaceAsDeleted(placeId);
+
+            res.json({
+                success: true,
+                message: "Location marked as closed successfully"
+            });
+        } catch (error) {
+            console.error("Error marking place as deleted:", error);
+            res.status(500).json({ message: "Failed to mark location as closed" });
         }
     });
 

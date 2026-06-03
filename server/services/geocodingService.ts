@@ -12,6 +12,7 @@ export interface GeocodeResult {
   success: boolean;
   coordinates?: { latitude: string; longitude: string };
   confidence?: number;
+  resultType?: string;
   formattedAddress?: string;
   error?: string;
 }
@@ -114,15 +115,29 @@ export class GeocodingService {
       const feature = data.features[0];
       const [lng, lat] = feature.geometry.coordinates;
       const confidence = feature.properties?.rank?.confidence || 0;
+      const resultType = feature.properties?.result_type || 'unknown';
+
+      // Street-level result types that we consider acceptable
+      const streetLevelTypes = ['amenity', 'building', 'street', 'road', 'house'];
+      const isStreetLevel = streetLevelTypes.includes(resultType);
 
       // Validate confidence score
-      if (confidence < 0.5) {
-        console.warn(`Low confidence geocoding result (${confidence}) for: ${formattedAddress}`);
+      // Accept lower confidence (0.3+) for street-level results, require 0.5+ for others
+      const minConfidence = isStreetLevel ? 0.3 : 0.5;
+
+      if (confidence < minConfidence) {
+        console.warn(
+          `Low confidence geocoding result (${confidence}, type: ${resultType}) for: ${formattedAddress}`
+        );
         return {
           success: false,
-          error: "Geocoding result has low confidence. Please provide a more specific address.",
+          error: isStreetLevel
+            ? "Geocoding result has very low confidence. Please provide a more specific address."
+            : "Geocoding result is too vague (city/district level). Please provide a specific street address.",
         };
       }
+
+      console.log(`Geocoding result type: ${resultType}, confidence: ${confidence}`);
 
       // Validate coordinates are within Portugal
       if (!this.validatePortugalCoordinates(lat, lng)) {
@@ -144,6 +159,7 @@ export class GeocodingService {
         success: true,
         coordinates,
         confidence,
+        resultType,
         formattedAddress: feature.properties?.formatted || formattedAddress,
       };
 
@@ -172,8 +188,14 @@ export class GeocodingService {
         const feature = data.features[0];
         const [lng, lat] = feature.geometry.coordinates;
         const confidence = feature.properties?.rank?.confidence || 0;
+        const resultType = feature.properties?.result_type || 'unknown';
 
-        if (confidence < 0.5 || !this.validatePortugalCoordinates(lat, lng)) {
+        // Street-level result types that we consider acceptable
+        const streetLevelTypes = ['amenity', 'building', 'street', 'road', 'house'];
+        const isStreetLevel = streetLevelTypes.includes(resultType);
+        const minConfidence = isStreetLevel ? 0.3 : 0.5;
+
+        if (confidence < minConfidence || !this.validatePortugalCoordinates(lat, lng)) {
           return {
             success: false,
             error: "Geocoding result quality is insufficient.",
@@ -191,6 +213,7 @@ export class GeocodingService {
           success: true,
           coordinates,
           confidence,
+          resultType,
           formattedAddress: feature.properties?.formatted || formattedAddress,
         };
 

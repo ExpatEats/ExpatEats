@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { CsrfService } from "../services/csrfService";
 import { RateLimitService } from "../services/rateLimitService";
+import { EmailService } from "../services/emailService";
 import { AuthenticatedRequest } from "../types/session";
 import { db } from "../db";
 import { posts, comments, postLikes, users } from "@shared/schema";
@@ -422,10 +423,17 @@ export function registerCommunityRoutes(app: Express) {
                 return res.status(400).json({ message: "Invalid post ID" });
             }
 
-            // Check if post exists and is active
+            // Check if post exists and is active, and get post author info
             const [existingPost] = await db
-                .select({ id: posts.id })
+                .select({
+                    id: posts.id,
+                    title: posts.title,
+                    userId: posts.userId,
+                    authorEmail: users.email,
+                    authorUsername: users.username
+                })
                 .from(posts)
+                .innerJoin(users, eq(posts.userId, users.id))
                 .where(and(eq(posts.id, postId), eq(posts.status, "active")));
 
             if (!existingPost) {
@@ -458,6 +466,22 @@ export function registerCommunityRoutes(app: Express) {
                 .from(comments)
                 .innerJoin(users, eq(comments.userId, users.id))
                 .where(eq(comments.id, newComment.id));
+
+            // Send email notification to post author (async, don't block response)
+            // Only send if commenter is not the post author
+            if (existingPost.userId !== userId && existingPost.authorEmail) {
+                EmailService.sendForumReplyNotification(
+                    existingPost.authorEmail,
+                    existingPost.authorUsername || "there",
+                    existingPost.title,
+                    postId,
+                    commentWithUser.username || "Someone",
+                    commentData.body
+                ).catch(error => {
+                    // Log error but don't fail the comment creation
+                    console.error("Failed to send forum reply notification:", error);
+                });
+            }
 
             res.status(201).json(commentWithUser);
         } catch (error) {

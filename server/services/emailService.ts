@@ -350,4 +350,123 @@ The ExpatEats Team
             };
         }
     }
+
+    /**
+     * Send forum reply notification email
+     */
+    static async sendForumReplyNotification(
+        toEmail: string,
+        toName: string,
+        postTitle: string,
+        postId: number,
+        commenterName: string,
+        commentBody: string
+    ): Promise<{ success: boolean; error?: string }> {
+        try {
+            if (!SENDGRID_API_KEY) {
+                console.error("SendGrid API key not configured");
+                return { success: false, error: "Email service not configured" };
+            }
+
+            const postUrl = `${FRONTEND_URL}/community/post/${postId}`;
+
+            // Truncate comment body if too long for email (keep first 300 chars)
+            const truncatedComment = commentBody.length > 300
+                ? commentBody.substring(0, 300) + "..."
+                : commentBody;
+
+            const msg = {
+                to: toEmail,
+                from: FROM_EMAIL,
+                subject: `New reply on your post: ${postTitle}`,
+                trackingSettings: {
+                    clickTracking: {
+                        enable: false,
+                    },
+                },
+                text: `
+Hello ${toName},
+
+${commenterName} just replied to your post "${postTitle}":
+
+${truncatedComment}
+
+View the full conversation: ${postUrl}
+
+Best regards,
+The ExpatEats Team
+                `.trim(),
+                html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f7f4ef; padding: 30px; border-radius: 10px;">
+        <h1 style="color: #94AF9F; margin-top: 0;">New Reply on Your Post</h1>
+
+        <p>Hello ${toName},</p>
+
+        <p><strong>${commenterName}</strong> just replied to your post <strong>"${postTitle}"</strong>:</p>
+
+        <div style="background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #94AF9F;">
+            <p style="margin: 0; color: #555; font-style: italic;">"${truncatedComment.replace(/</g, "&lt;").replace(/>/g, "&gt;")}"</p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="${postUrl}"
+               style="background-color: #94AF9F; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                View Full Conversation
+            </a>
+        </div>
+
+        <p style="color: #666; font-size: 13px; margin-top: 30px;">
+            You're receiving this email because you created a post on the ExpatEats community forum.
+        </p>
+
+        <p style="margin-top: 30px;">
+            Best regards,<br>
+            <strong>The ExpatEats Team</strong>
+        </p>
+    </div>
+</body>
+</html>
+                `.trim(),
+            };
+
+            const response = await sgMail.send(msg);
+
+            // Log successful email send
+            await db.insert(emailLogs).values({
+                toEmail,
+                fromEmail: FROM_EMAIL,
+                subject: `New reply on your post: ${postTitle}`,
+                emailType: "forum-reply",
+                status: "sent",
+                messageId: response[0]?.headers?.["x-message-id"] || null,
+            });
+
+            console.log(`✅ Forum reply notification email sent to ${toEmail}`);
+            return { success: true };
+        } catch (error: any) {
+            console.error("Failed to send forum reply notification email:", error);
+
+            // Log failed email send
+            await db.insert(emailLogs).values({
+                toEmail,
+                fromEmail: FROM_EMAIL,
+                subject: `New reply on your post: ${postTitle}`,
+                emailType: "forum-reply",
+                status: "failed",
+                errorMessage: error.message || "Unknown error",
+            });
+
+            return {
+                success: false,
+                error: error.message || "Failed to send email",
+            };
+        }
+    }
 }
