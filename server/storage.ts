@@ -369,7 +369,10 @@ class DatabaseStorage implements Storage {
     }
 
     async getRandomPlaces(options: { limit: number; status?: string }): Promise<Place[]> {
-        const whereConditions = [eq(places.status, options.status || "approved")];
+        const whereConditions = [
+            eq(places.status, options.status || "approved"),
+            eq(places.deleted, false)
+        ];
 
         return await db
             .select()
@@ -483,6 +486,7 @@ class DatabaseStorage implements Storage {
             .where(
                 and(
                     eq(places.status, "approved"),
+                    eq(places.deleted, false),
                     or(
                         eq(places.latitude, ""),
                         eq(places.longitude, ""),
@@ -584,7 +588,10 @@ class DatabaseStorage implements Storage {
             })
             .from(savedStores)
             .innerJoin(places, eq(savedStores.placeId, places.id))
-            .where(eq(savedStores.userId, userId))
+            .where(and(
+                eq(savedStores.userId, userId),
+                eq(places.deleted, false)
+            ))
             .orderBy(sql`${savedStores.createdAt} DESC`);
 
         return result;
