@@ -465,23 +465,44 @@ export default function Store() {
 
                             {/* Tags */}
                             <div className="flex flex-wrap gap-2 mb-4">
-                                {getTagsFromPlace(store).map((tag, index) => {
-                                    const tagIcon = getTagIcon(tag);
-                                    return (
-                                        <Badge
-                                            key={index}
-                                            variant="secondary"
-                                            className="bg-sage-lt text-sage border-sage/20 flex items-center gap-1.5 px-3 py-1.5"
-                                        >
-                                            {tagIcon}
-                                            {tag
-                                                .replace(/-/g, " ")
-                                                .replace(/\b\w/g, (l) =>
-                                                    l.toUpperCase(),
-                                                )}
-                                        </Badge>
-                                    );
-                                })}
+                                {(() => {
+                                    // Check if this is a supplement place
+                                    const isSupplementPlace = store.category === "Health Food Store" ||
+                                                             store.category === "Online Store" ||
+                                                             store.category === "Department Store";
+
+                                    if (isSupplementPlace) {
+                                        // Show only "Supplements" tag for supplement places
+                                        return (
+                                            <Badge
+                                                variant="secondary"
+                                                className="bg-sage-lt text-sage border-sage/20 flex items-center gap-1.5 px-3 py-1.5"
+                                            >
+                                                <Package2 className="h-4 w-4" />
+                                                Supplements
+                                            </Badge>
+                                        );
+                                    }
+
+                                    // For grocery places, show individual tags
+                                    return getTagsFromPlace(store).map((tag, index) => {
+                                        const tagIcon = getTagIcon(tag);
+                                        return (
+                                            <Badge
+                                                key={index}
+                                                variant="secondary"
+                                                className="bg-sage-lt text-sage border-sage/20 flex items-center gap-1.5 px-3 py-1.5"
+                                            >
+                                                {tagIcon}
+                                                {tag
+                                                    .replace(/-/g, " ")
+                                                    .replace(/\b\w/g, (l) =>
+                                                        l.toUpperCase(),
+                                                    )}
+                                            </Badge>
+                                        );
+                                    });
+                                })()}
                             </div>
                         </div>
 

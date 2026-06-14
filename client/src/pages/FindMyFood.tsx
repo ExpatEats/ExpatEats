@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { StepIndicator } from "@/components/StepIndicator";
 import {
     MapPin,
     Search,
@@ -21,218 +20,245 @@ import {
     ShoppingBag,
 } from "lucide-react";
 
+// Step component interfaces
+interface DietaryPreferencesStepProps {
+    selectedPreferences: string[];
+    setSelectedPreferences: (prefs: string[]) => void;
+    onNext: () => void;
+}
+
+interface LocationStepProps {
+    selectedLocations: string[];
+    setSelectedLocations: (locs: string[]) => void;
+    cities: Array<{id: number, name: string}>;
+    citiesLoading: boolean;
+    onBack: () => void;
+    onSearch: () => void;
+    isValid: boolean;
+}
+
+// Step 1: Dietary Preferences Selection
+function DietaryPreferencesStep({
+    selectedPreferences,
+    setSelectedPreferences,
+    onNext
+}: DietaryPreferencesStepProps) {
+    const getDietaryPreferences = () => {
+        return [
+            { id: "gluten-free", name: "Gluten-Free", icon: <Wheat className="h-5 w-5 text-bark" /> },
+            { id: "dairy-free", name: "Dairy-Free", icon: <Cherry className="h-5 w-5 text-bark" /> },
+            { id: "nut-free", name: "Nut-Free", icon: <Apple className="h-5 w-5 text-bark" /> },
+            { id: "vegan", name: "Vegan", icon: <Leaf className="h-5 w-5 text-sage" /> },
+            { id: "organic", name: "Bio/Organic", icon: <Apple className="h-5 w-5 text-sage" /> },
+            { id: "local-farms", name: "Local Farms", icon: <Truck className="h-5 w-5 text-sage" /> },
+            { id: "fresh-vegetables", name: "Fresh Vegetables", icon: <Carrot className="h-5 w-5 text-bark" /> },
+            { id: "farm-raised-meat", name: "Farm-Raised Meat", icon: <Egg className="h-5 w-5 text-bark" /> },
+            { id: "no-processed", name: "No Processed Foods", icon: <Package2 className="h-5 w-5 text-sage" /> },
+            { id: "kid-friendly", name: "Kid-Friendly Snacks", icon: <Baby className="h-5 w-5 text-bark" /> },
+            { id: "bulk-buying", name: "Bulk Buying Options", icon: <ShoppingBag className="h-5 w-5 text-sage" /> },
+            { id: "zero-waste", name: "Zero Waste Packaging", icon: <Leaf className="h-5 w-5 text-bark" /> },
+            { id: "supplements", name: "Supplements & Vitamins", icon: <Package2 className="h-5 w-5 text-bark" /> },
+        ];
+    };
+
+    const togglePreference = (prefId: string) => {
+        if (selectedPreferences.includes(prefId)) {
+            setSelectedPreferences(selectedPreferences.filter(p => p !== prefId));
+        } else {
+            setSelectedPreferences([...selectedPreferences, prefId]);
+        }
+    };
+
+    const preferences = getDietaryPreferences();
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-cormorant text-2xl">
+                    Select Your Dietary Preferences
+                    <span className="block text-sm font-outfit font-normal text-t2 mt-2">
+                        Optional - Skip this step if you want to see all options
+                    </span>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {preferences.map((pref) => (
+                        <div
+                            key={pref.id}
+                            onClick={() => togglePreference(pref.id)}
+                            className={`
+                                p-4 rounded-lg border-2 cursor-pointer transition-all
+                                ${selectedPreferences.includes(pref.id)
+                                    ? 'border-bark bg-bark/5'
+                                    : 'border-gray-200 hover:border-bark/50'}
+                            `}
+                        >
+                            <div className="flex items-center gap-3">
+                                {pref.icon}
+                                <span className="font-outfit font-medium">{pref.name}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-8 flex justify-end">
+                    <Button
+                        onClick={onNext}
+                        size="lg"
+                        className="min-w-[120px]"
+                    >
+                        Next
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+// Step 2: Location Selection
+function LocationStep({
+    selectedLocations,
+    setSelectedLocations,
+    cities,
+    citiesLoading,
+    onBack,
+    onSearch,
+    isValid
+}: LocationStepProps) {
+    const toggleLocation = (cityName: string) => {
+        if (selectedLocations.includes(cityName)) {
+            setSelectedLocations(selectedLocations.filter(c => c !== cityName));
+        } else {
+            setSelectedLocations([...selectedLocations, cityName]);
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-cormorant text-2xl">
+                    Choose Your Locations
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                {citiesLoading ? (
+                    <div className="text-center py-8">Loading locations...</div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {cities.map((city) => (
+                            <div
+                                key={city.id}
+                                onClick={() => toggleLocation(city.name)}
+                                className={`
+                                    p-4 rounded-lg border-2 cursor-pointer transition-all
+                                    ${selectedLocations.includes(city.name)
+                                        ? 'border-bark bg-bark/5'
+                                        : 'border-gray-200 hover:border-bark/50'}
+                                `}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <MapPin className="h-5 w-5 text-bark" />
+                                    <span className="font-outfit font-medium">{city.name}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <div className="mt-8 flex justify-between">
+                    <Button
+                        onClick={onBack}
+                        variant="outline"
+                        size="lg"
+                    >
+                        Back
+                    </Button>
+                    <Button
+                        onClick={onSearch}
+                        disabled={!isValid}
+                        size="lg"
+                        className="min-w-[120px]"
+                    >
+                        <Search className="h-5 w-5 mr-2" />
+                        Search
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+// Main Component
 export default function FindMyFood() {
     const [, setLocation] = useLocation();
+    const [currentStep, setCurrentStep] = useState<1 | 2>(1);
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-    const [selectedGuideType, setSelectedGuideType] = useState<string>("");
-    const [selectedPreferences, setSelectedPreferences] = useState<string[]>(
-        [],
-    );
+    const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
 
     // Fetch cities from API
     const { data: cities = [], isLoading: citiesLoading } = useQuery<{id: number, name: string, slug: string, country: string}[]>({
         queryKey: ["/api/cities"],
     });
 
-    const guideTypes = [
-        {
-            id: "grocery",
-            name: "Grocery and Market Guide",
-            description:
-                "Healthy grocery stores, markets, and local sellers offering organic and sustainable food options.",
-        },
-        {
-            id: "supplements",
-            name: "Supplements Guide",
-            description:
-                "Trusted supplement brands available in local stores and online retailers that ship to Portugal.",
-        },
-    ];
-
-    const getDietaryPreferences = () => {
-        if (selectedGuideType === "supplements") {
-            return [
-                {
-                    id: "supplements",
-                    name: "General Supplements",
-                    icon: <Package2 className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "vitamins",
-                    name: "Vitamins",
-                    icon: <Apple className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "sports-nutrition",
-                    name: "Sports Nutrition",
-                    icon: <Truck className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "omega-3",
-                    name: "Omega-3 & Fish Oil",
-                    icon: <Cherry className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "herbal-remedies",
-                    name: "Herbal Remedies",
-                    icon: <Leaf className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "practitioner-grade",
-                    name: "Practitioner Grade",
-                    icon: <Search className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "vegan",
-                    name: "Vegan Supplements",
-                    icon: <Leaf className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "organic",
-                    name: "Organic Supplements",
-                    icon: <Apple className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "hypoallergenic",
-                    name: "Hypoallergenic",
-                    icon: <Wheat className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "online",
-                    name: "Online Retailers",
-                    icon: <ShoppingBag className="h-5 w-5 text-sage" />,
-                },
-            ];
-        } else {
-            return [
-                {
-                    id: "gluten-free",
-                    name: "Gluten-Free",
-                    icon: <Wheat className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "dairy-free",
-                    name: "Dairy-Free",
-                    icon: <Cherry className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "nut-free",
-                    name: "Nut-Free",
-                    icon: <Apple className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "vegan",
-                    name: "Vegan",
-                    icon: <Leaf className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "organic",
-                    name: "Bio/Organic",
-                    icon: <Apple className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "local-farms",
-                    name: "Local Farms",
-                    icon: <Truck className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "fresh-vegetables",
-                    name: "Fresh Vegetables",
-                    icon: <Carrot className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "farm-raised-meat",
-                    name: "Farm-Raised Meat",
-                    icon: <Egg className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "no-processed",
-                    name: "No Processed Foods",
-                    icon: <Package2 className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "kid-friendly",
-                    name: "Kid-Friendly Snacks",
-                    icon: <Baby className="h-5 w-5 text-bark" />,
-                },
-                {
-                    id: "bulk-buying",
-                    name: "Bulk Buying Options",
-                    icon: <ShoppingBag className="h-5 w-5 text-sage" />,
-                },
-                {
-                    id: "zero-waste",
-                    name: "Zero Waste Packaging",
-                    icon: <Leaf className="h-5 w-5 text-bark" />,
-                },
-            ];
+    // Step navigation functions
+    const goToNextStep = () => {
+        if (currentStep < 2) {
+            setCurrentStep((prev) => (prev + 1) as 1 | 2);
         }
     };
 
-    const toggleLocation = (cityName: string) => {
-        setSelectedLocations((prev) =>
-            prev.includes(cityName)
-                ? prev.filter((name) => name !== cityName)
-                : [...prev, cityName],
-        );
+    const goToPreviousStep = () => {
+        if (currentStep > 1) {
+            setCurrentStep((prev) => (prev - 1) as 1 | 2);
+        }
     };
 
-    const toggleGuideType = (guideId: string) => {
-        setSelectedGuideType((prev) => (prev === guideId ? "" : guideId));
-    };
-
-    const togglePreference = (preferenceId: string) => {
-        setSelectedPreferences((prev) =>
-            prev.includes(preferenceId)
-                ? prev.filter((id) => id !== preferenceId)
-                : [...prev, preferenceId],
-        );
-    };
-
-    const isFormValid = () => {
-        return selectedLocations.length > 0 && selectedGuideType;
-    };
+    // Step validation functions
+    const isStep2Valid = () => selectedLocations.length > 0;
 
     const handleFindFood = () => {
-        if (!isFormValid()) return;
+        if (!isStep2Valid()) return;
 
-        const params = new URLSearchParams();
-
-        // Set all selected cities for filtering
         let citiesToSearch = selectedLocations.map(loc => loc.toLowerCase());
-        
-        // For supplements, always include Online stores
-        if (selectedGuideType === "supplements" && !citiesToSearch.includes("online")) {
+        const hasSupplements = selectedPreferences.includes("supplements");
+        const otherPreferences = selectedPreferences.filter(p => p !== "supplements");
+
+        // SCENARIO 1: No supplements - Grocery only
+        if (!hasSupplements) {
+            const params = new URLSearchParams();
+            params.set("city", citiesToSearch.join(","));
+            if (otherPreferences.length > 0) {
+                params.set("tags", otherPreferences.join(","));
+            }
+            const url = `/results?${params.toString()}`;
+            setLocation(url);
+            return;
+        }
+
+        // SCENARIO 2: ONLY supplements (no other preferences)
+        if (hasSupplements && otherPreferences.length === 0) {
+            if (!citiesToSearch.includes("online")) {
+                citiesToSearch.push("online");
+            }
+            const params = new URLSearchParams();
+            params.set("city", citiesToSearch.join(","));
+            params.set("category", "Health Food Store,Online Store,Department Store");
+            const url = `/results?${params.toString()}`;
+            setLocation(url);
+            return;
+        }
+
+        // SCENARIO 3: Supplements + Other preferences - Dual search
+        if (!citiesToSearch.includes("online")) {
             citiesToSearch.push("online");
         }
-        
+        const params = new URLSearchParams();
         params.set("city", citiesToSearch.join(","));
-
-        // For supplements, add category filter
-        if (selectedGuideType === "supplements") {
-            params.set(
-                "category",
-                "Health Food Store,Online Store,Department Store",
-            );
-        }
-
-        // Add preferences as tags
-        if (selectedPreferences.length > 0) {
-            params.set("tags", selectedPreferences.join(","));
-        }
-
-        console.log("Navigating to:", `/results?${params.toString()}`);
-
-        // Force navigation with window.location to ensure proper routing
+        params.set("tags", otherPreferences.join(","));
+        params.set("includeSupplements", "true");
         const url = `/results?${params.toString()}`;
         setLocation(url);
-
-        // Fallback navigation if wouter fails
-        setTimeout(() => {
-            if (window.location.pathname !== "/results") {
-                window.location.href = url;
-            }
-        }, 100);
     };
 
     return (
@@ -254,165 +280,36 @@ export default function FindMyFood() {
                         </p>
                     </div>
 
-                    {/* Location Selection */}
-                    <Card className="mb-8 shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-xl font-semibold">
-                                Location
-                            </CardTitle>
-                            <p className="text-t2 font-outfit">
-                                Select one or more locations:
-                            </p>
-                        </CardHeader>
-                        <CardContent>
-                            {citiesLoading ? (
-                                <div className="text-center py-4">Loading cities...</div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    {cities.map((city) => (
-                                    <div
-                                        key={city.id}
-                                        onClick={() => toggleLocation(city.name)}
-                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors cursor-pointer"
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <Checkbox
-                                                id={`city-${city.id}`}
-                                                checked={selectedLocations.includes(
-                                                    city.name,
-                                                )}
-                                                onCheckedChange={() =>
-                                                    toggleLocation(city.name)
-                                                }
-                                                className="h-5 w-5 pointer-events-none"
-                                            />
-                                            <Label
-                                                htmlFor={`city-${city.id}`}
-                                                className="text-base font-medium cursor-pointer pointer-events-none"
-                                            >
-                                                {city.name}
-                                            </Label>
-                                        </div>
-                                    </div>
-                                    ))}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                    {/* Progress Indicator */}
+                    <div className="mb-8">
+                        <StepIndicator currentStep={currentStep} />
+                    </div>
 
-                    {/* Guide Type Selection */}
-                    <Card className="mb-8 shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-xl font-semibold">
-                                Guide Type
-                            </CardTitle>
-                            <p className="text-t2 font-outfit">
-                                Choose what you are looking for:
-                            </p>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {guideTypes.map((guide) => (
-                                    <div
-                                        key={guide.id}
-                                        onClick={() => toggleGuideType(guide.id)}
-                                        className="border border-mist rounded-lg p-4 hover:border-sage/50 transition-colors cursor-pointer"
-                                    >
-                                        <div className="flex items-start space-x-3">
-                                            <Checkbox
-                                                id={`guide-${guide.id}`}
-                                                checked={
-                                                    selectedGuideType ===
-                                                    guide.id
-                                                }
-                                                onCheckedChange={() =>
-                                                    toggleGuideType(guide.id)
-                                                }
-                                                className="h-5 w-5 mt-0.5 pointer-events-none"
-                                            />
-                                            <div className="flex-1 pointer-events-none">
-                                                <Label
-                                                    htmlFor={`guide-${guide.id}`}
-                                                    className="text-base font-medium cursor-pointer block mb-1"
-                                                >
-                                                    {guide.name}
-                                                </Label>
-                                                <p className="text-sm text-t2 font-outfit">
-                                                    {guide.description}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {/* Step Content */}
+                    <div className="max-w-4xl mx-auto">
+                        {currentStep === 1 && (
+                            <DietaryPreferencesStep
+                                selectedPreferences={selectedPreferences}
+                                setSelectedPreferences={setSelectedPreferences}
+                                onNext={goToNextStep}
+                            />
+                        )}
 
-                    {/* Dietary Preferences */}
-                    <Card className="mb-8 shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-xl font-semibold">
-                                Dietary Preferences
-                            </CardTitle>
-                            <p className="text-t2 font-outfit">
-                                Select all dietary preferences that apply.
-                            </p>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {getDietaryPreferences().map((preference) => (
-                                    <div
-                                        key={preference.id}
-                                        onClick={() => togglePreference(preference.id)}
-                                        className="border border-mist rounded-lg p-3 hover:border-sage/50 transition-colors cursor-pointer"
-                                    >
-                                        <div className="flex items-start space-x-2">
-                                            <Checkbox
-                                                id={`pref-${preference.id}`}
-                                                checked={selectedPreferences.includes(
-                                                    preference.id,
-                                                )}
-                                                onCheckedChange={() =>
-                                                    togglePreference(
-                                                        preference.id,
-                                                    )
-                                                }
-                                                className="h-4 w-4 mt-1 flex-shrink-0 pointer-events-none"
-                                            />
-                                            <Label
-                                                htmlFor={`pref-${preference.id}`}
-                                                className="text-sm font-medium cursor-pointer flex items-start gap-2 flex-1 pointer-events-none"
-                                            >
-                                                <span className="flex-shrink-0 mt-0.5">
-                                                    {preference.icon}
-                                                </span>
-                                                <span className="leading-tight break-words">
-                                                    {preference.name}
-                                                </span>
-                                            </Label>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                        {currentStep === 2 && (
+                            <LocationStep
+                                selectedLocations={selectedLocations}
+                                setSelectedLocations={setSelectedLocations}
+                                cities={cities}
+                                citiesLoading={citiesLoading}
+                                onBack={goToPreviousStep}
+                                onSearch={handleFindFood}
+                                isValid={isStep2Valid()}
+                            />
+                        )}
+                    </div>
 
-                    {/* Action Buttons */}
-                    <div className="space-y-4">
-                        <Button
-                            type="button"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                console.log("Button clicked directly");
-                                handleFindFood();
-                            }}
-                            disabled={!isFormValid()}
-                            className="w-full bg-bark-lt hover:bg-bark-lt/90 text-white py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <Search className="mr-2 h-5 w-5" />
-                            Find My Food
-                        </Button>
-
+                    {/* Help Button */}
+                    <div className="mt-8 max-w-4xl mx-auto">
                         <Button
                             variant="outline"
                             asChild

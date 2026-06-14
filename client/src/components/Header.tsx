@@ -104,7 +104,7 @@ const Header = () => {
                         <span className="text-[10px] italic">coming soon</span>
                     </div>
                     <div className="py-2 text-gray-400 cursor-not-allowed flex items-center gap-2">
-                        <span>Resources</span>
+                        <span>Living Well</span>
                         <span className="text-[10px] italic">coming soon</span>
                     </div>
                     <div
@@ -223,7 +223,7 @@ const Header = () => {
                                     <span className="text-[10px] italic">coming soon</span>
                                 </div>
                                 <div className="py-2 px-4 rounded-lg text-gray-400 cursor-not-allowed flex items-center gap-2">
-                                    <span>Resources</span>
+                                    <span>Living Well</span>
                                     <span className="text-[10px] italic">coming soon</span>
                                 </div>
                                 <div
