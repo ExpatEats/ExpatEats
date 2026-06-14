@@ -78,6 +78,9 @@ export const EditLocationModal = ({
     const [website, setWebsite] = useState("");
     const [instagram, setInstagram] = useState("");
 
+    // Image state
+    const [imageUrl, setImageUrl] = useState("");
+
     // Tags state
     const [tagsInput, setTagsInput] = useState("");
 
@@ -86,7 +89,7 @@ export const EditLocationModal = ({
 
     // Admin fields state
     const [status, setStatus] = useState("");
-    const [softRating, setSoftRating] = useState("");
+    const [softRating, setSoftRating] = useState("none");
     const [michaelesNotes, setMichaelesNotes] = useState("");
     const [adminNotes, setAdminNotes] = useState("");
 
@@ -110,6 +113,9 @@ export const EditLocationModal = ({
             setWebsite(place.website || "");
             setInstagram(place.instagram || "");
 
+            // Image
+            setImageUrl(place.imageUrl || "");
+
             // Tags
             setTagsInput(getTagsFromPlace(place).join(", ") || "");
 
@@ -122,7 +128,7 @@ export const EditLocationModal = ({
 
             // Admin fields
             setStatus(place.status || "pending");
-            setSoftRating(place.softRating || "");
+            setSoftRating(place.softRating || "none");
             setMichaelesNotes(place.michaelesNotes || "");
             setAdminNotes(place.adminNotes || "");
         }
@@ -162,13 +168,15 @@ export const EditLocationModal = ({
             email: email.trim() || undefined,
             website: website.trim() || undefined,
             instagram: instagram.trim() || undefined,
+            // Image
+            imageUrl: imageUrl.trim() || undefined,
             // Tags
             tags: tagsArray.length > 0 ? tagsArray : undefined,
             // Features
             ...features,
             // Admin fields
             status: status as any,
-            softRating: softRating || undefined,
+            softRating: (softRating && softRating !== "none") ? softRating : undefined,
             michaelesNotes: michaelesNotes.trim() || undefined,
             adminNotes: adminNotes.trim() || undefined,
         };
@@ -190,9 +198,10 @@ export const EditLocationModal = ({
             setEmail(place.email || "");
             setWebsite(place.website || "");
             setInstagram(place.instagram || "");
+            setImageUrl(place.imageUrl || "");
             setTagsInput(getTagsFromPlace(place).join(", ") || "");
             setStatus(place.status || "pending");
-            setSoftRating(place.softRating || "");
+            setSoftRating(place.softRating || "none");
             setMichaelesNotes(place.michaelesNotes || "");
             setAdminNotes(place.adminNotes || "");
 
@@ -272,6 +281,20 @@ export const EditLocationModal = ({
                                             <SelectItem value="community">Community</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="imageUrl">Image URL (optional)</Label>
+                                    <Input
+                                        id="imageUrl"
+                                        value={imageUrl}
+                                        onChange={(e) => setImageUrl(e.target.value)}
+                                        placeholder="https://example.com/image.jpg"
+                                        disabled={isLoading}
+                                    />
+                                    <p className="text-xs text-t3">
+                                        Provide a direct URL to an image for this location
+                                    </p>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -497,12 +520,12 @@ export const EditLocationModal = ({
 
                                 <div className="space-y-2">
                                     <Label htmlFor="softRating">Soft Rating</Label>
-                                    <Select value={softRating} onValueChange={setSoftRating} disabled={isLoading}>
+                                    <Select value={softRating || "none"} onValueChange={setSoftRating} disabled={isLoading}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select rating (optional)" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">None</SelectItem>
+                                            <SelectItem value="none">None</SelectItem>
                                             <SelectItem value="Gold Standard">Gold Standard</SelectItem>
                                             <SelectItem value="Great Choice">Great Choice</SelectItem>
                                             <SelectItem value="This Will Do in a Pinch">

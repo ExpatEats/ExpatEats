@@ -75,7 +75,7 @@ const Results = () => {
     const [searchParams, setSearchParams] = useState<URLSearchParams | null>(
         null,
     );
-    const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const [viewMode, setViewMode] = useState<"list" | "map">("map");
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
@@ -130,25 +130,55 @@ const Results = () => {
     const city = searchParams?.get("city") || "";
     const category = searchParams?.get("category") || "";
     const tags = searchParams?.get("tags") || "";
+    const includeSupplements = searchParams?.get("includeSupplements") === "true";
 
-    const buildQueryUrl = () => {
+    const buildGroceryQueryUrl = () => {
         const params = new URLSearchParams();
-        if (city) {
-            params.append("city", city);
-        }
-        if (category) {
-            params.append("category", category);
-        }
-        if (tags) {
-            params.append("tags", tags);
-        }
+        if (city) params.append("city", city);
+        if (tags) params.append("tags", tags);
         return `/api/places?${params.toString()}`;
     };
 
-    const { data: results = [], isLoading } = useQuery<Place[]>({
-        queryKey: [buildQueryUrl()],
-        enabled: !!searchParams && !!city,
+    const buildSupplementsQueryUrl = () => {
+        const params = new URLSearchParams();
+        if (city) params.append("city", city);
+        params.append("category", "Health Food Store,Online Store,Department Store");
+        return `/api/places?${params.toString()}`;
+    };
+
+    // Single query for grocery-only or category-based searches
+    const { data: groceryResults = [], isLoading: isGroceryLoading } = useQuery<Place[]>({
+        queryKey: [buildGroceryQueryUrl()],
+        enabled: !!searchParams && !!city && !includeSupplements && !category,
     });
+
+    // Query for category-based searches (supplements only, no dual mode)
+    const { data: categoryResults = [], isLoading: isCategoryLoading } = useQuery<Place[]>({
+        queryKey: [`/api/places?city=${city}&category=${category}`],
+        enabled: !!searchParams && !!city && !!category && !includeSupplements,
+    });
+
+    // Dual queries when supplements is included with other preferences
+    const { data: groceryResultsDual = [], isLoading: isGroceryLoadingDual } = useQuery<Place[]>({
+        queryKey: [buildGroceryQueryUrl()],
+        enabled: !!searchParams && !!city && includeSupplements,
+    });
+
+    const { data: supplementResults = [], isLoading: isSupplementLoading } = useQuery<Place[]>({
+        queryKey: [buildSupplementsQueryUrl()],
+        enabled: !!searchParams && !!city && includeSupplements,
+    });
+
+    // Merge results with deduplication
+    const results = includeSupplements
+        ? [...groceryResultsDual, ...supplementResults].filter((place, index, self) =>
+            index === self.findIndex(p => p.id === place.id)
+        )
+        : (category ? categoryResults : groceryResults);
+
+    const isLoading = includeSupplements
+        ? (isGroceryLoadingDual || isSupplementLoading)
+        : (category ? isCategoryLoading : isGroceryLoading);
 
 
     const handlePlaceClick = (place: Place) => {
@@ -176,7 +206,8 @@ const Results = () => {
     }, [setLocation]);
 
     const getCategoryTitle = () => {
-        if (category && category.includes("Health Food Store"))
+        if (includeSupplements && tags) return "Food Sources & Supplements Guide";
+        if (includeSupplements || (category && category.includes("Health Food Store")))
             return "Supplements Guide";
         return "Food Sources Guide";
     };
@@ -204,7 +235,13 @@ const Results = () => {
         const isSupplements =
             category && category.includes("Health Food Store");
 
-        if (tags && tags.length > 0) {
+        if (includeSupplements && tags && tags.length > 0) {
+            const tagList = tags
+                .split(",")
+                .map((tag) => tag.trim())
+                .join(", ");
+            return `${results.length} results found in ${location}: all supplement stores plus food sources offering ${tagList} options`;
+        } else if (tags && tags.length > 0) {
             const tagList = tags
                 .split(",")
                 .map((tag) => tag.trim())
@@ -214,7 +251,7 @@ const Results = () => {
             } else {
                 return `${results.length} food sources found in ${location} offering ${tagList} options`;
             }
-        } else if (isSupplements) {
+        } else if (includeSupplements || isSupplements) {
             return `${results.length} supplement stores found in ${location}`;
         } else {
             return `${results.length} sustainable food sources found in ${location}`;
@@ -438,6 +475,32 @@ const Results = () => {
                                             )}
 
                                             {(() => {
+                                                // Check if this is a supplement place
+                                                const isSupplementPlace = place.category === "Health Food Store" ||
+                                                                         place.category === "Online Store" ||
+                                                                         place.category === "Department Store";
+
+                                                if (isSupplementPlace) {
+                                                    // Show only "Supplements" tag for supplement places
+                                                    return (
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-700 mb-2">
+                                                                Features
+                                                            </p>
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                <Badge
+                                                                    variant="secondary"
+                                                                    className="text-xs bg-sage/10 text-sage hover:bg-sage/20 flex items-center gap-1"
+                                                                >
+                                                                    <Package2 className="h-4 w-4" />
+                                                                    Supplements
+                                                                </Badge>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                // For grocery places, show individual tags
                                                 const tags = getTagsFromPlace(place);
                                                 return tags.length > 0 && (
                                                     <div>
