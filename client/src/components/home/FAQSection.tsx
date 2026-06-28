@@ -56,7 +56,7 @@ export function FAQSection() {
 
     return (
         <section className="bg-white py-[88px] px-11 border-t border-mist" id="faq">
-            <div className="max-w-[800px] mx-auto">
+            <div className="max-w-[720px] mx-auto">
                 {/* Eyebrow badge */}
                 <div className="flex items-center gap-2 mb-5">
                     <div className="w-2 h-2 rounded-full bg-sage"></div>
@@ -73,21 +73,21 @@ export function FAQSection() {
                 </h2>
 
                 {/* FAQ list */}
-                <div className="space-y-3">
+                <div className="mt-[44px]">
                     {faqs.map((faq, index) => (
                         <div
                             key={index}
-                            className="bg-cream rounded-xl border border-mist overflow-hidden transition-all"
+                            className="border-b border-mist"
                         >
                             <button
                                 onClick={() => toggleFaq(index)}
-                                className="w-full flex items-center justify-between p-[20px_24px] text-left cursor-pointer transition-colors hover:bg-white"
+                                className="w-full flex items-center justify-between gap-4 py-5 text-left cursor-pointer transition-colors hover:text-bark font-outfit text-[15px] font-normal text-soil"
                             >
-                                <span className="text-[15px] font-outfit font-medium text-soil pr-4">
+                                <span className="pr-4">
                                     {faq.question}
                                 </span>
                                 <span
-                                    className={`text-[24px] font-light text-bark transition-transform flex-shrink-0 ${
+                                    className={`text-[18px] text-bark flex-shrink-0 transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                                         openIndex === index ? "rotate-45" : ""
                                     }`}
                                 >
@@ -95,11 +95,11 @@ export function FAQSection() {
                                 </span>
                             </button>
                             <div
-                                className={`overflow-hidden transition-all duration-300 ${
-                                    openIndex === index ? "max-h-96" : "max-h-0"
+                                className={`overflow-hidden transition-[max-height] duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                                    openIndex === index ? "max-h-[300px]" : "max-h-0"
                                 }`}
                             >
-                                <div className="p-[12px_24px_20px_24px] text-[14px] font-outfit font-light text-t2 leading-[1.7]">
+                                <div className="pb-5 text-[14px] font-outfit font-light text-t2 leading-[1.8]">
                                     {faq.answer}
                                 </div>
                             </div>
