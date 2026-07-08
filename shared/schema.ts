@@ -99,6 +99,7 @@ export const places = pgTable("places", {
     kidFriendly: boolean("kid_friendly").default(false),
     bulkBuying: boolean("bulk_buying").default(false),
     zeroWaste: boolean("zero_waste").default(false),
+    worldCuisine: boolean("world_cuisine").default(false),
 
     // Supplement Boolean Filters
     generalSupplements: boolean("general_supplements").default(false),

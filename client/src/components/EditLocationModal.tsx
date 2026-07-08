@@ -52,7 +52,8 @@ const dietaryFeatures = [
     { id: "kidFriendly", label: "Kid-Friendly" },
     { id: "bulkBuying", label: "Bulk Buying" },
     { id: "zeroWaste", label: "Zero Waste" },
-];
+    { id: "worldCuisine", label: "World Cuisine" },
+].sort((a, b) => a.label.localeCompare(b.label));
 
 export const EditLocationModal = ({
     open,

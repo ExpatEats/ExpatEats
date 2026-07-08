@@ -7,6 +7,7 @@ import { MissionStrip } from "@/components/home/MissionStrip";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { AboutSection } from "@/components/home/AboutSection";
 import { FAQSection } from "@/components/home/FAQSection";
+import { FixedCTAButton } from "@/components/home/FixedCTAButton";
 
 export default function Home() {
     return (
@@ -20,6 +21,7 @@ export default function Home() {
             <TestimonialsSection />
             <AboutSection />
             <FAQSection />
+            <FixedCTAButton />
         </div>
     );
 }

@@ -254,6 +254,8 @@ class DatabaseStorage implements Storage {
                             return eq(places.bulkBuying, true);
                         case "zero-waste":
                             return eq(places.zeroWaste, true);
+                        case "world-cuisine":
+                            return eq(places.worldCuisine, true);
                         default:
                             return null;
                     }
@@ -577,6 +579,7 @@ class DatabaseStorage implements Storage {
                 kidFriendly: places.kidFriendly,
                 bulkBuying: places.bulkBuying,
                 zeroWaste: places.zeroWaste,
+                worldCuisine: places.worldCuisine,
                 userId: places.userId,
                 imageUrl: places.imageUrl,
                 averageRating: places.averageRating,

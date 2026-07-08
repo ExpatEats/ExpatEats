@@ -44,7 +44,7 @@ function DietaryPreferencesStep({
     onNext
 }: DietaryPreferencesStepProps) {
     const getDietaryPreferences = () => {
-        return [
+        const preferences = [
             { id: "gluten-free", name: "Gluten-Free", icon: <Wheat className="h-5 w-5 text-bark" /> },
             { id: "dairy-free", name: "Dairy-Free", icon: <Cherry className="h-5 w-5 text-bark" /> },
             { id: "nut-free", name: "Nut-Free", icon: <Apple className="h-5 w-5 text-bark" /> },
@@ -58,7 +58,10 @@ function DietaryPreferencesStep({
             { id: "bulk-buying", name: "Bulk Buying Options", icon: <ShoppingBag className="h-5 w-5 text-sage" /> },
             { id: "zero-waste", name: "Zero Waste Packaging", icon: <Leaf className="h-5 w-5 text-bark" /> },
             { id: "supplements", name: "Supplements & Vitamins", icon: <Package2 className="h-5 w-5 text-bark" /> },
+            { id: "world-cuisine", name: "World Cuisine", icon: <Apple className="h-5 w-5 text-bark" /> },
         ];
+        // Sort alphabetically by name
+        return preferences.sort((a, b) => a.name.localeCompare(b.name));
     };
 
     const togglePreference = (prefId: string) => {
@@ -73,15 +76,7 @@ function DietaryPreferencesStep({
 
     return (
         <Card>
-            <CardHeader>
-                <CardTitle className="font-cormorant text-2xl">
-                    Select Your Dietary Preferences
-                    <span className="block text-sm font-outfit font-normal text-t2 mt-2">
-                        Optional - Skip this step if you want to see all options
-                    </span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6 pb-24 md:pb-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {preferences.map((pref) => (
                         <div
@@ -102,11 +97,11 @@ function DietaryPreferencesStep({
                     ))}
                 </div>
 
-                <div className="mt-8 flex justify-end">
+                <div className="mt-8 flex justify-end md:relative fixed bottom-0 left-0 right-0 md:p-0 p-4 bg-white md:bg-transparent border-t md:border-t-0 border-gray-200 z-10">
                     <Button
                         onClick={onNext}
                         size="lg"
-                        className="min-w-[120px]"
+                        className="min-w-[120px] md:w-auto w-full max-w-md mx-auto"
                     >
                         Next
                     </Button>
@@ -136,12 +131,7 @@ function LocationStep({
 
     return (
         <Card>
-            <CardHeader>
-                <CardTitle className="font-cormorant text-2xl">
-                    Choose Your Locations
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6 pb-24 md:pb-6">
                 {citiesLoading ? (
                     <div className="text-center py-8">Loading locations...</div>
                 ) : (
@@ -166,11 +156,12 @@ function LocationStep({
                     </div>
                 )}
 
-                <div className="mt-8 flex justify-between">
+                <div className="mt-8 flex justify-between md:relative fixed bottom-0 left-0 right-0 md:p-0 p-4 bg-white md:bg-transparent border-t md:border-t-0 border-gray-200 z-10">
                     <Button
                         onClick={onBack}
                         variant="outline"
                         size="lg"
+                        className="md:flex-none flex-1 mr-2"
                     >
                         Back
                     </Button>
@@ -178,7 +169,7 @@ function LocationStep({
                         onClick={onSearch}
                         disabled={!isValid}
                         size="lg"
-                        className="min-w-[120px]"
+                        className="min-w-[120px] md:flex-none flex-1"
                     >
                         <Search className="h-5 w-5 mr-2" />
                         Search
@@ -205,12 +196,14 @@ export default function FindMyFood() {
     const goToNextStep = () => {
         if (currentStep < 2) {
             setCurrentStep((prev) => (prev + 1) as 1 | 2);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
     const goToPreviousStep = () => {
         if (currentStep > 1) {
             setCurrentStep((prev) => (prev - 1) as 1 | 2);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
@@ -267,17 +260,13 @@ export default function FindMyFood() {
                 <div className="max-w-6xl mx-auto">
                     {/* Header */}
                     <div className="text-center mb-12">
-                        <div className="inline-flex items-center bg-sage text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+                        <div className="inline-flex items-center bg-sage text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
                             <MapPin className="h-4 w-4 mr-1.5" />
                             <span>PORTUGAL</span>
                         </div>
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                            Find My Food
+                        <h1 className="text-4xl font-bold text-gray-900">
+                            {currentStep === 1 ? "Select Your Dietary Preferences" : "Select Your Locations"}
                         </h1>
-                        <p className="text-lg text-t2 font-outfit">
-                            Discover healthy, organic grocery stores and supplements near you,
-                            curated for your diet and location in Portugal.
-                        </p>
                     </div>
 
                     {/* Progress Indicator */}
@@ -308,19 +297,6 @@ export default function FindMyFood() {
                         )}
                     </div>
 
-                    {/* Help Button */}
-                    <div className="mt-8 max-w-4xl mx-auto">
-                        <Button
-                            variant="outline"
-                            asChild
-                            className="w-full border-sage text-sage hover:bg-sage/10 py-3 text-base sm:text-lg font-medium"
-                        >
-                            <Link href="/contact" className="flex items-center justify-center">
-                                <MessageCircle className="mr-2 h-5 w-5 flex-shrink-0" />
-                                <span className="text-center">I want someone to figure this out for me</span>
-                            </Link>
-                        </Button>
-                    </div>
                 </div>
             </div>
         </div>

@@ -937,6 +937,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 kidFriendly,
                 bulkBuying,
                 zeroWaste,
+                worldCuisine,
                 // Admin fields
                 status,
                 softRating,
@@ -987,6 +988,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (kidFriendly !== undefined) updateData.kidFriendly = kidFriendly;
             if (bulkBuying !== undefined) updateData.bulkBuying = bulkBuying;
             if (zeroWaste !== undefined) updateData.zeroWaste = zeroWaste;
+            if (worldCuisine !== undefined) updateData.worldCuisine = worldCuisine;
 
             // Admin fields
             if (status !== undefined) {
