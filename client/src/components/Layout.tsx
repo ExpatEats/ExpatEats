@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Header />
             <AnnouncementBar />
             <main className={`flex-grow w-full max-w-full ${!isHomePage ? "pt-[calc(64px+36px)] sm:pt-[calc(64px+38px)] md:pt-[calc(64px+42px)]" : ""}`}>{children}</main>
-            <WhatsAppChat />
+            <WhatsAppChat currentPath={location} />
             <Footer />
         </div>
     );

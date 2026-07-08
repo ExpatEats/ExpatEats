@@ -20,6 +20,7 @@ export function getTagsFromPlace(place: Place): string[] {
     if (place.kidFriendly) tags.push("kid-friendly");
     if (place.bulkBuying) tags.push("bulk-buying");
     if (place.zeroWaste) tags.push("zero-waste");
+    if (place.worldCuisine) tags.push("world-cuisine");
 
     // Supplement tags
     if (place.generalSupplements) tags.push("general-supplements");

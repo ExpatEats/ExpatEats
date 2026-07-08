@@ -83,7 +83,35 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
         }
     };
 
-    // Set up global function for popup buttons
+    // Navigation helper functions
+    const openGoogleMaps = (place: Place) => {
+        if (place.latitude && place.longitude) {
+            const lat = parseFloat(String(place.latitude));
+            const lng = parseFloat(String(place.longitude));
+            if (!isNaN(lat) && !isNaN(lng)) {
+                window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
+                return;
+            }
+        }
+        const fullAddress = `${place.address}, ${place.city}, ${place.country}`;
+        const encodedAddress = encodeURIComponent(fullAddress);
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+    };
+
+    const openWaze = (place: Place) => {
+        if (place.latitude && place.longitude) {
+            const lat = parseFloat(String(place.latitude));
+            const lng = parseFloat(String(place.longitude));
+            if (!isNaN(lat) && !isNaN(lng)) {
+                window.open(`https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes`, '_blank');
+                return;
+            }
+        }
+        const fullAddress = `${place.address}, ${place.city}, ${place.country}`;
+        window.open(`https://www.waze.com/ul?q=${encodeURIComponent(fullAddress)}`, '_blank');
+    };
+
+    // Set up global functions for popup buttons
     useEffect(() => {
         (window as any).viewStoreDetails = (placeId: number) => {
             const place = places.find(p => p.id === placeId);
@@ -92,8 +120,24 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
             }
         };
 
+        (window as any).openGoogleMapsFromPopup = (placeId: number) => {
+            const place = places.find(p => p.id === placeId);
+            if (place) {
+                openGoogleMaps(place);
+            }
+        };
+
+        (window as any).openWazeFromPopup = (placeId: number) => {
+            const place = places.find(p => p.id === placeId);
+            if (place) {
+                openWaze(place);
+            }
+        };
+
         return () => {
             delete (window as any).viewStoreDetails;
+            delete (window as any).openGoogleMapsFromPopup;
+            delete (window as any).openWazeFromPopup;
         };
     }, [places, onPlaceClick]);
 
@@ -230,9 +274,31 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
                     ? '<p class="text-xs text-orange-600 mb-2">📍 Approximate location - exact address not available</p>'
                     : ""
             }
+            <div class="flex gap-2 mb-2">
+              <button
+                onclick="window.openGoogleMapsFromPopup(${place.id})"
+                class="flex-1 bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs py-2 px-2 rounded transition-colors flex items-center justify-center gap-1"
+                title="Open in Google Maps"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                Google Maps
+              </button>
+              <button
+                onclick="window.openWazeFromPopup(${place.id})"
+                class="flex-1 bg-[#33CCFF] hover:bg-[#00B8FF] text-white text-xs py-2 px-2 rounded transition-colors flex items-center justify-center gap-1"
+                title="Open in Waze"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                Waze
+              </button>
+            </div>
             <button
               onclick="window.viewStoreDetails(${place.id})"
-              class="w-full bg-bark text-white text-xs py-1 px-2 rounded hover:bg-bark transition-colors"
+              class="w-full bg-bark text-white text-xs py-2 px-2 rounded hover:bg-bark transition-colors"
             >
               View Details
             </button>

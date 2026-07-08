@@ -76,7 +76,8 @@ const availableTags = [
     { id: "kid-friendly", label: "Kid-Friendly Snacks", icon: Baby },
     { id: "bulk-buying", label: "Bulk Buying Options", icon: ShoppingBag },
     { id: "zero-waste", label: "Zero Waste Packaging", icon: Leaf },
-];
+    { id: "world-cuisine", label: "World Cuisine", icon: Apple },
+].sort((a, b) => a.label.localeCompare(b.label));
 
 export default function AddLocation() {
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);

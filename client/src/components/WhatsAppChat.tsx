@@ -16,8 +16,15 @@ import { Input } from "@/components/ui/input";
 // Michaele's WhatsApp phone number
 const WHATSAPP_PHONE = "351912095445";
 
-export const WhatsAppChat = () => {
+interface WhatsAppChatProps {
+    currentPath?: string;
+}
+
+export const WhatsAppChat = ({ currentPath = "" }: WhatsAppChatProps) => {
     const [message, setMessage] = useState("");
+
+    // Check if we're on a page with sticky bottom buttons
+    const hasBottomButtons = currentPath === "/search" || currentPath === "/find-my-food";
 
     const openWhatsApp = () => {
         // Encode the message for URL
@@ -32,7 +39,7 @@ export const WhatsAppChat = () => {
     };
 
     return (
-        <div className="fixed right-5 bottom-5 z-40">
+        <div className={`fixed right-5 z-40 ${hasBottomButtons ? "bottom-32 md:bottom-5" : "bottom-5"}`}>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button

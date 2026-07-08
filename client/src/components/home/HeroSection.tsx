@@ -24,12 +24,6 @@ export function HeroSection() {
                         Find trusted grocery stores, supplements and healthy essentials that help you feel at home.
                     </p>
 
-                    {/* CTA Button */}
-                    <Link href="/search">
-                        <button className="inline-flex items-center justify-center gap-2.5 mt-2 w-full max-w-[320px] font-outfit text-base font-medium bg-bark text-white border-none rounded-xl px-9 py-[17px] cursor-pointer tracking-[0.1px] transition-all duration-200 shadow-[0_4px_18px_rgba(124,92,59,0.28)] hover:bg-soil hover:-translate-y-px">
-                            Find my picks →
-                        </button>
-                    </Link>
 
                     {/* Coming Soon Badge */}
                     <div className="inline-flex items-center gap-[7px] mt-[18px] bg-bark-pale border border-bark/25 rounded-full px-[14px] py-[6px] text-xs font-light text-bark-lt">

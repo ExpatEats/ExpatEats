@@ -295,6 +295,21 @@ const Results = () => {
                             <div className="bg-cream-mid rounded-lg p-1 inline-flex">
                                 <Button
                                     variant={
+                                        viewMode === "map" ? "default" : "ghost"
+                                    }
+                                    size="sm"
+                                    onClick={() => setViewMode("map")}
+                                    className={`${
+                                        viewMode === "map"
+                                            ? "bg-bark-lt text-white hover:bg-bark"
+                                            : "text-t2 font-outfit hover:text-gray-900"
+                                    }`}
+                                >
+                                    <Map className="h-4 w-4 mr-1" />
+                                    Map View
+                                </Button>
+                                <Button
+                                    variant={
                                         viewMode === "list" ? "default" : "ghost"
                                     }
                                     size="sm"
@@ -308,21 +323,6 @@ const Results = () => {
                                     <List className="h-4 w-4 mr-1" />
                                     List View
                                 </Button>
-                                <Button
-                                    variant={
-                                        viewMode === "map" ? "default" : "ghost"
-                                    }
-                                    size="sm"
-                                    onClick={() => setViewMode("map")}
-                                    className={`${
-                                        viewMode === "map"
-                                            ? "bg-bark-lt text-white hover:bg-bark"
-                                            : "text-t2 font-outfit hover:text-gray-900"
-                                    }`}
-                                    >
-                                        <Map className="h-4 w-4 mr-1" />
-                                        Map View
-                                    </Button>
                                 </div>
                             </div>
                         )}
@@ -347,21 +347,48 @@ const Results = () => {
                         ))}
                     </div>
                 ) : results.length === 0 ? (
-                    <div className="text-center py-12">
-                        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                            No results found
-                        </h2>
-                        <p className="text-t2 font-outfit mb-6">
-                            We couldn't find any businesses matching your criteria.
-                            <br />
-                            Try adjusting your search parameters.
-                        </p>
-                        <Button
-                            onClick={() => window.history.back()}
-                            className="bg-bark-lt hover:bg-bark-lt/90 text-white"
-                        >
-                            Modify Search
-                        </Button>
+                    <div className="text-center py-12 max-w-2xl mx-auto">
+                        <div className="mb-8">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                                Nothing on our plater yet
+                            </h2>
+                            <p className="text-t2 font-outfit text-lg mb-6">
+                                Not every corner of the map is fully stocked, try broadening your search
+                            </p>
+                            <Button
+                                onClick={() => setLocation("/search")}
+                                className="bg-bark-lt hover:bg-bark-lt/90 text-white px-8 py-6 text-lg"
+                                size="lg"
+                            >
+                                Broaden My Search
+                            </Button>
+                        </div>
+
+                        <div className="relative my-8">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-4 bg-white text-gray-500">or</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                                Know of a place we can add?
+                            </h3>
+                            <p className="text-t2 font-outfit text-lg mb-6">
+                                Help fellow food lovers discover even more great spots
+                            </p>
+                            <Button
+                                onClick={() => setLocation("/add-location")}
+                                variant="outline"
+                                className="border-bark-lt text-bark-lt hover:bg-bark-lt hover:text-white px-8 py-6 text-lg"
+                                size="lg"
+                            >
+                                Suggest a Place
+                            </Button>
+                        </div>
                     </div>
                 ) : (
                     <>
