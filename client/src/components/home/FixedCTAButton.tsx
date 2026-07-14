@@ -1,13 +1,156 @@
-import { Link } from "wouter";
+import { useEffect, useState } from "react";
+import { CTAButton } from "./CTAButton";
+import {
+    Sheet,
+    SheetContent,
+    SheetTrigger,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+// WhatsApp phone number
+const WHATSAPP_PHONE = "351912095445";
 
 export function FixedCTAButton() {
+    const [isVisible, setIsVisible] = useState(false);
+    const [message, setMessage] = useState("");
+
+    const openWhatsApp = () => {
+        const encodedMessage = encodeURIComponent(
+            message ||
+                "Hi Michaele, I have a question about food sources in Lisbon.",
+        );
+        const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMessage}`;
+        window.open(whatsappUrl, "_blank");
+    };
+
+    useEffect(() => {
+        // Target the original button in the hero section
+        const heroButton = document.getElementById("hero-cta-button");
+        if (!heroButton) return;
+
+        // Create intersection observer
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // When the hero button is NOT intersecting (out of view), show the sticky button
+                setIsVisible(!entry.isIntersecting);
+            },
+            {
+                // Trigger when button is completely out of viewport
+                threshold: 0,
+                // Add some margin to trigger slightly before/after
+                rootMargin: "-80px 0px 0px 0px", // Accounts for header height
+            }
+        );
+
+        observer.observe(heroButton);
+
+        // Cleanup
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-6 px-4 pointer-events-none">
-            <Link href="/search">
-                <button className="inline-flex items-center justify-center gap-2.5 w-full max-w-[320px] font-outfit text-base font-medium bg-bark text-white border-none rounded-xl px-9 py-[17px] cursor-pointer tracking-[0.1px] transition-all duration-200 shadow-[0_4px_18px_rgba(124,92,59,0.28)] hover:bg-soil hover:-translate-y-px pointer-events-auto">
-                    Find my picks →
-                </button>
-            </Link>
+        <div
+            className={`fixed bottom-0 left-0 right-0 z-50 pointer-events-none transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                isVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-full opacity-0"
+            }`}
+        >
+            {/* Taskbar Background */}
+            <div className="bg-white/95 backdrop-blur-xl border-t border-bark/10 shadow-[0_-2px_24px_rgba(44,31,15,0.07)]">
+                <div className="flex justify-between items-center pb-6 pt-4 px-4 max-w-[1100px] mx-auto">
+                    <div className="flex-1 flex justify-center">
+                        <CTAButton className="w-full max-w-[320px] pointer-events-auto" />
+                    </div>
+
+                    {/* WhatsApp Button */}
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button
+                                className="bg-bark hover:bg-soil text-white rounded-full h-14 w-14 flex items-center justify-center shadow-lg border-none flex-shrink-0 pointer-events-auto"
+                                aria-label="Chat with Michaele on WhatsApp"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="28"
+                                    height="28"
+                                    fill="white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                </svg>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-[90vw] sm:max-w-sm border-none">
+                            <SheetHeader className="pb-4">
+                                <SheetTitle className="text-lg font-normal text-bark flex items-center gap-2">
+                                    <div className="bg-bark p-1 rounded-full">
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            width="20"
+                                            height="20"
+                                            fill="white"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                        </svg>
+                                    </div>
+                                    Start a Conversation
+                                </SheetTitle>
+                            </SheetHeader>
+
+                            <div className="flex flex-col">
+                                <div className="mb-6">
+                                    <h3 className="text-base font-medium mb-2">
+                                        Hi there 👋
+                                    </h3>
+                                    <p className="text-sm text-t2">
+                                        I'm Michaele Kruger, holistic nutritionist based
+                                        in Lisbon. Have a question about food sources or
+                                        dietary needs? Send me a message and I'll get
+                                        back to you ASAP!
+                                    </p>
+                                </div>
+
+                                <div className="rounded-md bg-cream-mid p-4 mb-4">
+                                    <Input
+                                        placeholder="Type your message here..."
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        className="flex-1 mb-3"
+                                    />
+                                    <Button
+                                        onClick={openWhatsApp}
+                                        className="bg-bark hover:bg-soil w-full"
+                                    >
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            width="16"
+                                            height="16"
+                                            fill="white"
+                                            className="mr-2"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                        </svg>
+                                        Chat via WhatsApp
+                                    </Button>
+                                </div>
+
+                                <p className="text-xs text-t3 mt-2 text-center">
+                                    Messages will be sent directly to Michaele on
+                                    WhatsApp
+                                </p>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                </div>
+            </div>
         </div>
     );
 }

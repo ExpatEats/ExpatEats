@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { HeroStatsBar } from "./HeroStatsBar";
+import { CTAButton } from "./CTAButton";
 
 export function HeroSection() {
     return (
@@ -24,6 +25,10 @@ export function HeroSection() {
                         Find trusted grocery stores, supplements and healthy essentials that help you feel at home.
                     </p>
 
+                    {/* CTA Button */}
+                    <div id="hero-cta-button">
+                        <CTAButton className="w-full max-w-[320px]" />
+                    </div>
 
                     {/* Coming Soon Badge */}
                     <div className="inline-flex items-center gap-[7px] mt-[18px] bg-bark-pale border border-bark/25 rounded-full px-[14px] py-[6px] text-xs font-light text-bark-lt">
