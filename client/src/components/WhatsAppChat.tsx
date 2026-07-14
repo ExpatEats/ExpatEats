@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Send } from "lucide-react";
 import {
     Sheet,
@@ -22,9 +22,41 @@ interface WhatsAppChatProps {
 
 export const WhatsAppChat = ({ currentPath = "" }: WhatsAppChatProps) => {
     const [message, setMessage] = useState("");
+    const [taskbarVisible, setTaskbarVisible] = useState(false);
 
     // Check if we're on a page with sticky bottom buttons
     const hasBottomButtons = currentPath === "/search" || currentPath === "/find-my-food";
+
+    // Check if we're on the home page
+    const isHomePage = currentPath === "/";
+
+    // On home page, detect when taskbar is visible
+    useEffect(() => {
+        if (!isHomePage) {
+            setTaskbarVisible(false);
+            return;
+        }
+
+        const heroButton = document.getElementById("hero-cta-button");
+        if (!heroButton) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // Taskbar is visible when hero button is NOT intersecting
+                setTaskbarVisible(!entry.isIntersecting);
+            },
+            {
+                threshold: 0,
+                rootMargin: "-80px 0px 0px 0px",
+            }
+        );
+
+        observer.observe(heroButton);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [isHomePage]);
 
     const openWhatsApp = () => {
         // Encode the message for URL
@@ -37,6 +69,11 @@ export const WhatsAppChat = ({ currentPath = "" }: WhatsAppChatProps) => {
         // Open in new tab
         window.open(whatsappUrl, "_blank");
     };
+
+    // Hide the button on home page when taskbar is visible
+    if (isHomePage && taskbarVisible) {
+        return null;
+    }
 
     return (
         <div className={`fixed right-5 z-40 ${hasBottomButtons ? "bottom-32 md:bottom-5" : "bottom-5"}`}>

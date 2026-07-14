@@ -280,8 +280,11 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
                 class="flex-1 bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs py-2 px-2 rounded transition-colors flex items-center justify-center gap-1"
                 title="Open in Google Maps"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <svg width="14" height="14" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M24 9.5C17.096 9.5 11.5 15.096 11.5 22C11.5 30.5 24 42.5 24 42.5C24 42.5 36.5 30.5 36.5 22C36.5 15.096 30.904 9.5 24 9.5Z" fill="#EA4335"/>
+                  <circle cx="24" cy="22" r="7" fill="#FBBC04"/>
+                  <path d="M24 15C20.134 15 17 18.134 17 22C17 25.866 20.134 29 24 29C27.866 29 31 25.866 31 22C31 18.134 27.866 15 24 15ZM24 26C21.791 26 20 24.209 20 22C20 19.791 21.791 18 24 18C26.209 18 28 19.791 28 22C28 24.209 26.209 26 24 26Z" fill="white"/>
+                  <circle cx="24" cy="22" r="2.5" fill="#4285F4"/>
                 </svg>
                 Google Maps
               </button>
@@ -290,8 +293,12 @@ export function MapView({ places, onPlaceClick }: MapViewProps) {
                 class="flex-1 bg-[#33CCFF] hover:bg-[#00B8FF] text-white text-xs py-2 px-2 rounded transition-colors flex items-center justify-center gap-1"
                 title="Open in Waze"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <svg width="14" height="14" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M36.5 23.5C36.5 23.5 35.8 22.3 34.2 21.7C33.9 21.6 33.6 21.5 33.3 21.5C32.7 21.5 32.2 21.7 31.8 22C31.3 22.4 31 23 31 23.7C31 24 31.1 24.3 31.2 24.6C31.5 25.3 32.1 25.8 32.9 26C33.1 26.1 33.3 26.1 33.5 26.1C34.3 26.1 35 25.6 35.3 24.9C35.4 24.7 35.5 24.4 35.5 24.2C35.5 23.9 35.5 23.7 35.4 23.5H36.5ZM16.5 23.5C16.5 23.5 15.8 22.3 14.2 21.7C13.9 21.6 13.6 21.5 13.3 21.5C12.7 21.5 12.2 21.7 11.8 22C11.3 22.4 11 23 11 23.7C11 24 11.1 24.3 11.2 24.6C11.5 25.3 12.1 25.8 12.9 26C13.1 26.1 13.3 26.1 13.5 26.1C14.3 26.1 15 25.6 15.3 24.9C15.4 24.7 15.5 24.4 15.5 24.2C15.5 23.9 15.5 23.7 15.4 23.5H16.5Z" fill="white"/>
+                  <path d="M24 8C15.2 8 8 14.8 8 23.1C8 27.3 9.8 31.1 12.7 33.8C13.1 37.2 11.5 39.5 11.5 39.5C11.5 39.5 15.8 39.8 18.9 37.3C20.5 37.8 22.2 38 24 38C32.8 38 40 31.4 40 23.1C40 14.8 32.8 8 24 8Z" fill="white"/>
+                  <circle cx="15" cy="24" r="1.5" fill="#000"/>
+                  <circle cx="33" cy="24" r="1.5" fill="#000"/>
+                  <path d="M24 30C20.7 30 18 28.2 17 26H31C30 28.2 27.3 30 24 30Z" fill="#000" opacity="0.2"/>
                 </svg>
                 Waze
               </button>
